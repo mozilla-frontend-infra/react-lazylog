@@ -1,0 +1,31 @@
+{
+  "name": "unified-logviewer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Unified LogViewer",
+  "license": "MPL-2.0",
+  "config": {
+    "entry": "src/index.js",
+    "html": {
+      "title": "Unified LogViewer",
+      "description": "Unified LogViewer",
+      "author": "Eli Perelman"
+    }
+  },
+  "scripts": {
+    "build": "neo build",
+    "start": "neo start --port 4000"
+  },
+  "keywords": [],
+  "dependencies": {
+    "immutable": "3.8.1",
+    "lodash.throttle": "4.1.0",
+    "react": "15.3.0",
+    "react-addons-shallow-compare": "15.3.0",
+    "react-dom": "15.3.0",
+    "react-waypoint": "3.1.1"
+  },
+  "devDependencies": {
+    "mozilla-neo": "2.0.0"
+  }
+}
