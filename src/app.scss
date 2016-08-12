@@ -1,43 +1,59 @@
+$background: #222222 !default;
+$foreground: #d6d6d6 !default;
+$black: #4e4e4e !default;
+$black-bold: #7c7c7c !default;
+$red: #ff6c60 !default;
+$red-bold: #ffb6b0 !default;
+$green: #00aa00 !default;
+$green-bold: #ceffab !default;
+$yellow: #ffffb6 !default;
+$yellow-bold: #ffffcb !default;
+$blue: #96cbfe !default;
+$blue-bold: #b5dcfe !default;
+$magenta: #ff73fd !default;
+$magenta-bold: #ff9cfe !default;
+$cyan: #00aaaa !default;
+$cyan-bold: #55ffff !default;
+$white: #eeeeee !default;
+$white-bold: #ffffff !default;
+$bg-black: #4e4e4e !default;
+$bg-red: #ff6c60 !default;
+$bg-green: #00aa00 !default;
+$bg-yellow: #ffffb6 !default;
+$bg-blue: #96cbfe !default;
+$bg-magenta: #ff73fd !default;
+$bg-cyan: #00aaaa !default;
+$bg-white: #eeeeee !default;
+
 html, body {
-  font-family: "Monaco", sans-serif;
+  font-family: "Monaco", "Courier New", Courier, monospace;
   font-size: 12px;
   line-height: 1.45;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
-  color: #666;
-  background-color: #222;
+  background-color: $background;
+  color: $foreground;
   font-weight: 400;
+}
+
+h1 {
+  color: $white;
+}
+
+i .spinner {
+  fill: white;
+  vertical-align: middle;
 }
 
 h1.loading {
   margin: 50px;
-  color: white;
   vertical-align: middle;
+}
 
-  @keyframes spinner {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    100% {
-      transform: rotate(359deg);
-    }
-  }
-
-  i {
-    animation: spinner 1.25s infinite linear;
-    display: inline-block;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  i .spinner {
-    fill: white;
-    vertical-align: middle;
-  }
+.error h1 i {
+  fill: $yellow;
 }
 
 .ansi {
@@ -51,79 +67,79 @@ h1.loading {
     text-decoration: underline;
   }
   .black {
-    color: #4E4E4E;
+    color: $black;
   }
   .black.bold {
-    color: #7C7C7C;
+    color: $black-bold;
   }
   .red {
-    color: #FF6C60;
+    color: $red;
   }
   .red.bold {
-    color: #FFB6B0;
+    color: $red-bold;
   }
   .green {
-    color: #00AA00;
+    color: $green;
   }
   .green.bold {
-    color: #CEFFAB;
+    color: $green-bold;
   }
   .yellow {
-    color: #FFFFB6;
+    color: $yellow;
   }
   .yellow.bold {
-    color: #FFFFCB;
+    color: $yellow-bold;
   }
   .blue {
-    color: #96CBFE;
+    color: $blue;
   }
   .blue.bold {
-    color: #B5DCFE;
+    color: $blue-bold;
   }
   .magenta {
-    color: #FF73FD;
+    color: $magenta;
   }
   .magenta.bold {
-    color: #FF9CFE;
+    color: $magenta-bold;
   }
   .cyan {
-    color: #00AAAA;
+    color: $cyan;
   }
-  .cyan {
-    color: #55FFFF;
+  .cyan.bold {
+    color: $cyan-bold;
   }
   .white {
-    color: #EEEEEE;
+    color: $white;
   }
   .white.bold {
-    color: #FFFFFF;
+    color: $white-bold;
   }
   .grey {
     color: #969696;
   }
   .bg-black {
-    background-color: #4E4E4E;
+    background-color: $bg-black;
   }
   .bg-red {
-    background-color: #FF6C60;
+    background-color: $bg-red;
   }
   .bg-green {
-    background-color: #00AA00;
+    background-color: $bg-green;
   }
   .bg-yellow {
-    background-color: #FFFFB6;
+    background-color: $bg-yellow;
   }
   .bg-blue {
-    background-color: #96CBFE;
+    background-color: $bg-blue;
   }
   .bg-magenta {
-    background-color: #FF73FD;
+    background-color: $bg-magenta;
   }
   .bg-cyan {
-    background-color: #00AAAA;
+    background-color: $bg-cyan;
   }
   .bg-white {
-    background-color: #EEEEEE;
+    background-color: $bg-white;
   }
 }
 
@@ -209,13 +225,14 @@ i {
   min-height: 12px;
   margin: 0;
   padding-bottom: 15px;
-  color: #f1f1f1;
   line-height: 19px;
   white-space: pre;
   word-wrap: break-word;
-  background-color: #222;
   border-radius: 4px;
-  counter-reset: line-numbering;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
 
   &.wrap-lines {
     white-space: pre-wrap;
@@ -262,12 +279,7 @@ i {
       margin-left: -33px;
       cursor: pointer;
       text-decoration: none;
-
-      &::before {
-        content: counter(line-numbering);
-        counter-increment: line-numbering;
-        padding-right: 1em;
-      }
+      padding-right: 1em;
     }
 
     .fold {
@@ -422,13 +434,4 @@ i {
   vertical-align: middle;
   width: 20px;
   height: 20px;
-}
-
-.warning {
-  color: #c00;
-
-  a {
-    color: #c00;
-    text-decoration: underline;
-  }
 }
