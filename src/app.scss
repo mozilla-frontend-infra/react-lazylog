@@ -25,8 +25,10 @@ $bg-magenta: #ff73fd !default;
 $bg-cyan: #00aaaa !default;
 $bg-white: #eeeeee !default;
 
+$font-family: "Monaco", "Courier New", Courier, monospace;
+
 html, body {
-  font-family: "Monaco", "Courier New", Courier, monospace;
+  font-family: $font-family;
   font-size: 12px;
   line-height: 1.45;
   margin: 0;
@@ -219,6 +221,7 @@ i {
 }
 
 #log {
+  font-family: $font-family;
   position: relative;
   clear: left;
   min-height: 12px;
