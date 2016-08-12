@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "build": "neo build",
+    "build": "neo build --config webpack.prod.js",
     "start": "neo start --port 4000"
   },
   "keywords": [],
