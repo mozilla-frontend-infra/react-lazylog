@@ -216,9 +216,9 @@ export default class LogViewer extends React.Component {
     return (
       <div>
         <div id="log-container">
-          <pre id="log" className={className} onClick={this.handleDelegation}>
+          <code id="log" className={className} onClick={this.handleDelegation}>
             {this.renderChunks()}
-          </pre>
+          </code>
         </div>
 
         <div id="toolbar" className={toolbarOpen ? 'open' : ''}>
