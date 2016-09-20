@@ -128,14 +128,21 @@ const update = (response) => {
 const error = () => self.postMessage(JSON.stringify({ type: 'error' }));
 const loadEnd = () => self.postMessage(JSON.stringify({ type: 'loadend' }));
 
-const toHtml = (index) => {
+const getParagraphClass = (lineNumber, { highlightStart, highlightEnd }) => {
+  return lineNumber >= highlightStart && lineNumber <= highlightEnd ?
+    ' class="highlight"' :
+    '';
+};
+
+const toHtml = (index, metadata) => {
   const lines = decode(chunks[index]);
   const start = LINE_CHUNK * index + offset + 1;
 
   const html = lines.map((parts, index) => {
     const lineNumber = start + index;
+    const pClass = getParagraphClass(lineNumber, metadata);
 
-    return `<p><a id="${lineNumber}">${lineNumber}</a>${parts.map((part) => {
+    return `<p${pClass}><a id="${lineNumber}">${lineNumber}</a>${parts.map((part) => {
       const className = getAnsiClasses(part);
       
       return className ?
@@ -155,7 +162,7 @@ self.addEventListener('message', (e) => {
       case 'start':
         return init(data.url);
       case 'decode-index':
-        return toHtml(data.index);
+        return toHtml(data.index, data.metadata);
     }
   } catch (err) {
     return err;
