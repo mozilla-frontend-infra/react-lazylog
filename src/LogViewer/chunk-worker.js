@@ -60,19 +60,12 @@ const init = (url) => {
   xhr.responseType = 'arraybuffer';
   xhr.overrideMimeType('text/plain; charset=utf-8');
   xhr.addEventListener('error', error);
-  xhr.addEventListener('progress', () => update(xhr.response));
-  xhr.addEventListener('load', () => {
-    update(xhr.response);
-    loadEnd();
-  });
+  xhr.addEventListener('progress', () => xhr.response && update(xhr.response));
+  xhr.addEventListener('load', () => xhr.response && (update(xhr.response) || loadEnd()));
   xhr.send();
 };
 
 const update = (response) => {
-  if (!response) {
-    return;
-  }
-
   const _buffer = new Uint8Array(response);
   const bufferLength = _buffer.length;
 
