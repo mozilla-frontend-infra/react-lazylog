@@ -21,12 +21,13 @@ export default class LogViewer extends React.Component {
       ...qs,
       wrapLines: qs.wrapLines === 'true',
       showLineNumbers: qs.showLineNumbers !== 'false',
+      jumpToHighlight: qs.jumpToHighlight === 'true',
       isLoading: true,
       chunkHeights: [],
       offset: 0,
       minLineHeight: 0,
       error: false,
-      toolbarOpen: false,
+      toolbarOpen: false
     };
 
     this.handleMessage = ::this.handleMessage;
@@ -51,7 +52,8 @@ export default class LogViewer extends React.Component {
       highlightEnd: nextState.highlightEnd,
       lineNumber: nextState.lineNumber,
       wrapLines: nextState.wrapLines,
-      showLineNumbers: nextState.showLineNumbers
+      showLineNumbers: nextState.showLineNumbers,
+      jumpToHighlight: nextState.jumpToHighlight
     });
 
     history.pushState(null, '', `${location.origin}${location.pathname}?${qs}`);
@@ -62,9 +64,15 @@ export default class LogViewer extends React.Component {
   }
 
   componentDidMount() {
-    const { lineNumber } = this.state;
+    const { lineNumber, highlightStart, jumpToHighlight } = this.state;
 
-    this.request() || (lineNumber && this.jumpToQueriedLine(lineNumber));
+    this.request();
+
+    if (lineNumber) {
+      this.jumpToQueriedLine(lineNumber);
+    } else if (jumpToHighlight && highlightStart) {
+      this.jumpToQueriedLine(highlightStart);
+    }
   }
 
   request() {
