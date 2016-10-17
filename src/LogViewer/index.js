@@ -23,6 +23,8 @@ export default class LogViewer extends React.Component {
       showLineNumbers: qs.showLineNumbers !== 'false',
       isLoading: true,
       chunkHeights: [],
+      offset: 0,
+      minLineHeight: 0,
       error: false,
       toolbarOpen: false,
     };
@@ -47,6 +49,7 @@ export default class LogViewer extends React.Component {
       url: nextState.url,
       highlightStart: nextState.highlightStart,
       highlightEnd: nextState.highlightEnd,
+      lineNumber: nextState.lineNumber,
       wrapLines: nextState.wrapLines,
       showLineNumbers: nextState.showLineNumbers
     });
@@ -59,7 +62,9 @@ export default class LogViewer extends React.Component {
   }
 
   componentDidMount() {
-    this.request();
+    const { lineNumber } = this.state;
+
+    this.request() || (lineNumber && this.jumpToQueriedLine(lineNumber));
   }
 
   request() {
@@ -93,8 +98,8 @@ export default class LogViewer extends React.Component {
     }
   }
 
-  handleContainerUpdate({ chunkHeights }) {
-    this.setState({ chunkHeights, isLoading: false });
+  handleContainerUpdate({ offset, chunkHeights, minLineHeight }) {
+    this.setState({ offset, chunkHeights, minLineHeight, isLoading: false });
   }
 
   handleDelegation(event) {
@@ -182,6 +187,21 @@ export default class LogViewer extends React.Component {
         {(heights, shouldLoad) => heights.map((height, index) => this.renderChunk(height, index, shouldLoad))}
       </LazyList>
     );
+  }
+
+  jumpToLine(lineNumber) {
+    const { minLineHeight, offset } = this.state;
+
+    window.scrollTo(0, (lineNumber - offset) * minLineHeight + minLineHeight);
+  }
+
+  jumpToQueriedLine(lineNumber) {
+    const interval = setInterval(() => {
+      if (this.state.minLineHeight) {
+        this.jumpToLine(lineNumber);
+        clearInterval(interval);
+      }
+    }, 1000);
   }
 
   render() {
