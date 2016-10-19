@@ -10,6 +10,16 @@ const LINE_CHUNK = 1000;
 const DECODER = new TextDecoder('utf-8');
 // Setting a hard limit on lines since browser have trouble with heights starting at around 16.7 million pixels and up
 const CHUNK_LIMIT = 883000 / LINE_CHUNK;
+const ESCAPE_REGEX = /[&<>'"]/g;
+const ESCAPE_ENTITY = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  "'": '&#39;',
+  '"': '&quot;',
+  '`': '&#x60;'
+};
+const ESCAPE_FUNCTION = entity => ESCAPE_ENTITY[entity];
 
 let buffer = new Uint8Array(0);
 let offset = 0;
@@ -127,6 +137,11 @@ const getParagraphClass = (lineNumber, { highlightStart, highlightEnd }) => {
     '';
 };
 
+const escape = (string) => string.replace(ESCAPE_REGEX, ESCAPE_FUNCTION);
+
+const escapeHtml = ([result, ...strings], ...values) => values
+  .reduce((result, value, index) => `${result}${escape(value)}${strings[index]}`, result);
+
 const toHtml = (index, metadata) => {
   const lines = decode(chunks[index]);
   const start = LINE_CHUNK * index + offset + 1;
@@ -137,10 +152,11 @@ const toHtml = (index, metadata) => {
 
     return `<p${pClass}><a id="${lineNumber}">${lineNumber}</a>${parts.map((part) => {
       const className = getAnsiClasses(part);
+      const html = escapeHtml`${part.text}`;
       
       return className ?
-        `<span class="${className}">${part.text}</span>` :
-        `<span>${part.text}</span>`;
+        `<span class="${className}">${html}</span>` :
+        `<span>${html}</span>`;
       }).join('')}</p>`;
   }).join('');
 
