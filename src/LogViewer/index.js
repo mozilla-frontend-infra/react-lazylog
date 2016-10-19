@@ -91,6 +91,9 @@ export default class LogViewer extends React.Component {
           return this.handleContainerUpdate(data);
         case 'loadend':
           return worker.removeEventListener('message', handler);
+        case 'error':
+          worker.removeEventListener('message', handler);
+          return this.setState({ error: true });
       }
     };
 
@@ -219,7 +222,8 @@ export default class LogViewer extends React.Component {
       return (
         <div className="error">
           <h1 className="loading">
-            <Warning /> An error occurred while trying to load the specified log.
+            <Warning /> An error occurred while trying to load the specified log. It may not exist,
+            or may not have any content.
           </h1>
         </div>
       );
