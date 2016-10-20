@@ -2,8 +2,9 @@ import parseAnsi from '../util/ansi-parse';
 
 const CLEAR_ANSI = /(?:\033)(?:\[0?c|\[[0356]n|\[7[lh]|\[\?25[lh]|\(B|H|\[(?:\d+(;\d+){,2})?G|\[(?:[12])?[JK]|[DM]|\[0K)/gm;
 const CONTROL_CHARS = /\033\[1000D/gm;
-const NORMALIZE_NEWLINES = /\r+\n/gm;
+const NORMALIZE_NEWLINES = /\r[\n]?/gm;
 const NEWLINE = /^/gm;
+const ENCODED_CARRIAGERETURN = 13;
 const ENCODED_NEWLINE = 10;
 const MIN_LINE_HEIGHT = 19;
 const LINE_CHUNK = 1000;
@@ -155,7 +156,11 @@ const update = (response) => {
   chunkHeights = [];
 
   for (let index = 0; index < bufferLength; index++) {
-    if (buffer[index] === ENCODED_NEWLINE) {
+    const isNewline = buffer[index] === ENCODED_CARRIAGERETURN ||
+      (buffer[index] === ENCODED_NEWLINE &&
+        buffer[index - 1] !== ENCODED_CARRIAGERETURN);
+
+    if (isNewline) {
       newlineCount++;
     }
 
