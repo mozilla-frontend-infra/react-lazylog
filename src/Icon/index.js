@@ -1,5 +1,5 @@
 import React from 'react';
-import './index.scss';
+import './index.css';
 
 const Icon = ({ width = 35, height = 35, className, children, ...props }) => {
   return (

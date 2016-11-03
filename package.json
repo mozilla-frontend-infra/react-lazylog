@@ -5,16 +5,11 @@
   "description": "Unified LogViewer",
   "license": "MPL-2.0",
   "config": {
-    "entry": "src/index.js",
-    "html": {
-      "title": "Unified LogViewer",
-      "description": "Unified LogViewer",
-      "author": "Eli Perelman"
-    }
+    "preset": "preset.js"
   },
   "scripts": {
-    "build": "neo build --config webpack.prod.js",
-    "start": "neo start --port 4000"
+    "build": "neutrino build",
+    "start": "PORT=4000 neutrino start"
   },
   "keywords": [],
   "dependencies": {
@@ -26,6 +21,7 @@
     "react-helmet": "3.1.0"
   },
   "devDependencies": {
-    "mozilla-neo": "2.2.1"
+    "neutrino": "^3.0.0",
+    "neutrino-preset-react": "2.0.1"
   }
 }
