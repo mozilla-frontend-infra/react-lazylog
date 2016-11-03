@@ -1,5 +1,6 @@
 import React from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
+import Helmet from 'react-helmet';
 import { parse, stringify } from 'querystring';
 import LazyList from '../LazyList';
 import LazyItem from '../LazyItem';
@@ -64,9 +65,22 @@ export default class LogViewer extends React.Component {
   }
 
   componentDidMount() {
-    const { lineNumber, highlightStart, jumpToHighlight } = this.state;
-
     this.request();
+    this.handleJump();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const shouldJump = prevState.lineNumber !== this.state.lineNumber ||
+      this.state.jumpToHighlight &&
+      prevState.highlightStart !== this.state.highlightStart;
+
+    if (shouldJump) {
+      this.handleJump();
+    }
+  }
+
+  handleJump() {
+    const { lineNumber, highlightStart, jumpToHighlight } = this.state;
 
     if (lineNumber) {
       this.jumpToQueriedLine(lineNumber);
@@ -105,7 +119,7 @@ export default class LogViewer extends React.Component {
 
   handleMessage(e) {
     if (e.data && typeof e.data === 'object') {
-      this.setState({ data: e.data });
+      this.setState(e.data);
     }
   }
 
@@ -251,6 +265,8 @@ export default class LogViewer extends React.Component {
 
     return (
       <div>
+        {this.state.customStyle && <Helmet style={[{ cssText: this.state.customStyle }]} />}
+
         <div id="log-container">
           <code id="log" className={className} onClick={this.handleDelegation}>
             {this.renderChunks()}
