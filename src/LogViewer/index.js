@@ -2,6 +2,7 @@ import React from 'react';
 import shallowCompare from 'react-addons-shallow-compare';
 import Helmet from 'react-helmet';
 import { parse, stringify } from 'querystring';
+import throttle from 'lodash.throttle';
 import LazyList from '../LazyList';
 import LazyItem from '../LazyItem';
 import Spinner from '../Spinner';
@@ -11,6 +12,10 @@ import bufferSearch from '../util/buffer-search';
 import ChunkWorker from 'worker!./chunk-worker';
 
 const ENCODER = new TextEncoder('utf-8');
+const html = document.documentElement;
+const body = document.body;
+
+let position = html.scrollTop || body.scrollTop;
 
 export default class LogViewer extends React.Component {
   constructor(props) {
@@ -23,6 +28,7 @@ export default class LogViewer extends React.Component {
       wrapLines: qs.wrapLines === 'true',
       showLineNumbers: qs.showLineNumbers !== 'false',
       jumpToHighlight: qs.jumpToHighlight === 'true',
+      followLog: qs.followLog === 'true',
       isLoading: true,
       chunkHeights: [],
       offset: 0,
@@ -31,19 +37,19 @@ export default class LogViewer extends React.Component {
       toolbarOpen: false
     };
 
-    this.handleMessage = ::this.handleMessage;
-    this.handleContainerUpdate = ::this.handleContainerUpdate;
-    this.handleDelegation = ::this.handleDelegation;
-    this.toggle = ::this.toggle;
-    this.toggleToolbar = ::this.toggleToolbar;
-    this.toggleWrapLines = ::this.toggleWrapLines;
-    this.toggleLineNumbers = ::this.toggleLineNumbers;
-    this.renderChunks = ::this.renderChunks;
-    this.renderChunk = ::this.renderChunk;
+    /* eslint-disable react/no-direct-mutation-state */
+    if (!this.state.lineNumber && this.state.jumpToHighlight && this.state.highlightStart) {
+      this.state.lineNumber = this.state.highlightStart;
+    }
+
+    if (!this.state.lineNumber) {
+      this.state.didLineJump = true;
+    }
+    /* eslint-enable react/no-direct-mutation-state */
   }
 
   componentWillMount() {
-    window.addEventListener('message', this.handleMessage);
+    window.addEventListener('message', e => this.handleMessage(e));
   }
 
   componentWillUpdate(nextProps, nextState = this.state) {
@@ -54,8 +60,13 @@ export default class LogViewer extends React.Component {
       lineNumber: nextState.lineNumber,
       wrapLines: nextState.wrapLines,
       showLineNumbers: nextState.showLineNumbers,
-      jumpToHighlight: nextState.jumpToHighlight
+      jumpToHighlight: nextState.jumpToHighlight,
+      followLog: nextState.followLog
     });
+
+    if (!this.state.followLog && nextState.followLog) {
+      this.followLog();
+    }
 
     history.pushState(null, '', `${location.origin}${location.pathname}?${qs}`);
   }
@@ -80,12 +91,14 @@ export default class LogViewer extends React.Component {
   }
 
   handleJump() {
-    const { lineNumber, highlightStart, jumpToHighlight } = this.state;
+    const { lineNumber, highlightStart, jumpToHighlight, followLog } = this.state;
 
     if (lineNumber) {
       this.jumpToQueriedLine(lineNumber);
     } else if (jumpToHighlight && highlightStart) {
       this.jumpToQueriedLine(highlightStart);
+    } else if (followLog) {
+      this.followLog();
     }
   }
 
@@ -162,6 +175,10 @@ export default class LogViewer extends React.Component {
     this.toggle('wrapLines');
   }
 
+  toggleFollowLog(value) {
+    this.toggle('followLog', value);
+  }
+
   highlight(anchor, isMultiple) {
     const lineNumber = parseInt(anchor.getAttribute('id'));
     const { highlightStart } = this.state;
@@ -214,10 +231,48 @@ export default class LogViewer extends React.Component {
     );
   }
 
+  followLog() {
+    const interval = setInterval(() => {
+      if (!this.state.followLog) {
+        return stop();
+      }
+
+      const height = (html.scrollHeight || body.scrollHeight) - html.clientHeight;
+      const scrollTop = html.scrollTop || body.scrollTop;
+      const bottom = scrollTop + height;
+
+      if (bottom > 0) {
+        window.scrollTo(0, height);
+      }
+    }, 300);
+
+    const scrollHandler = throttle(() => {
+      const scrollTop = html.scrollTop || body.scrollTop;
+
+      if (scrollTop < position) {
+        stop();
+      }
+
+      position = scrollTop;
+    }, 200);
+
+    const stop = () => {
+      window.removeEventListener('scroll', scrollHandler);
+      clearInterval(interval);
+
+      if (this.state.followLog) {
+        this.toggleFollowLog(false);
+      }
+    };
+
+    window.addEventListener('scroll', scrollHandler);
+  }
+
   jumpToLine(lineNumber) {
     const { minLineHeight, offset } = this.state;
 
     window.scrollTo(0, (lineNumber - offset) * minLineHeight + minLineHeight);
+    this.setState({ didLineJump: true });
   }
 
   jumpToQueriedLine(lineNumber) {
@@ -230,7 +285,7 @@ export default class LogViewer extends React.Component {
   }
 
   render() {
-    const { isLoading, error, toolbarOpen, showLineNumbers, wrapLines } = this.state;
+    const { isLoading, error, toolbarOpen, showLineNumbers, wrapLines, followLog } = this.state;
 
     if (error) {
       return (
@@ -268,21 +323,22 @@ export default class LogViewer extends React.Component {
         {this.state.customStyle && <Helmet style={[{ cssText: this.state.customStyle }]} />}
 
         <div id="log-container">
-          <code id="log" className={className} onClick={this.handleDelegation}>
+          <code id="log" className={className} onClick={e => this.handleDelegation(e)}>
             {this.renderChunks()}
           </code>
         </div>
 
         <div id="toolbar" className={toolbarOpen ? 'open' : ''}>
-          <div className="cog-wrapper" onClick={this.toggleToolbar}>
+          <div className="cog-wrapper" onClick={() => this.toggleToolbar()}>
             <Cog className="cog" width={20} height={20} />
             <header>Settings</header>
           </div>
 
           <menu onClick={e => e.stopPropagation()}>
             <ul>
-              <li><input type="checkbox" checked={showLineNumbers} onChange={this.toggleLineNumbers} /> Show Line Numbers</li>
-              <li><input type="checkbox" checked={wrapLines} onChange={this.toggleWrapLines} /> Wrap Lines</li>
+              <li><input type="checkbox" checked={followLog} onChange={() => this.toggleFollowLog()} /> Follow Log</li>
+              <li><input type="checkbox" checked={showLineNumbers} onChange={() => this.toggleLineNumbers()} /> Show Line Numbers</li>
+              <li><input type="checkbox" checked={wrapLines} onChange={() => this.toggleWrapLines()} /> Wrap Lines</li>
             </ul>
           </menu>
         </div>
