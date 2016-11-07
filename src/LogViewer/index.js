@@ -68,6 +68,10 @@ export default class LogViewer extends React.Component {
       this.followLog();
     }
 
+    if (parent !== window) {
+      parent.postMessage(parse(qs), '*');
+    }
+
     history.pushState(null, '', `${location.origin}${location.pathname}?${qs}`);
   }
 
