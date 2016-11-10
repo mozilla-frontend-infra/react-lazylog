@@ -16,11 +16,5 @@ install:
   - yarn
 script:
   - yarn test
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: deploy.sh
-  on:
-    repo: taskcluster/unified-logviewer
-    branch: master
-    node: '6'
+after_success:
+  - deploy.sh
