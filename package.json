@@ -9,7 +9,8 @@
   },
   "scripts": {
     "build": "neutrino build",
-    "start": "PORT=4000 neutrino start"
+    "start": "PORT=4000 neutrino start",
+    "test": "neutrino build"
   },
   "keywords": [],
   "dependencies": {

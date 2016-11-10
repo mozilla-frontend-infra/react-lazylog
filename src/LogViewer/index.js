@@ -29,6 +29,7 @@ export default class LogViewer extends React.Component {
       showLineNumbers: qs.showLineNumbers !== 'false',
       jumpToHighlight: qs.jumpToHighlight === 'true',
       followLog: qs.followLog === 'true',
+      asText: qs.asText === 'true',
       isLoading: true,
       chunkHeights: [],
       offset: 0,
@@ -61,7 +62,8 @@ export default class LogViewer extends React.Component {
       wrapLines: nextState.wrapLines,
       showLineNumbers: nextState.showLineNumbers,
       jumpToHighlight: nextState.jumpToHighlight,
-      followLog: nextState.followLog
+      followLog: nextState.followLog,
+      asText: nextState.asText
     });
 
     if (!this.state.followLog && nextState.followLog) {
@@ -107,7 +109,7 @@ export default class LogViewer extends React.Component {
   }
 
   request() {
-    const { url } = this.state;
+    const { url, asText } = this.state;
 
     if (!url) {
       return this.setState({ error: true });
@@ -129,7 +131,7 @@ export default class LogViewer extends React.Component {
     };
 
     worker.addEventListener('message', handler);
-    worker.postMessage(JSON.stringify({ type: 'start', url }));
+    worker.postMessage(JSON.stringify({ type: 'start', url, useBuffer: !asText }));
 
     this.setState({ worker });
   }

@@ -106,7 +106,31 @@ const request = (url, asBuffer = true) => new Promise((resolve, reject) => {
   xhr.send();
 });
 
-const init = (url) => {
+const init = (url, useBuffer = true) => {
+  const textRequest = () => request(url, false)
+    .then(xhr => {
+      xhr.addEventListener('error', error);
+      xhr.addEventListener('progress', () => {
+        if (xhr.response) {
+          update(ENCODER.encode(xhr.response));
+        }
+      });
+      xhr.addEventListener('load', () => {
+        if (xhr.response) {
+          update(ENCODER.encode(xhr.response));
+          loadEnd();
+        }
+      });
+    })
+    .catch(xhr => {
+      xhr && xhr.abort && xhr.abort();
+      error();
+    });
+
+  if (!useBuffer) {
+    return textRequest();
+  }
+
   request(url)
     .then(xhr => {
       if (xhr.response) {
@@ -116,27 +140,8 @@ const init = (url) => {
     })
     .catch(xhr => {
       xhr && xhr.abort && xhr.abort();
-
-      request(url, false)
-        .then(xhr => {
-          xhr.addEventListener('error', error);
-          xhr.addEventListener('progress', () => {
-            if (xhr.response) {
-              update(ENCODER.encode(xhr.response));
-            }
-          });
-          xhr.addEventListener('load', () => {
-            if (xhr.response) {
-              update(ENCODER.encode(xhr.response));
-              loadEnd();
-            }
-          });
-        })
-        .catch(xhr => {
-          xhr && xhr.abort && xhr.abort();
-          error();
-        });
-    })
+      textRequest();
+    });
 };
 
 const update = (response) => {
@@ -237,7 +242,7 @@ self.addEventListener('message', (e) => {
 
     switch (data.type) {
       case 'start':
-        return init(data.url);
+        return init(data.url, data.useBuffer);
       case 'decode-index':
         return toHtml(data.index, data.metadata);
     }
