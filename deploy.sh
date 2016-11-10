@@ -15,8 +15,8 @@ SHA=`git rev-parse --short HEAD`
 
 cd $BUILD_DIR
 git init
-git config user.name "Travis CI"
-git config user.email "$COMMIT_AUTHOR_EMAIL"
+git config user.name "Eli Perelman"
+git config user.email "eli@eliperelman.com"
 
 git remote add upstream "https://$GH_TOKEN@github.com/taskcluster/unified-logviewer.git"
 git fetch upstream
