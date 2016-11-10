@@ -200,14 +200,11 @@ i {
 #log.show-line-numbers p a {
   display: inline-block;
 }
-#log .cut {
-  padding: 20px 15px 0 55px;
-}
 #log p {
   position: relative;
   padding: 0 15px 0 55px;
   margin: 0;
-  min-height: 16px;
+  min-height: 19px;
 }
 #log p.highlight {
   background-color: #666;
@@ -231,121 +228,12 @@ i {
   text-decoration: none;
   padding-right: 1em;
 }
-#log p .fold {
-  position: relative;
-  height: 16px;
-  overflow: hidden;
-  cursor: pointer;
-}
-#log p .fold.open {
-  height: auto;
-}
-#log p .fold:not(.open) p:first-of-type {
-  visibility: visible;
-  height: auto;
-  min-height: 16px;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Ik0yLDksOSw1LDIsMXoiIHN0cm9rZT0iIzU1NSIgc3Ryb2tlLXdpZHRoPSIwLjUiIGZpbGw9IiM2NjYiLz4KPC9zdmc+Cgo=");
-}
-#log p .fold p:first-of-type {
-  padding-right: 190px;
-  background: #333 url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMTAiIHdpZHRoPSIxMCI+CjxwYXRoIGQ9Im0wLjUsMS41LDQuNSw3LDQuNS03eiIgc3Ryb2tlPSIjNTU1IiBzdHJva2Utd2lkdGg9IjAuNSIgZmlsbD0iIzY2NiIvPgo8L3N2Zz4KCg==") no-repeat 8px 3px;
-}
-#log p .fold p:first-of-type.highlight {
-  background-color: #777;
-}
-#log p .fold .fold-name {
-  position: absolute;
-  z-index: 1;
-  display: block;
-  top: 2px;
-  right: 85px;
-  padding: 0 7px 2px 7px;
-  line-height: 10px;
-  font-size: 10px;
-  background-color: #666;
-  border-radius: 6px;
-  color: #bbb;
-}
-#log .fold-start:not(.fold),
-#log .fold-end {
-  display: none;
-}
 
 #log-container {
   position: relative;
   height: calc(100% - 35px);
   margin-top: 35px;
   padding-top: 15px;
-}
-#log-container #tail {
-  z-index: 99;
-  position: absolute;
-  display: block;
-  top: 0;
-  right: 2px;
-  margin: 13px 10px 0 0;
-  padding: 0 2px 0 3px;
-  color: #666;
-  text-shadow: 0 1px 0 #fff;
-  font-size: 11px;
-  line-height: 14px;
-  text-decoration: none;
-  white-space: nowrap;
-  border: 1px solid #bbb;
-  border-radius: 8px;
-  background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2UwZTBlMCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==");
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #e0e0e0));
-  background: -webkit-linear-gradient(#ffffff, #e0e0e0);
-  background: linear-gradient(#ffffff, #e0e0e0);
-}
-#log-container #tail:hover {
-  padding: 1px 4px 1px 6px;
-}
-#log-container #tail:hover label {
-  display: inline;
-}
-#log-container #tail.scrolling {
-  position: fixed;
-  right: 32px;
-}
-#log-container #tail.bottom {
-  bottom: 45px;
-  top: inherit;
-}
-#log-container #tail label {
-  display: none;
-  cursor: pointer;
-}
-#log-container #tail .status {
-  display: inline-block;
-  margin-right: 1px;
-  width: 8px;
-  height: 8px;
-  background-color: #aaa;
-  border-radius: 4px;
-  box-shadow: white 1px 1px 2px;
-}
-#log-container #tail.active .status {
-  display: inline-block;
-  margin-right: 1px;
-  width: 8px;
-  height: 8px;
-  border-radius: 4px;
-  box-shadow: white 1px 1px 2px;
-  background-color: #6b0;
-}
-#log-container .to-top {
-  z-index: 99;
-  position: absolute;
-  display: block;
-  bottom: 2px;
-  right: 2px;
-  width: 50px;
-  margin-right: 2px;
-  padding-right: 16px;
-  text-align: right;
-  color: #999;
-  background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNSIgd2lkdGg9IjEwIj4KPHBhdGggZmlsbD0iI2MyYzJjMiIgZD0iTTEwLDUsNSwwLDAsNXoiLz4KPC9zdmc+Cgo=") no-repeat right 6px;
 }
 
 .display {
@@ -358,10 +246,4 @@ i {
 
 .hidden {
   display: none;
-}
-
-.emoji {
-  vertical-align: middle;
-  width: 20px;
-  height: 20px;
 }
