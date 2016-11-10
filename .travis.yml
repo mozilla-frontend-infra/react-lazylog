@@ -1,6 +1,7 @@
 language: node_js
 sudo: false
 cache:
+  apt: true
   directories:
     - $HOME/.npm
     - $HOME/.yarn-cache
@@ -17,4 +18,4 @@ install:
 script:
   - yarn test
 after_success:
-  - deploy.sh
+  - ./deploy.sh
