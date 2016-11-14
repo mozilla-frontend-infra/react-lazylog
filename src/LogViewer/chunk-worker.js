@@ -169,7 +169,7 @@ const update = (response) => {
       newlineCount++;
     }
 
-    if (newlineCount !== LINE_CHUNK) {
+    if (newlineCount !== LINE_CHUNK - 1) {
       continue;
     }
 
