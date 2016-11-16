@@ -177,7 +177,7 @@ const update = (response) => {
     chunkHeights.push(LINE_CHUNK * MIN_LINE_HEIGHT);
     lineCounts.push(newlineCount);
 
-    nextSliceIndex = buffer[index + 1] === ENCODED_NEWLINE ?
+    nextSliceIndex = buffer[index] === ENCODED_CARRIAGERETURN && buffer[index + 1] === ENCODED_NEWLINE ?
       index + 2 :
       index + 1;
 
