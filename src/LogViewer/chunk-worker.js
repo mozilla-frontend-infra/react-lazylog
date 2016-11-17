@@ -176,7 +176,11 @@ const update = (response) => {
     chunks.push(buffer.slice(nextSliceIndex, index));
     chunkHeights.push(LINE_CHUNK * MIN_LINE_HEIGHT);
     lineCounts.push(newlineCount);
-    nextSliceIndex = index + 1;
+
+    nextSliceIndex = buffer[index] === ENCODED_CARRIAGERETURN && buffer[index + 1] === ENCODED_NEWLINE ?
+      index + 2 :
+      index + 1;
+
     newlineCount = 0;
   }
 
