@@ -207,7 +207,7 @@ i {
   min-height: 19px;
   display: flex;
 }
-#log p * {
+#log p > a {
   align-items: stretch;
 }
 #log p.highlight {
