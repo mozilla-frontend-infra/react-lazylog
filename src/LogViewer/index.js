@@ -30,10 +30,10 @@ export default class LogViewer extends React.Component {
       jumpToHighlight: qs.jumpToHighlight === 'true',
       followLog: qs.followLog === 'true',
       asText: qs.asText === 'true',
+      lineHeight: qs.lineHeight,
       isLoading: true,
       chunkHeights: [],
       offset: 0,
-      minLineHeight: 0,
       error: false,
       toolbarOpen: false
     };
@@ -63,6 +63,7 @@ export default class LogViewer extends React.Component {
       showLineNumbers: nextState.showLineNumbers,
       jumpToHighlight: nextState.jumpToHighlight,
       followLog: nextState.followLog,
+      lineHeight: nextState.lineHeight,
       asText: nextState.asText
     });
 
@@ -109,7 +110,7 @@ export default class LogViewer extends React.Component {
   }
 
   request() {
-    const { url, asText } = this.state;
+    const { url, asText, lineHeight } = this.state;
 
     if (!url) {
       return this.setState({ error: true });
@@ -131,7 +132,7 @@ export default class LogViewer extends React.Component {
     };
 
     worker.addEventListener('message', handler);
-    worker.postMessage(JSON.stringify({ type: 'start', url, useBuffer: !asText }));
+    worker.postMessage(JSON.stringify({ type: 'start', url, useBuffer: !asText, lineHeight }));
 
     this.setState({ worker });
   }
@@ -142,8 +143,8 @@ export default class LogViewer extends React.Component {
     }
   }
 
-  handleContainerUpdate({ offset, chunkHeights, minLineHeight }) {
-    this.setState({ offset, chunkHeights, minLineHeight, isLoading: false });
+  handleContainerUpdate({ offset, chunkHeights, lineHeight }) {
+    this.setState({ offset, chunkHeights, isLoading: false, lineHeight });
   }
 
   handleDelegation(event) {
@@ -202,7 +203,7 @@ export default class LogViewer extends React.Component {
 
   renderChunk(height, index, shouldLoad) {
     const load = shouldLoad(index);
-    const { worker, highlightStart, highlightEnd } = this.state;
+    const { worker, highlightStart, highlightEnd, lineHeight } = this.state;
 
     return (
       <LazyItem key={index} load={load} style={{ minHeight: height }}>
@@ -221,7 +222,7 @@ export default class LogViewer extends React.Component {
             worker.postMessage(JSON.stringify({
               index,
               type: 'decode-index',
-              metadata: { highlightStart, highlightEnd }
+              metadata: { highlightStart, highlightEnd, lineHeight }
             }));
           });
         }}
@@ -275,15 +276,15 @@ export default class LogViewer extends React.Component {
   }
 
   jumpToLine(lineNumber) {
-    const { minLineHeight, offset } = this.state;
+    const { offset, lineHeight } = this.state;
 
-    window.scrollTo(0, (lineNumber - offset) * minLineHeight + minLineHeight);
+    window.scrollTo(0, (lineNumber - offset) * lineHeight + 35);
     this.setState({ didLineJump: true });
   }
 
   jumpToQueriedLine(lineNumber) {
     const interval = setInterval(() => {
-      if (this.state.minLineHeight) {
+      if (this.state.chunkHeights.length) {
         this.jumpToLine(lineNumber);
         clearInterval(interval);
       }
@@ -291,7 +292,9 @@ export default class LogViewer extends React.Component {
   }
 
   render() {
-    const { isLoading, error, toolbarOpen, showLineNumbers, wrapLines, followLog } = this.state;
+    const { isLoading, error, toolbarOpen, showLineNumbers, wrapLines, followLog, lineHeight, customStyle } = this.state;
+    const lineStyle = `#log p{min-height:${lineHeight}px}#log{line-height:${lineHeight}px}`;
+    const cssText = customStyle ? customStyle + lineStyle : lineStyle;
 
     if (error) {
       return (
@@ -326,7 +329,7 @@ export default class LogViewer extends React.Component {
 
     return (
       <div>
-        {this.state.customStyle && <Helmet style={[{ cssText: this.state.customStyle }]} />}
+        {<Helmet style={[{ cssText }]} />}
 
         <div id="log-container">
           <code id="log" className={className} onClick={e => this.handleDelegation(e)}>

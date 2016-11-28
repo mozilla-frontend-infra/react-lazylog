@@ -6,7 +6,6 @@ const NORMALIZE_NEWLINES = /\r[\n]?/gm;
 const NEWLINE = /^/gm;
 const ENCODED_CARRIAGERETURN = 13;
 const ENCODED_NEWLINE = 10;
-const MIN_LINE_HEIGHT = 19;
 const LINE_CHUNK = 1000;
 const DECODER = new TextDecoder('utf-8');
 const ENCODER = new TextEncoder('utf-8');
@@ -28,6 +27,7 @@ let offset = 0;
 let chunks = [];
 let chunkHeights = [];
 let lineCounts = [];
+let lineHeight = 19;
 
 export const getAnsiClasses = (part) => {
   const colors = [];
@@ -174,7 +174,7 @@ const update = (response) => {
     }
 
     chunks.push(buffer.slice(nextSliceIndex, index));
-    chunkHeights.push(LINE_CHUNK * MIN_LINE_HEIGHT);
+    chunkHeights.push(LINE_CHUNK * lineHeight);
     lineCounts.push(newlineCount);
 
     nextSliceIndex = buffer[index] === ENCODED_CARRIAGERETURN && buffer[index + 1] === ENCODED_NEWLINE ?
@@ -187,7 +187,7 @@ const update = (response) => {
   // Add any remaining lines that didn't fit into the exact slices
   if (nextSliceIndex < bufferLength) {
     chunks.push(buffer.slice(nextSliceIndex, bufferLength));
-    chunkHeights.push(newlineCount * MIN_LINE_HEIGHT);
+    chunkHeights.push(newlineCount * lineHeight);
     lineCounts.push(newlineCount);
   }
 
@@ -202,7 +202,7 @@ const update = (response) => {
     lineCounts = lineCounts.slice(overage);
   }
 
-  self.postMessage(JSON.stringify({ type: 'update', chunkHeights, offset, minLineHeight: MIN_LINE_HEIGHT }));
+  self.postMessage(JSON.stringify({ type: 'update', chunkHeights, offset, lineHeight }));
 };
 
 const error = () => self.postMessage(JSON.stringify({ type: 'error' }));
@@ -246,6 +246,10 @@ self.addEventListener('message', (e) => {
 
     switch (data.type) {
       case 'start':
+        if (data.lineHeight) {
+          lineHeight = data.lineHeight
+        }
+
         return init(data.url, data.useBuffer);
       case 'decode-index':
         return toHtml(data.index, data.metadata);
