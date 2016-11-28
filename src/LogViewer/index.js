@@ -342,9 +342,9 @@ export default class LogViewer extends React.Component {
 
           <menu onClick={e => e.stopPropagation()}>
             <ul>
-              <li><input type="checkbox" checked={followLog} onChange={() => this.toggleFollowLog()} /> Follow Log</li>
-              <li><input type="checkbox" checked={showLineNumbers} onChange={() => this.toggleLineNumbers()} /> Show Line Numbers</li>
-              <li><input type="checkbox" checked={wrapLines} onChange={() => this.toggleWrapLines()} /> Wrap Lines</li>
+              <li><label><input type="checkbox" checked={followLog} onChange={() => this.toggleFollowLog()} /> Follow Log</label></li>
+              <li><label><input type="checkbox" checked={showLineNumbers} onChange={() => this.toggleLineNumbers()} /> Show Line Numbers</label></li>
+              <li><label><input type="checkbox" checked={wrapLines} onChange={() => this.toggleWrapLines()} /> Wrap Lines</label></li>
             </ul>
           </menu>
         </div>
