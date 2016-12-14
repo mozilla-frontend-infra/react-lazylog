@@ -54,7 +54,7 @@ export default class LogViewer extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState = this.state) {
-    const qs = stringify({
+    const qs = {
       url: nextState.url,
       highlightStart: nextState.highlightStart,
       highlightEnd: nextState.highlightEnd,
@@ -65,17 +65,17 @@ export default class LogViewer extends React.Component {
       followLog: nextState.followLog,
       lineHeight: nextState.lineHeight,
       asText: nextState.asText
-    });
+    };
 
     if (!this.state.followLog && nextState.followLog) {
       this.followLog();
     }
 
     if (parent !== window) {
-      parent.postMessage(parse(qs), '*');
+      parent.postMessage(JSON.stringify(qs), '*');
     }
 
-    history.pushState(null, '', `${location.origin}${location.pathname}?${qs}`);
+    history.pushState(null, '', `${location.origin}${location.pathname}?${stringify(qs)}`);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
