@@ -215,7 +215,7 @@ i {
   color: white;
 }
 #log p:hover {
-  background-color: #444 !important;
+  background-color: #444;
 }
 #log p a {
   -webkit-user-select: none;
