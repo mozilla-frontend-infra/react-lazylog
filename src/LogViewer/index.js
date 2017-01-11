@@ -75,7 +75,7 @@ export default class LogViewer extends React.Component {
       parent.postMessage(JSON.stringify(qs), '*');
     }
 
-    history.pushState(null, '', `${location.origin}${location.pathname}?${stringify(qs)}`);
+    history.replaceState(null, '', `${location.origin}${location.pathname}?${stringify(qs)}`);
   }
 
   shouldComponentUpdate(nextProps, nextState) {
