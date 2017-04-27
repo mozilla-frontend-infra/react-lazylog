@@ -1,28 +1,38 @@
 {
-  "name": "unified-logviewer",
+  "name": "react-logviewer",
   "private": true,
   "version": "1.0.0",
-  "description": "Unified LogViewer",
+  "description": "React Logviewer",
   "license": "MPL-2.0",
-  "config": {
-    "preset": "preset.js"
+  "neutrino": {
+    "use": [
+      "neutrino-preset-react-components"
+    ]
   },
   "scripts": {
     "build": "neutrino build",
-    "start": "PORT=4000 neutrino start",
-    "test": "neutrino build"
+    "start": "cross-env PORT=9001 neutrino start"
   },
-  "keywords": [],
-  "dependencies": {
-    "immutable": "3.8.1",
-    "lodash.throttle": "4.1.0",
-    "react": "15.3.0",
-    "react-addons-shallow-compare": "15.3.0",
-    "react-dom": "15.3.0",
-    "react-helmet": "3.1.0"
-  },
+  "keywords": [
+    "react",
+    "log",
+    "viewer",
+    "logviewer"
+  ],
   "devDependencies": {
-    "neutrino": "^3.0.0",
-    "neutrino-preset-react": "2.0.1"
+    "cross-env": "^4.0.0",
+    "neutrino": "^5.6.0",
+    "neutrino-preset-react-components": "1.0.0-beta.6"
+  },
+  "dependencies": {
+    "ansiparse": "^0.1.0",
+    "deepmerge": "^1.3.2",
+    "fetch-readablestream": "^0.1.0",
+    "immutable": "^3.8.1",
+    "mitt": "^1.1.0",
+    "react": "^15.5.3",
+    "react-dom": "^15.5.3",
+    "react-virtualized": "^9.7.3",
+    "web-streams-polyfill": "^1.3.2"
   }
 }

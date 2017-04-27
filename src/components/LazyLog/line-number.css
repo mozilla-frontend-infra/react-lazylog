@@ -1,0 +1,3 @@
+.lineNumber::before {
+  content: attr(id);
+}

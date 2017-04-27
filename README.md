@@ -1,16 +1,6 @@
-# Taskcluster Unified Log Viewer
-A service to view logs in real time
+# React Logviewer
 
-## Building
-Fork the repository then run the following commands:
-```
-$ git clone https://github.com/<user>/unified-logviewer.git
-$ cd unified-logviewer
-$ npm install
-```
-
-## Developing
-`npm start` - Runs the build on port 4000
+Load and view remote files in the browser lazily and efficiently.
 
 ## Example
 ```
