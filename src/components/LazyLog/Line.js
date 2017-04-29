@@ -1,8 +1,9 @@
 import React from 'react';
-import { LinePart } from './LinePart';
 import { LineNumber } from './LineNumber';
+import { LineContent } from './LineContent';
+import { line, lineHighlight, lineHover } from './styles.css';
 
-export class Line extends React.Component {
+export class Line extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = { hover: false };
@@ -16,33 +17,20 @@ export class Line extends React.Component {
     this.setState({ hover: e.type === 'mouseenter' });
   }
 
-  getLineStyle() {
-    return {
-      ...Line.defaultProps.style,
-      ...this.props.style,
-      ...(this.props.highlight ? this.props.highlightStyle : {}),
-      ...(this.state.hover ? this.props.hoverStyle : {})
-    };
-  }
-
   render() {
-    const { children, highlight, number, onLineNumberClick, onRowClick } = this.props;
-    const lineStyle = this.getLineStyle();
+    const { children, highlight, hover, number, onLineNumberClick, onRowClick, rowHeight, style } = this.props;
+    const className = hover ? lineHover : (highlight ? lineHighlight : line);
+    const lineStyle = {
+      ...style,
+      lineHeight: `${style ? style.height || rowHeight : rowHeight}px`,
+      minWidth: style ? style.width || '100%' : '100%',
+      width: null
+    };
 
     return (
-      <div style={lineStyle} onMouseEnter={this.handleHover} onMouseLeave={this.handleHover}>
+      <div className={className} style={lineStyle} onMouseEnter={this.handleHover} onMouseLeave={this.handleHover}>
         <LineNumber number={number} highlight={highlight} onClick={onLineNumberClick} />
-        <span style={{ userSelect: 'initial' }} onClick={onRowClick}>
-          {children.map((child, n) => {
-            const part = n === children.length - 1 && typeof child.text === 'string' ?
-              { ...child, text: `${child.text}\n` } :
-              child;
-
-            return (
-              <LinePart part={part} format={this.props.formatPart} key={`line-${number}-${n}`} />
-            );
-          })}
-        </span>
+        <LineContent number={number} onClick={onRowClick}>{children}</LineContent>
       </div>
     );
   }
@@ -52,16 +40,5 @@ Line.defaultProps = {
   onLineNumberClick: null,
   onRowClick: null,
   highlight: false,
-  style: {
-    margin: 0,
-    paddingRight: 20,
-    userSelect: 'none',
-    overflowY: 'hidden'
-  },
-  hoverStyle: {
-    backgroundColor: '#444444'
-  },
-  highlightStyle: {
-    backgroundColor: '#666666'
-  }
+  style: null
 };

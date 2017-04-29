@@ -1,14 +1,9 @@
-import fetchReadable from 'fetch-readablestream';
-import { ReadableStream as StreamPolyfill } from 'web-streams-polyfill';
 import { List } from 'immutable';
 import mitt from 'mitt';
 
-if (!('fetch' in self)) {
-  self.fetch = fetchReadable;
-}
-
 if (!('ReadableStream' in self)) {
-  self.ReadableStream = StreamPolyfill;
+  self.ReadableStream = require('web-streams-polyfill').ReadableStream;
+  self.fetch = require('fetch-readablestream');
 }
 
 const encodedNewline = 10;

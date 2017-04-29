@@ -1,9 +1,9 @@
 {
-  "name": "react-logviewer",
-  "private": true,
-  "version": "1.0.0",
-  "description": "React Logviewer",
+  "name": "react-lazylog",
+  "version": "1.0.0-beta.2",
+  "description": "React Lazy Logviewer",
   "license": "MPL-2.0",
+  "repository": "mozilla-rpweb/react-lazylog",
   "neutrino": {
     "use": [
       "neutrino-preset-react-components"
@@ -30,6 +30,7 @@
     "fetch-readablestream": "^0.1.0",
     "immutable": "^3.8.1",
     "mitt": "^1.1.0",
+    "prop-types": "^15.5.8",
     "react": "^15.5.3",
     "react-dom": "^15.5.3",
     "react-virtualized": "^9.7.3",

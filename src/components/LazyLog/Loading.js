@@ -1,15 +1,11 @@
 import React from 'react';
 import { Spinner } from './Spinner';
+import { loading } from './styles.css';
 
 export const Loading = ({ style }) => (
-  <Spinner style={style} />
+  <Spinner className={loading} style={style} />
 );
 
 Loading.defaultProps = {
-  style: {
-    position: 'relative',
-    top: '50%',
-    left: '50%',
-    transform: 'translateX(-50%) translateY(-50%)'
-  }
+  style: null
 };

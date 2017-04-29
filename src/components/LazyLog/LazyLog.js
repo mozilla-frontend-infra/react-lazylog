@@ -1,21 +1,22 @@
 import React from 'react';
-import { AutoSizer, InfiniteLoader, List as VirtualList } from 'react-virtualized';
+import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List, Range } from 'immutable';
 import ansiparse from 'ansiparse';
 import { request, stream } from './request';
 import { Line } from './Line';
 import { Loading } from './Loading';
+import { lazyLog } from './styles.css';
 
-export class LazyLog extends React.Component {
+export class LazyLog extends React.PureComponent {
   constructor(props) {
     super(props);
     this.decoder = new TextDecoder('utf-8');
     this.state = {
       lines: List(),
-      decodedLines: List(),
       count: 0,
       offset: 0,
       loaded: false,
+      error: null,
       ...this.propsToState(props)
     };
   }
@@ -26,11 +27,8 @@ export class LazyLog extends React.Component {
       'handleEnd',
       'handleError',
       'handleScroll',
-      'renderRow',
-      'renderNoRows',
-      'isRowLoaded',
-      'loadMoreRows'
-    ].forEach(method => this[method] = this[method].bind(this));
+      'renderRow'
+    ].map(method => this[method] = this[method].bind(this));
 
     const { streaming, url, fetchOptions } = this.props;
     const emitter = streaming ? stream(url, fetchOptions) : request(url, fetchOptions);
@@ -46,16 +44,13 @@ export class LazyLog extends React.Component {
   }
 
   propsToState({ highlight, followUntilScroll, scrollToLine, rowHeight }) {
-    const count = this.state ? this.state.count : 0;
-    const offset = this.state ? this.state.offset : 0;
-
     return {
       ...this.getScrollingState(
         scrollToLine,
         this.state && this.state.stopScrolling,
         followUntilScroll,
-        count,
-        offset
+        this.state ? this.state.count : 0,
+        this.state ? this.state.offset : 0
       ),
       following: followUntilScroll,
       highlight: this.getHighlightRange(highlight),
@@ -66,18 +61,15 @@ export class LazyLog extends React.Component {
   }
 
   getScrollingState(scrollToLine, stopScrolling, following, count, offset) {
-    let scrollToIndex = -1;
-
     if (stopScrolling) {
-      scrollToIndex = -1;
+      return { scrollToIndex: -1, stopScrolling };
     } else if (following) {
-      scrollToIndex = count - 1 - offset;
+      return { scrollToIndex: count - 1 - offset, stopScrolling };
     } else if (scrollToLine && scrollToLine < count) {
-      stopScrolling = true;
-      scrollToIndex = scrollToLine - 1 - offset;
+      return { scrollToIndex: scrollToLine - 1 - offset, stopScrolling: true };
     }
 
-    return { scrollToIndex, stopScrolling };
+    return { scrollToIndex: -1, stopScrolling };
   }
 
   handleUpdate(moreLines) {
@@ -156,26 +148,6 @@ export class LazyLog extends React.Component {
     return ansiparse(this.decoder.decode(value));
   }
 
-  isRowLoaded({ index }) {
-    return this.state.decodedLines.has(index);
-  }
-
-  loadMoreRows({ startIndex, stopIndex }) {
-    return new Promise(resolve => {
-      requestAnimationFrame(() => {
-        const { decodedLines } = this.state;
-
-        decodedLines.withMutations(decodedLines => {
-          this.state.lines.slice(startIndex, stopIndex).forEach((line, index) => {
-            decodedLines.set(index, this.decode(line));
-          });
-        });
-
-        this.setState({ decodedLines }, resolve);
-      });
-    });
-  }
-
   renderError() {
     const { url } = this.props;
     const { error } = this.state;
@@ -217,69 +189,49 @@ export class LazyLog extends React.Component {
 
     return (
       <Line
-        style={{ lineHeight: `${style.height}px`, ...style }}
+        rowHeight={this.props.rowHeight}
+        style={style}
         key={key}
         number={number}
         highlight={this.state.highlight.includes(number)}
         onLineNumberClick={this.handleHighlight.bind(this, number)}>
-        {this.state.decodedLines.get(index)}
+        {this.decode(this.state.lines.get(index))}
       </Line>
     );
   }
 
   renderNoRows() {
-    const { error, loaded } = this.state;
-
-    if (!error && !loaded) {
-      return <Loading />;
+    if (this.state.error) {
+      return this.renderError();
     }
 
-    if (loaded) {
+    if (this.state.loaded) {
       return <Line>{[{ bold: true, text: 'No content' }]}</Line>;
     }
 
-    return this.renderError();
-  }
-
-  renderLoader() {
-    return (
-      <InfiniteLoader isRowLoaded={this.isRowLoaded} loadMoreRows={this.loadMoreRows} rowCount={this.state.count} ref={ref => this.loaderRef = ref}>
-        {(loader) => this.renderSizer(loader)}
-      </InfiniteLoader>
-    );
-  }
-
-  renderSizer(loader) {
-    return (
-      <AutoSizer>
-        {size => this.renderList({ ...size, ...loader })}
-      </AutoSizer>
-    );
-  }
-
-  renderList({ height, width, onRowsRendered, registerChild }) {
-    const { props } = this;
-    const { count, following, scrollToAlignment, scrollToIndex } = this.state;
-
-    return (
-      <VirtualList
-        ref={registerChild}
-        onRowsRendered={onRowsRendered}
-        height={height}
-        width={width}
-        rowCount={count}
-        scrollToAlignment={scrollToAlignment}
-        rowRenderer={this.renderRow}
-        noRowsRenderer={this.renderNoRows}
-        onScroll={following && count ? this.handleScroll : undefined}
-        {...props}
-        scrollToIndex={scrollToIndex || props.scrollToLine}
-      />
-    );
+    return <Loading />;
   }
 
   render() {
-    return this.renderLoader();
+    return (
+      <AutoSizer>
+        {({ height, width }) => (
+          <VirtualList
+            className={lazyLog}
+            overscanRowCount={100}
+            height={height}
+            width={width}
+            rowCount={this.state.count}
+            scrollToAlignment={this.state.scrollToAlignment}
+            rowRenderer={this.renderRow}
+            noRowsRenderer={() => this.renderNoRows()}
+            onScroll={this.state.following && this.state.count ? this.handleScroll : undefined}
+            {...this.props}
+            scrollToIndex={this.state.scrollToIndex ||this.props.scrollToLine}
+          />
+        )}
+      </AutoSizer>
+    );
   }
 }
 
@@ -289,16 +241,9 @@ LazyLog.defaultProps = {
   highlight: null,
   rowHeight: 19,
   containerStyle: {
-    overflowX: 'scroll'
+    width: 'auto',
+    maxWidth: 'initial',
+    overflowX: 'visible'
   },
-  style: {
-    fontFamily: 'Monaco, monospace',
-    fontSize: 12,
-    margin: 0,
-    whiteSpace: 'pre',
-    wordWrap: 'break-word',
-    backgroundColor: '#222222',
-    color: '#d6d6d6',
-    fontWeight: 400
-  }
+  style: null
 };
