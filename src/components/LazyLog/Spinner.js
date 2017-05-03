@@ -16,3 +16,7 @@ export const Spinner = ({ className, style }) => (
     </g>
   </svg>
 );
+
+Spinner.defaultProps = {
+  style: {}
+};

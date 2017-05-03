@@ -1,11 +1,11 @@
 import React from 'react';
 import { LazyList } from './LazyList';
-import { request } from './request';
+import { stream } from './stream';
 
-export class LazyLog extends LazyList {
+export class LazyStream extends LazyList {
   componentWillMount() {
     super.componentWillMount();
-    this.request();
+    this.stream();
   }
 
   componentWillReceiveProps(props) {
@@ -13,26 +13,26 @@ export class LazyLog extends LazyList {
 
     super
       .componentWillReceiveProps(props)
-      .then(() => props.url !== url && this.request());
+      .then(() => props.url !== url && this.stream());
   }
 
   componentWillUnmount() {
-    this.stopRequest();
+    this.stopStreaming();
   }
 
-  request() {
+  stream() {
     const { url, fetchOptions } = this.props;
 
-    this.stopRequest();
+    this.stopStreaming();
 
-    this.emitter = request(url, fetchOptions);
+    this.emitter = stream(url, fetchOptions);
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
     this.emitter.emit('start');
   }
 
-  stopRequest() {
+  stopStreaming() {
     if (this.emitter) {
       this.emitter.emit('abort');
       this.emitter.off('update', this.handleUpdate);

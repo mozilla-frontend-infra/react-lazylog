@@ -1,0 +1,76 @@
+import { List, Range } from 'immutable';
+
+export const ENCODED_NEWLINE = 10;
+export const ENCODED_CARRIAGE_RETURN = 13;
+
+export const isNewline = (current, next) => (
+  current === ENCODED_NEWLINE ||
+  (current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE)
+);
+
+export const getScrollIndex = ({ follow = false, scrollToLine = 0, previousCount = 0, count = 0, offset = 0 }) => {
+  if (follow) {
+    return count - 1 - offset;
+  } else if (scrollToLine && previousCount > scrollToLine) {
+    return -1;
+  } else if (scrollToLine) {
+    return scrollToLine - 1 - offset;
+  }
+
+  return -1;
+};
+
+export const getHighlightRange = (highlight) => {
+  if (!highlight) {
+    return Range(0, 0);
+  }
+
+  if (!Array.isArray(highlight)) {
+    return Range(highlight, highlight + 1);
+  }
+
+  if (highlight.length === 1) {
+    return Range(highlight[0], highlight[0] + 1);
+  }
+
+  return Range(highlight[0], highlight[1] + 1);
+};
+
+export const bufferConcat = (a, b) => {
+  const buffer = new Uint8Array(a.length + b.length);
+
+  buffer.set(a, 0);
+  buffer.set(b, a.length);
+
+  return buffer;
+};
+
+export const convertBufferToLines = (current, previous) => {
+  const buffer = previous ? bufferConcat(previous, current) : current;
+  const length = buffer.length;
+  let lastNewlineIndex = 0;
+  let index = 0;
+
+  const lines = List().withMutations(lines => {
+    while (index < length) {
+      const current = buffer[index];
+      const next = buffer[index + 1];
+
+      if (isNewline(current, next)) {
+        lines.push(buffer.subarray(lastNewlineIndex, index));
+        lastNewlineIndex = current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE ?
+          index + 2 :
+          index + 1;
+
+        index = lastNewlineIndex;
+      } else {
+        index++;
+      }
+    }
+  });
+
+  return {
+    lines,
+    remaining: index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null
+  };
+};

@@ -7,5 +7,5 @@ export const Loading = ({ style }) => (
 );
 
 Loading.defaultProps = {
-  style: null
+  style: {}
 };

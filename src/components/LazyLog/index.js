@@ -1,4 +1,7 @@
 export { LazyLog } from './LazyLog';
+export { LazyStream } from './LazyStream';
+export { LazyList } from './LazyList';
+export { ScrollFollow } from './ScrollFollow';
 export { Line } from './Line';
 export { LineContent } from './LineContent';
 export { LineNumber } from './LineNumber';

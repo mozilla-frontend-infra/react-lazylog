@@ -7,6 +7,7 @@
   background-color: #222222;
   color: #d6d6d6;
   font-weight: 400;
+  will-change: initial;
 }
 
 .line {
@@ -14,12 +15,12 @@
   user-select: none;
 }
 
-.lineHover {
-  background-color: #444444;
-}
-
 .lineHighlight {
   background-color: #666666;
+}
+
+.lineHover {
+  background-color: #444444;
 }
 
 .lineNumber {
@@ -50,7 +51,7 @@
 }
 
 .loading {
-  position: relative;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
