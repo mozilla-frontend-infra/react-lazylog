@@ -2,6 +2,8 @@
 
 React components that load and view remote text in the browser lazily and efficiently.
 
+![demo](demo.gif)
+
 ## Features
 
 - Efficient scrolling performance thanks to [react-virtualized](https://github.com/bvaughn/react-virtualized)
