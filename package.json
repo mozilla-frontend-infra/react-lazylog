@@ -5,6 +5,10 @@
   "license": "MPL-2.0",
   "repository": "mozilla-rpweb/react-lazylog",
   "main": "lib/LazyLog.js",
+  "files": [
+    "lib",
+    "src/components/LazyLog"
+  ],
   "keywords": [
     "react",
     "log",
