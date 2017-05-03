@@ -23,7 +23,7 @@ You can install `react-lazylog` via Yarn or npm:
 yarn add react-lazylog
 
 # If using npm:
-yarn add --save react-lazylog
+npm install --save react-lazylog
 ```
 
 The core components from react-lazylog are `LazyLog` and `LazyStream`. There is also a higher-order component (HOC) for
@@ -233,7 +233,7 @@ own `LinePart` and styled separately (colors, text formatting, etc.) from the re
 - [ansiparse](https://www.npmjs.com/package/ansiparse) for nice log styling, like Travis
 - [mitt](https://www.npmjs.com/package/mitt) for dead-simple events to manage streaming lifecycle
 - [Immutable](https://www.npmjs.com/package/immutable) for efficiently storing and managing very large collections of lines and highlight ranges
-- `Uint8Array` for dealing with text content as binary, allows for conditionally rendering partial data with decoding everything and crashing your browser
+- `Uint8Array` for dealing with text content as binary, allows for conditionally rendering partial data and decoding everything without crashing your browser
 
 ## Development and Contributing
 
