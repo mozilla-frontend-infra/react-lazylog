@@ -12,7 +12,6 @@ export class ScrollFollow extends React.Component {
 
   handleScroll({ scrollTop, scrollHeight, clientHeight }) {
     if (this.state.follow && scrollHeight - scrollTop !== clientHeight) {
-      console.log('SHUTTING OFF FOLLOWING');
       this.setState({ follow: false });
     }
   }
