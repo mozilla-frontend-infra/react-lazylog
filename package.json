@@ -1,6 +1,6 @@
 {
   "name": "react-lazylog",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "React Lazy Logviewer",
   "license": "MPL-2.0",
   "repository": "mozilla-rpweb/react-lazylog",
@@ -24,15 +24,14 @@
     "stop": "pm2 stop ecosystem.config.js"
   },
   "devDependencies": {
-    "neutrino": "^6.0.3",
-    "neutrino-preset-react-components": "^2.0.0",
+    "neutrino": "^6.1.1",
+    "neutrino-preset-react-components": "^2.0.1",
     "pm2": "^2.5.0",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.6.0",
     "react-dom": "^15.6.1"
   },
   "dependencies": {
-    "ansiparse": "^0.1.0",
     "fetch-readablestream": "^0.1.0",
     "immutable": "^3.8.1",
     "mitt": "^1.1.2",

@@ -1,7 +1,7 @@
 import React from 'react';
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
-import ansiparse from 'ansiparse';
+import ansiparse from '../../ansiparse';
 import { decode } from './encoding';
 import { getScrollIndex, getHighlightRange } from './utils';
 import { Line } from './Line';
