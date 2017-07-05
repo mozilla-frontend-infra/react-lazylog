@@ -1,6 +1,6 @@
 {
   "name": "react-lazylog",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "React Lazy Logviewer",
   "license": "MPL-2.0",
   "repository": "mozilla-rpweb/react-lazylog",

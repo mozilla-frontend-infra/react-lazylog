@@ -1,12 +1,9 @@
 import { List, Range } from 'immutable';
 
-export const ENCODED_NEWLINE = 10;
-export const ENCODED_CARRIAGE_RETURN = 13;
+export const ENCODED_NEWLINE = 10; // \n
+export const ENCODED_CARRIAGE_RETURN = 13; // \r
 
-export const isNewline = (current, next) => (
-  current === ENCODED_NEWLINE ||
-  (current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE)
-);
+export const isNewline = (current) => (current === ENCODED_NEWLINE || current === ENCODED_CARRIAGE_RETURN);
 
 export const getScrollIndex = ({ follow = false, scrollToLine = 0, previousCount = 0, count = 0, offset = 0 }) => {
   if (follow) {
