@@ -1,6 +1,6 @@
 {
   "name": "react-lazylog",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "React Lazy Logviewer",
   "license": "MPL-2.0",
   "repository": "mozilla-rpweb/react-lazylog",
@@ -19,12 +19,13 @@
   ],
   "scripts": {
     "build": "neutrino build",
+    "prepare": "yarn build",
     "start": "pm2 start ecosystem.config.js && yarn attach",
     "attach": "pm2 monit ecosystem.config.js",
     "stop": "pm2 stop ecosystem.config.js"
   },
   "devDependencies": {
-    "neutrino": "^6.1.1",
+    "neutrino": "^6.1.4",
     "neutrino-preset-react-components": "^2.0.1",
     "pm2": "^2.5.0",
     "react": "^15.6.1",

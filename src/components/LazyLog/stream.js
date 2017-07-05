@@ -4,7 +4,7 @@ import { convertBufferToLines } from './utils';
 
 const fetcher = Promise
   .resolve()
-  .then(() => 'ReadableStream' in self ?
+  .then(() => ('ReadableStream' in self && 'body' in self.Response.prototype) ?
     self.fetch :
     import('web-streams-polyfill')
       .then(({ ReadableStream }) => {
