@@ -162,11 +162,6 @@ export class LazyList extends React.PureComponent {
 
   renderRow({ key, index, style }) {
     const number = index + 1 + this.state.offset;
-    
-    // Avoid horizontal scrollbar overlap with the last line of the log
-    if (index === this.state.count - 1) {
-      style.height *= 3;
-    }
 
     return (
       <Line
