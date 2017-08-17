@@ -12,6 +12,6 @@ createServer((request, response) => {
   response.setHeader('Access-Control-Allow-Methods', 'GET');
   response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  setInterval(() => response.write(Buffer.from(`${Date.now()}\n`)), 250);
+  setInterval(() => response.write(Buffer.from(`${Date.now()}\n`)), 100);
 })
 .listen(port, host, () => process.stderr.write(`Server started on port ${port}\n`));
