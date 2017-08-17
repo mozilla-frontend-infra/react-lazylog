@@ -4,16 +4,13 @@ import { request } from './request';
 
 export class LazyLog extends LazyList {
   componentWillMount() {
-    super.componentWillMount();
     this.request();
   }
 
-  componentWillReceiveProps(props) {
-    const { url } = this.props;
-
-    super
-      .componentWillReceiveProps(props)
-      .then(() => props.url !== url && this.request());
+  componentDidUpdate(prevProps) {
+    if (prevProps.url !== this.props.url) {
+      this.request();
+    }
   }
 
   componentWillUnmount() {

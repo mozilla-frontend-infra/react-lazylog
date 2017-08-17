@@ -14,26 +14,17 @@ export class LazyList extends React.PureComponent {
     this.state = this.propsToState(props, true);
   }
 
-  componentWillMount() {
-    ['handleUpdate', 'handleEnd', 'handleError', 'renderRow']
-      .map(method => this[method] = this[method].bind(this));
-  }
-
   componentWillReceiveProps(props) {
-    return new Promise(resolve => {
-      this.setState(this.propsToState(props), () => {
-        resolve();
+    this.setState(this.propsToState(props), () => {
+      if (this.state.loaded && this.props.onLoad) {
+        this.props.onLoad();
+      } else if (this.state.error && this.props.onError) {
+        this.props.onError(this.state.error);
+      }
 
-        if (this.state.loaded && this.props.onLoad) {
-          this.props.onLoad();
-        } else if (this.state.error && this.props.onError) {
-          this.props.onError(this.state.error);
-        }
-
-        if (props.highlight && this.props.onHighlight) {
-          this.props.onHighlight(this.state.highlight);
-        }
-      });
+      if (props.highlight && this.props.onHighlight) {
+        this.props.onHighlight(this.state.highlight);
+      }
     });
   }
 
@@ -62,7 +53,7 @@ export class LazyList extends React.PureComponent {
     return state;
   }
 
-  handleUpdate(moreLines) {
+  handleUpdate = (moreLines) => {
     const { scrollToLine, follow } = this.props;
     const { lineLimit, count: previousCount } = this.state;
 
@@ -84,25 +75,25 @@ export class LazyList extends React.PureComponent {
       count,
       scrollToIndex
     });
-  }
+  };
 
-  handleEnd() {
+  handleEnd = () => {
     this.setState({ loaded: true });
 
     if (this.props.onLoad) {
       this.props.onLoad();
     }
-  }
+  };
 
-  handleError(err) {
+  handleError = (err) => {
     this.setState({ error: err });
 
     if (this.props.onError) {
       this.props.onError(err);
     }
-  }
+  };
 
-  handleHighlight(lineNumber, { shiftKey }) {
+  handleHighlight = (lineNumber, { shiftKey }) => {
     const first = this.state.highlight.first();
     const last = this.state.highlight.last();
     let range;
@@ -122,7 +113,7 @@ export class LazyList extends React.PureComponent {
         this.props.onHighlight(this.state.highlight);
       }
     });
-  }
+  };
 
   renderError() {
     const { url } = this.props;
@@ -160,7 +151,7 @@ export class LazyList extends React.PureComponent {
     ];
   }
 
-  renderRow({ key, index, style }) {
+  renderRow = ({ key, index, style }) => {
     const number = index + 1 + this.state.offset;
 
     return (
@@ -175,7 +166,7 @@ export class LazyList extends React.PureComponent {
         {ansiparse(decode(this.state.lines.get(index)))}
       </Line>
     );
-  }
+  };
 
   renderNoRows() {
     if (this.state.error) {

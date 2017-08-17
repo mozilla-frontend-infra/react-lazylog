@@ -4,16 +4,13 @@ import { stream } from './stream';
 
 export class LazyStream extends LazyList {
   componentWillMount() {
-    super.componentWillMount();
     this.stream();
   }
 
-  componentWillReceiveProps(props) {
-    const { url } = this.props;
-
-    super
-      .componentWillReceiveProps(props)
-      .then(() => props.url !== url && this.stream());
+  componentDidUpdate(prevProps) {
+    if (prevProps.url !== this.props.url) {
+      this.stream();
+    }
   }
 
   componentWillUnmount() {
