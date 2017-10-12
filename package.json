@@ -18,26 +18,26 @@
     "lazylog"
   ],
   "scripts": {
-    "build": "neutrino build",
+    "build": "neutrino build && neutrino build --options.legacy",
     "prepare": "yarn build",
     "start": "pm2 start ecosystem.config.js && yarn attach",
     "attach": "pm2 monit ecosystem.config.js",
     "stop": "pm2 stop ecosystem.config.js"
   },
   "devDependencies": {
-    "neutrino": "^6.1.5",
-    "neutrino-preset-react-components": "^2.1.1",
-    "pm2": "^2.6.1",
-    "react": "^15.6.1",
-    "react-addons-css-transition-group": "^15.6.0",
-    "react-dom": "^15.6.1"
+    "neutrino": "^7.1.1",
+    "neutrino-preset-react-components": "^3.0.0",
+    "pm2": "^2.7.1",
+    "react": "^16.0.0",
+    "react-addons-css-transition-group": "^15.6.2",
+    "react-dom": "^16.0.0"
   },
   "dependencies": {
     "fetch-readablestream": "^0.1.0",
-    "immutable": "^3.8.1",
+    "immutable": "^3.8.2",
     "mitt": "^1.1.2",
     "react-hot-loader": "^3.0.0-beta.7",
-    "react-virtualized": "^9.9.0",
+    "react-virtualized": "^9.10.1",
     "text-encoding-utf-8": "^1.0.1",
     "web-streams-polyfill": "^1.3.2",
     "whatwg-fetch": "^2.0.3"
