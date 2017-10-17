@@ -49,6 +49,15 @@ export const stream = (url, options) => {
     try {
       const fetch = await fetcher;
       const response = await fetch(url, Object.assign({ credentials: 'omit' }, options));
+
+      if (!response.ok) {
+        const error = new Error(response.statusText);
+
+        error.status = response.status;
+        emitter.emit('error', error);
+        return;
+      }
+
       const reader = response.body.getReader();
 
       emitter.on('abort', () => reader.cancel('ABORTED'));
