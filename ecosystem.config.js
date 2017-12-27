@@ -13,11 +13,9 @@ module.exports = {
     {
       name: 'LAZYLOG_CLIENT',
       script: 'node_modules/.bin/neutrino',
+      args: '--options.port=9001',
       args: 'start',
       watch: false,
-      env: {
-        PORT: 9001
-      }
     }
   ]
 };
