@@ -100,6 +100,7 @@ quicker upfront rendering as content can be decoded as it arrives.
 | `highlight` | Number or Array |  | Line number (e.g. `highlight={10}`) or line number range to highlight inclusively (e.g. `highlight={[5, 10]}` highlights lines 5-10). This is 1-indexed, i.e. line numbers start at `1`. |
 | `scrollToLine` | Number |  | Scroll to a particular line number once it has loaded. This is 1-indexed, i.e. line numbers start at `1`. Cannot be used in combination with `follow`. |
 | `follow` | Boolean |  | Scroll to the end of the component after each update to the content. Cannot be used in combination with `scrollToLine`. |
+| `selectableLines` | Boolean |  | Make the text selectable, allowing to copy & paste. Defaults to `false`. |
 | `formatPart` | Function |  | Execute a function against each string part of a line, returning a new line part. Is passed a single argument which is the string part to manipulate, should return a new string with the manipulation completed. |
 | `onLoad` | Function |  | Execute a function if/when the provided `url` has completed loading. |
 | `onError` | Function |  | Execute a function if the provided `url` has encountered an error during loading. |

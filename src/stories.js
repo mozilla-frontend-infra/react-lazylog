@@ -24,16 +24,18 @@ const load = () => render((
         <Props name="Typical, follow" url={logs.TYPICAL} follow={true} />
         <Props name="Typical, highlight L10" url={logs.TYPICAL} highlight={10} />
         <Props name="Typical, highlight L5-L15" url={logs.TYPICAL} highlight={[5, 15]} />
+        <Props name="Typical Log, selectable lines" url={logs.TYPICAL} selectableLines={true} />
         <Props name="Massive Log, scroll to 500K" url={logs.MASSIVE} scrollToLine={500000} />
         <Props name="403 Error, Fixed dimensions" url={logs.HTTP_403} height={100} width={550} />
         <Props name="404 Error" url={logs.HTTP_404} />
         <Props name="Missing CORS headers" url={logs.MISSING_CORS} />
-        <Props name="Generic error" url={logs.BAD_URL} />
+        <Props name="Generic error" url={logs.BAD_URL} selectableLines={true} />
       </Story>
       <Story component={LazyStream}>
         <Props name="Local Stream" url={logs.LOCAL_STREAM} />
         <Props name="Local Stream, scroll To 30" url={logs.LOCAL_STREAM} scrollToLine={30} />
         <Props name="Local Stream, follow" url={logs.LOCAL_STREAM} follow={true} />
+        <Props name="Local Stream, selectable lines" url={logs.LOCAL_STREAM} selectableLines={true} />
       </Story>
       <Story component={ScrollFollow}>
         <Props name="Not following">
