@@ -1,12 +1,13 @@
 import React from 'react';
 import { LineNumber } from './LineNumber';
 import { LineContent } from './LineContent';
-import { line, lineHighlight, lineHover } from './styles.css';
+import { line, lineHighlight, lineHover, lineSelectable } from './styles.css';
 
 export const Line = ({
   children,
   formatPart,
   highlight = false,
+  selectable = false,
   onLineNumberClick,
   onRowClick,
   number,
@@ -14,7 +15,9 @@ export const Line = ({
   style
 }) => {
   const handleHover = ({ currentTarget, type }) => currentTarget.classList.toggle(lineHover, type === 'mouseenter');
-  const className = highlight ? `${line} ${lineHighlight}` : line;
+  const highlightClass = highlight ? ` ${lineHighlight}` : '';
+  const selectableClass = selectable ? ` ${lineSelectable}` : '';
+  const className = `${line}${highlightClass}${selectableClass}`;
   const lineStyle = {
     ...style,
     lineHeight: `${style ? style.height || rowHeight : rowHeight}px`,

@@ -161,6 +161,7 @@ export class LazyList extends React.PureComponent {
         key={key}
         number={number}
         formatPart={this.props.formatPart}
+        selectable={this.props.selectableLines}
         highlight={this.state.highlight.includes(number)}
         onLineNumberClick={this.handleHighlight.bind(this, number)}>
         {ansiparse(decode(this.state.lines.get(index)))}
@@ -206,6 +207,7 @@ LazyList.defaultProps = {
   follow: false,
   scrollToLine: 0,
   highlight: null,
+  selectableLines: false,
   rowHeight: 19,
   overscanRowCount: 100,
   containerStyle: {
