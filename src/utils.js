@@ -3,9 +3,16 @@ import { List, Range } from 'immutable';
 export const ENCODED_NEWLINE = 10; // \n
 export const ENCODED_CARRIAGE_RETURN = 13; // \r
 
-export const isNewline = (current) => (current === ENCODED_NEWLINE || current === ENCODED_CARRIAGE_RETURN);
+export const isNewline = current =>
+  current === ENCODED_NEWLINE || current === ENCODED_CARRIAGE_RETURN;
 
-export const getScrollIndex = ({ follow = false, scrollToLine = 0, previousCount = 0, count = 0, offset = 0 }) => {
+export const getScrollIndex = ({
+  follow = false,
+  scrollToLine = 0,
+  previousCount = 0,
+  count = 0,
+  offset = 0,
+}) => {
   if (follow) {
     return count - 1 - offset;
   } else if (scrollToLine && previousCount > scrollToLine) {
@@ -17,7 +24,7 @@ export const getScrollIndex = ({ follow = false, scrollToLine = 0, previousCount
   return -1;
 };
 
-export const getHighlightRange = (highlight) => {
+export const getHighlightRange = highlight => {
   if (!highlight) {
     return Range(0, 0);
   }
@@ -44,10 +51,9 @@ export const bufferConcat = (a, b) => {
 
 export const convertBufferToLines = (current, previous) => {
   const buffer = previous ? bufferConcat(previous, current) : current;
-  const length = buffer.length;
+  const { length } = buffer;
   let lastNewlineIndex = 0;
   let index = 0;
-
   const lines = List().withMutations(lines => {
     while (index < length) {
       const current = buffer[index];
@@ -55,9 +61,10 @@ export const convertBufferToLines = (current, previous) => {
 
       if (isNewline(current, next)) {
         lines.push(buffer.subarray(lastNewlineIndex, index));
-        lastNewlineIndex = current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE ?
-          index + 2 :
-          index + 1;
+        lastNewlineIndex =
+          current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
+            ? index + 2
+            : index + 1;
 
         index = lastNewlineIndex;
       } else {
@@ -68,6 +75,7 @@ export const convertBufferToLines = (current, previous) => {
 
   return {
     lines,
-    remaining: index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null
+    remaining:
+      index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null,
   };
 };
