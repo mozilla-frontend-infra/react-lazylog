@@ -18,9 +18,10 @@
   ],
   "scripts": {
     "build": "neutrino build",
+    "prepare": "yarn build",
     "lint": "neutrino lint",
     "start": "neutrino styleguide:start",
-    "deploy": "neutrino styleguide:build && gh-pages -d styleguide"
+    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
   },
   "devDependencies": {
     "@neutrinojs/airbnb": "^8.1.1",
