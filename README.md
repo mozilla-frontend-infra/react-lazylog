@@ -116,7 +116,7 @@ you wish to override these styles, there are a few techniques you can use.
 
 ### `style` and `containerStyle`
 
-For the core container of `<LazyLog />` and `<LazyStream />`, you can pass a `style` object prop to affect many styles.
+For the core container of `<LazyLog />`, you can pass a `style` object prop to affect many styles.
 For affecting the look or behavior of the scrollable region of these components, use the `containerStyle` prop with a
 styling object.
 
