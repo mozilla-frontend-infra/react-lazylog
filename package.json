@@ -30,6 +30,7 @@
     "babel-polyfill": "^6.26.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.6.0",
+    "gh-pages": "^1.1.0",
     "neutrino": "^8.1.1",
     "neutrino-middleware-styleguidist": "^1.0.2",
     "prettier": "^1.10.2",
