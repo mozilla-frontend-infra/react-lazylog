@@ -43,7 +43,8 @@ export default class LazyLog extends PureComponent {
      */
     height: oneOfType([number, string]),
     /**
-     * Set the width in pixels for the component. Defaults to `'auto'` if unspecified.
+     * Set the width in pixels for the component.
+     * Defaults to `'auto'` if unspecified.
      * When the `width` is `'auto'`, the component will expand
      * horizontally to fill its container.
      */
@@ -81,7 +82,8 @@ export default class LazyLog extends PureComponent {
      */
     onLoad: func,
     /**
-     * Execute a function if the provided `url` has encountered an error during loading.
+     * Execute a function if the provided `url` has encountered an error
+     * during loading.
      */
     onError: func,
     /**
@@ -103,11 +105,13 @@ export default class LazyLog extends PureComponent {
      */
     overscanRowCount: number,
     /**
-     * Optional custom inline style to attach to element which contains the interior scrolling container.
+     * Optional custom inline style to attach to element which contains
+     * the interior scrolling container.
      */
     containerStyle: object,
     /**
-     * Optional custom inline style to attach to root virtual `LazyList` element.
+     * Optional custom inline style to attach to root
+     * virtual `LazyList` element.
      */
     style: object,
   };

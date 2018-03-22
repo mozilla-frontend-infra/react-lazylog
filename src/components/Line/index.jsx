@@ -10,7 +10,8 @@ import {
 } from './index.module.css';
 
 /**
- * A single row of content, containing both the line number and any text content within the line.
+ * A single row of content, containing both the line number
+ * and any text content within the line.
  */
 export default class Line extends PureComponent {
   static propTypes = {

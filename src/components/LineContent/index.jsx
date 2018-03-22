@@ -3,6 +3,8 @@ import { arrayOf, func, number, object, shape, string } from 'prop-types';
 import LinePart from '../LinePart';
 import { lineContent } from './index.module.css';
 
+/* eslint-disable react/no-array-index-key */
+
 /**
  * The container of all the individual pieces of content that
  * is on a single line. May contain one or more `LinePart`s

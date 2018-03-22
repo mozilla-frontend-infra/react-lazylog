@@ -68,7 +68,7 @@ export const convertBufferToLines = (current, previous) => {
 
         index = lastNewlineIndex;
       } else {
-        index++;
+        index += 1;
       }
     }
   });

@@ -8,21 +8,25 @@ export default class ScrollFollow extends Component {
      *
      *   - `follow: bool` This value is `true` or `false`
      *   based on whether the component should be auto-following.
-     *   This value can be passed directly to the Lazy component's `follow` prop.
+     *   This value can be passed directly to the Lazy component's
+     *   `follow` prop.
      *
-     *   - `onScroll: func`: This function is used to listen for scrolling events
-     *   and turn off auto-following (`follow`). This value can be passed directly
-     *   to the Lazy component's `onScroll` prop.
+     *   - `onScroll: func`: This function is used to listen for scrolling
+     *   events and turn off auto-following (`follow`).
+     *   This value can be passed directly to the Lazy component's
+     *   `onScroll` prop.
      *
      *   - `startFollowing: func`: A helper function for manually re-starting
-     *   `follow`ing. Is not used by a Lazy component; rather this can be invoked
-     *   whenever you need to turn back on auto-following, but cannot reliably do
-     *   this from the `startFollowing` prop. e.g `startFollowing();`
+     *   `follow`ing. Is not used by a Lazy component;
+     *   rather this can be invoked whenever you need to turn back on
+     *   auto-following, but cannot reliably do this from the `startFollowing`
+     *   prop. e.g `startFollowing();`
      *
-     *   - `stopFollowing: func`: A helper function for manually stopping `follow`ing.
-     *   Is not used by a Lazy component; rather this can be invoked whenever you
-     *   need to turn off auto-following, but cannot reliably do this from the
-     *   `startFollowing` prop. e.g `stopFollowing();`
+     *   - `stopFollowing: func`: A helper function for manually stopping
+     *   `follow`ing. Is not used by a Lazy component;
+     *   rather this can be invoked whenever you need to turn off
+     *   auto-following, but cannot reliably do this from the `startFollowing`
+     *   prop. e.g `stopFollowing();`
      */
     render: func.isRequired,
     /**

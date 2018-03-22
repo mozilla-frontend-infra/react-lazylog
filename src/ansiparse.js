@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus, no-continue */
 const foregroundColors = {
   '30': 'black',
   '31': 'red',
