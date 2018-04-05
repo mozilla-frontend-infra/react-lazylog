@@ -59,3 +59,5 @@ typings/
 
 # build directory
 lib
+build
+styleguide

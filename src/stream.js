@@ -2,15 +2,16 @@ import { List } from 'immutable';
 import mitt from 'mitt';
 import { convertBufferToLines } from './utils';
 
-const fetcher = Promise
-  .resolve()
-  .then(() => ('ReadableStream' in self && 'body' in self.Response.prototype) ?
-    self.fetch :
-    import('web-streams-polyfill')
-      .then(({ ReadableStream }) => {
-        self.ReadableStream = ReadableStream;
-        return import('fetch-readablestream');
-      }));
+const fetcher = Promise.resolve().then(
+  () =>
+    'ReadableStream' in self && 'body' in self.Response.prototype
+      ? self.fetch
+      : import('web-streams-polyfill').then(({ ReadableStream }) => {
+          self.ReadableStream = ReadableStream;
+
+          return import('fetch-readablestream');
+        })
+);
 
 export const recurseReaderAsEvent = async (reader, emitter) => {
   const result = await reader.read();
@@ -21,12 +22,12 @@ export const recurseReaderAsEvent = async (reader, emitter) => {
 
   if (!result.done) {
     return recurseReaderAsEvent(reader, emitter);
-  } else {
-    emitter.emit('done');
   }
+
+  emitter.emit('done');
 };
 
-export const stream = (url, options) => {
+export default (url, options) => {
   const emitter = mitt();
   let overage = null;
 
@@ -48,13 +49,17 @@ export const stream = (url, options) => {
   emitter.on('start', async () => {
     try {
       const fetch = await fetcher;
-      const response = await fetch(url, Object.assign({ credentials: 'omit' }, options));
+      const response = await fetch(
+        url,
+        Object.assign({ credentials: 'omit' }, options)
+      );
 
       if (!response.ok) {
         const error = new Error(response.statusText);
 
         error.status = response.status;
         emitter.emit('error', error);
+
         return;
       }
 

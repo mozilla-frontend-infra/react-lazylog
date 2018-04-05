@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus, no-continue */
 const foregroundColors = {
   '30': 'black',
   '31': 'red',
@@ -7,7 +8,7 @@ const foregroundColors = {
   '35': 'magenta',
   '36': 'cyan',
   '37': 'white',
-  '90': 'grey'
+  '90': 'grey',
 };
 const backgroundColors = {
   '40': 'black',
@@ -17,32 +18,36 @@ const backgroundColors = {
   '44': 'blue',
   '45': 'magenta',
   '46': 'cyan',
-  '47': 'white'
+  '47': 'white',
 };
 const styles = {
   '1': 'bold',
   '3': 'italic',
-  '4': 'underline'
+  '4': 'underline',
 };
-
-const eraseChar = function (matchingText, result) {
+const eraseChar = (matchingText, result) => {
   if (matchingText.length) {
-    matchingText = matchingText.substr(0, matchingText.length - 1);
+    return [matchingText.substr(0, matchingText.length - 1), result];
   } else if (result.length) {
     const index = result.length - 1;
-    const text = result[index].text;
+    const { text } = result[index];
+    const newResult =
+      text.length === 1
+        ? result.slice(0, result.length - 1)
+        : result.map(
+            (item, i) =>
+              index === i
+                ? { ...item, text: text.substr(0, text.length - 1) }
+                : item
+          );
 
-    if (text.length === 1) {
-      result.pop();
-    } else {
-      result[index].text = text.substr(0, text.length - 1);
-    }
+    return [matchingText, newResult];
   }
 
   return [matchingText, result];
 };
 
-function ansiparse(str) {
+const ansiparse = str => {
   let matchingControl = null;
   let matchingData = null;
   let matchingText = '';
@@ -78,7 +83,7 @@ function ansiparse(str) {
         matchingText = '';
 
         for (let a = 0; a < ansiState.length; a++) {
-          let ansiCode = ansiState[a];
+          const ansiCode = ansiState[a];
 
           if (foregroundColors[ansiCode]) {
             state.foreground = foregroundColors[ansiCode];
@@ -117,11 +122,11 @@ function ansiparse(str) {
   }
 
   if (matchingText) {
-    state.text = matchingText + (matchingControl ? matchingControl : '');
+    state.text = matchingText + (matchingControl || '');
     result.push(state);
   }
 
   return result;
-}
+};
 
 export default ansiparse;

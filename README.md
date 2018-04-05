@@ -1,8 +1,8 @@
 # React Lazylog
 
-React components that load and view remote text in the browser lazily and efficiently.
+React component that loads and views remote text in the browser lazily and efficiently.
 
-![demo](demo.gif)
+See the demo on the styleguide at https://mozilla-rpweb.github.io/react-lazylog
 
 ## Features
 
@@ -26,43 +26,27 @@ yarn add react-lazylog
 npm install --save react-lazylog
 ```
 
-The core components from react-lazylog are `LazyLog` and `LazyStream`. There is also a higher-order component (HOC) for
+The core component from react-lazylog is `LazyLog`. There is also a higher-order component (HOC) for
 following logs until scroll. This module can be required via ES imports, CommonJS require, or UMD.
 
 ```js
-import { LazyLog, LazyStream, ScrollFollow } from 'react-lazylog';
-
-// full list of components
-import {
-  LazyLog,
-  LazyStream,
-  LazyList,
-  ScrollFollow,
-  Line,
-  LineContent,
-  LineNumber,
-  LinePart,
-  Loading,
-  Spinner
-} from 'react-lazylog';
+import { LazyLog } from 'react-lazylog';
 
 // using require
-const { LazyLog, LazyStream, ScrollFollow } = require('react-lazylog');
+const { LazyLog } = require('react-lazylog');
 ```
 
 **Important! If you are using Create React App, you will need to import the ES5 versions of components.
-These are located `react-lazylog/lib/LazyLog.es5.js`, e.g.:**
+These are located `react-lazylog/build/LazyLog.es5.js`, e.g.:**
 
 ```js
-import { LazyLog, LazyStream } from 'react-lazylog/lib/LazyLog.es5';
+import LazyLog from 'react-lazylog/build/LazyLog.es5';
 
 // using require
-const { LazyLog, LazyStream } = require('react-lazylog/lib/LazyStream.es5');
+const LazyLog = require('react-lazylog/build/LazyLog.es5');
 ```
 
-_`LazyLog` and `LazyStream` inherit from `LazyList`._
-
-## `<LazyLog />` & `<LazyStream />`
+## `<LazyLog />`
 
 ### Usage
 
@@ -82,33 +66,15 @@ By default the `LazyLog` will expand to fill its container, so ensure this conta
 If you wish to have fixed dimensions, change the `height` and `width` props.
 
 If you are going to be rendering a complete file, or an endpoint which can be downloaded all at once, use the
-`<LazyLog />` component for better overall performance at the expense of slightly longer upfront load time.
+`<LazyLog />` component as-is for better overall performance at the expense of slightly longer upfront load time.
 
-If you are going to be requesting a streaming or chunked response, use the `<LazyStream />` component for
-quicker upfront rendering as content can be decoded as it arrives.
+If you are going to be requesting a streaming or chunked response, use the `<LazyLog stream />` component with the
+`stream` prop of `true` for quicker upfront rendering as content can be decoded as it arrives.
 
-### Props
+[See the styleguide](https://mozilla-rpweb.github.io/react-lazylog) for a listing of complete props and a demo.
 
-`LazyLog` and `LazyStream` accept various common props to customize their behavior:
-
-| Property | Type | Required? | Description |
-|:---|:---|:---:|:---|
-| `url` | String | ✓ | The URL from which to fetch content. Subject to same-origin policy, so must be accessible via fetch on same domain or via CORS. |
-| `fetchOptions` | Object |  | Options object which will be passed through to the `fetch` request. Defaults to `{ credentials: 'omit' }`. |
-| `height` | Number or `'auto'` |  | Set the height in pixels for the component. Defaults to `'auto'` if unspecified. When the `height` is `'auto'`, the component will expand vertically to fill its container. |
-| `width` | Number or `'auto'` |  | Set the width in pixels for the component. Defaults to `'auto'` if unspecified. When the `width` is `'auto'`, the component will expand horizontally to fill its container. |
-| `highlight` | Number or Array |  | Line number (e.g. `highlight={10}`) or line number range to highlight inclusively (e.g. `highlight={[5, 10]}` highlights lines 5-10). This is 1-indexed, i.e. line numbers start at `1`. |
-| `scrollToLine` | Number |  | Scroll to a particular line number once it has loaded. This is 1-indexed, i.e. line numbers start at `1`. Cannot be used in combination with `follow`. |
-| `follow` | Boolean |  | Scroll to the end of the component after each update to the content. Cannot be used in combination with `scrollToLine`. |
-| `selectableLines` | Boolean |  | Make the text selectable, allowing to copy & paste. Defaults to `false`. |
-| `formatPart` | Function |  | Execute a function against each string part of a line, returning a new line part. Is passed a single argument which is the string part to manipulate, should return a new string with the manipulation completed. |
-| `onLoad` | Function |  | Execute a function if/when the provided `url` has completed loading. |
-| `onError` | Function |  | Execute a function if the provided `url` has encountered an error during loading. |
-| `onHighlight` | Function |  | Execute a function when the highlighted range has changed. Is passed a single argument which is an `Immutable.Range` of the highlighted line numbers. |
-| `style` | Object |  | Optional custom inline style to attach to root virtual `LazyList` element. |
-| `containerStyle` | Object |  | Optional custom inline style to attach to element which contains the interior scrolling container. |
-
-In addition, most of the properties available to [react-virtualized List](https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md)
+In addition to the props listed for `LazyLog`, most of the properties available to
+[react-virtualized List](https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md)
 can be provided and will be passed through to the component. _Here are a few useful props:_
 
 | Property | Type | Required? | Description |
@@ -120,12 +86,12 @@ can be provided and will be passed through to the component. _Here are a few use
 
 ## `<ScrollFollow />`
 
-`ScrollFollow` is a higher-order component (HOC) that aims to simplify toggling a `LazyLog`'s or `LazyStream`'s
+`ScrollFollow` is a higher-order component (HOC) that aims to simplify toggling a `LazyLog`'s
 "follow" functionality based on user scrolling.
 
 ### Usage
 
-The `ScrollFollow` component accepts a function-as-child prop which should return a component to render based on the
+The `ScrollFollow` component accepts a render prop function which should return a component to render based on the
 function's arguments.
 
 ```jsx
@@ -134,37 +100,13 @@ import { render } from 'react-dom';
 import { LazyLog, ScrollFollow } from 'react-lazylog';
 
 render((
-  <ScrollFollow startFollowing={true}>
-    {({ follow, onScroll }) => (
-      <LazyLog url="http://example.log" follow={follow} onScroll={onScroll} />
+  <ScrollFollow
+    startFollowing={true}
+    render={({ follow, onScroll }) => (
+      <LazyLog url="http://example.log" stream follow={follow} onScroll={onScroll} />
     )}
-  </ScrollFollow>
+  />
 ), document.getElementById('root'));
-```
-
-### Props
-
-| Property | Type | Required? | Description |
-|:---|:---|:---:|:---|
-| `startFollowing` | Boolean |  | The initial follow action; defaults to `false`. The value provided here will inform the initial `follow` property passed to the child function. |
-
-### Child Function Properties
-
-The child function passed to `ScrollFollow` is passed a single argument, an object with the following properties:
-
-| Property | Type | Description |
-|:---|:---|:---|
-| `follow` | Boolean | This value is `true` or `false` based on whether the component should be auto-following. This value can be passed directly to the Lazy component's `follow` prop. |
-| `onScroll` | Function | This function is used to listen for scrolling events and turn off auto-following (`follow`). This value can be passed directly to the Lazy component's `onScroll` prop. |
-| `startFollowing` | Function | A helper function for manually re-starting `follow`ing. Is not used by a Lazy component; rather this can be invoked whenever you need to turn back on auto-following, but cannot reliably do this from the `startFollowing` prop. e.g `startFollowing();` |
-| `stopFollowing` | Function | A helper function for manually stopping `follow`ing. Is not used by a Lazy component; rather this can be invoked whenever you need to turn off auto-following, but cannot reliably do this from the `startFollowing` prop. e.g `stopFollowing();` |
-
-```jsx
-<ScrollFollow>
-{({ onScroll, follow, startFollowing, stopFollowing }) => (
-  <LazyLog url={'...'} onScroll={onScroll} follow={follow} />
-)}
-</ScrollFollow>
 ```
 
 ## Styling
@@ -174,7 +116,7 @@ you wish to override these styles, there are a few techniques you can use.
 
 ### `style` and `containerStyle`
 
-For the core container of `<LazyLog />` and `<LazyStream />`, you can pass a `style` object prop to affect many styles.
+For the core container of `<LazyLog />`, you can pass a `style` object prop to affect many styles.
 For affecting the look or behavior of the scrollable region of these components, use the `containerStyle` prop with a
 styling object.
 
@@ -184,15 +126,7 @@ For many react-logviewer components, continually passing varied styling objects 
 override the `defaultProps.style` of any desired component to override styles of that component. For example:
 
 ```jsx
-// full list of components
-import {
-  Line,
-  LineContent,
-  LineNumber,
-  LinePart,
-  Loading,
-  Spinner
-} from 'react-lazylog';
+import Line from 'react-lazylog/build/Line';
 
 // Use defaultProps.style to set the style for an internal component
 Line.defaultProps.style = {
@@ -235,8 +169,8 @@ own `LinePart` and styled separately (colors, text formatting, etc.) from the re
 
 - [React Virtualized](https://github.com/bvaughn/react-virtualized) for efficiently rendering large lines of data
 - [Neutrino](https://neutrino.js.org) for building and developing using shared presets and Webpack
-- [neutrino-preset-react-components](https://github.com/eliperelman/neutrino-preset-react-components/) for creating and previewing React components
-- [PM2](http://pm2.keymetrics.io/) for process management during development
+- [@neutrinojs/react-components](https://neutrino.js.org/packages/react-components) for creating React components
+- [neutrino-middleware-styleguidist](https://github.com/eliperelman/neutrino-middleware-styleguidist) for component demos and documentation
 - `fetch` API for efficiently requesting data with array buffers and binary streams
   - [fetch-readablestream](https://github.com/jonnyreeves/fetch-readablestream/)
   - [web-streams-polyfill](https://www.npmjs.com/package/web-streams-polyfill)
@@ -248,15 +182,16 @@ own `LinePart` and styled separately (colors, text formatting, etc.) from the re
 
 ## Development and Contributing
 
-This repository uses [Neutrino](https://neutrino.js.org) and [neutrino-preset-react-components](https://github.com/eliperelman/neutrino-preset-react-components/)
+This repository uses [Neutrino](https://neutrino.js.org),
+[@neutrinojs/react-components](https://neutrino.js.org/packages/react-components),
+and [neutrino-middleware-styleguidist](https://github.com/eliperelman/neutrino-middleware-styleguidist)
 for developing, previewing, and building React components. To get started:
 
 - Fork and clone this repo.
 - Install the dependencies with `yarn`.
-- Start the development servers with `yarn start`. This will launch a PM2 instance of webpack-dev-server and a Node.js server.
-Open a browser to http://localhost:9001 to preview the React components.
-- Use CTRL-C to exit the PM2 server monitoring.
-- Use `yarn stop` to stop the development servers.
+- Start the development server with `yarn start`. This will launch a styleguide instance.
+Open a browser to http://localhost:6060 to preview the React components.
+- Use CTRL-C to exit the styleguide.
 - Use `yarn build` to generate the compiled component for publishing to npm.
 
 Feel free to open an issue, submit a pull request, or contribute however you would like. Understand that this
