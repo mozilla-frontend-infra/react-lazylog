@@ -1,10 +1,10 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import { loading } from './index.module.css';
 
 /**
  * Just a loading spinner.
  */
-export default class Loading extends PureComponent {
+export default class Loading extends Component {
   render() {
     return (
       <svg

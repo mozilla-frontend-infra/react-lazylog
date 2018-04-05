@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import { arrayOf, func, number, object, shape, string } from 'prop-types';
 import LinePart from '../LinePart';
 import { lineContent } from './index.module.css';
@@ -10,7 +10,7 @@ import { lineContent } from './index.module.css';
  * is on a single line. May contain one or more `LinePart`s
  * depending on ANSI parsing.
  */
-export default class LineContent extends PureComponent {
+export default class LineContent extends Component {
   static propTypes = {
     /**
      * The pieces of data to render in a line. Will typically

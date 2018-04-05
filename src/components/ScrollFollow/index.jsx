@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import { bool, func } from 'prop-types';
 
 export default class ScrollFollow extends Component {
@@ -41,14 +41,15 @@ export default class ScrollFollow extends Component {
     startFollowing: false,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = { follow: props.startFollowing };
+  static getDerivedStateFromProps(nextProps) {
+    return {
+      follow: nextProps.startFollowing,
+    };
   }
 
-  componentWillReceiveProps({ startFollowing }) {
-    this.setState({ follow: startFollowing });
-  }
+  state = {
+    follow: false,
+  };
 
   handleScroll = ({ scrollTop, scrollHeight, clientHeight }) => {
     if (this.state.follow && scrollHeight - scrollTop !== clientHeight) {
@@ -68,11 +69,15 @@ export default class ScrollFollow extends Component {
     const { render } = this.props;
     const { follow } = this.state;
 
-    return render({
-      follow,
-      onScroll: this.handleScroll,
-      startFollowing: this.startFollowing,
-      stopFollowing: this.stopFollowing,
-    });
+    return (
+      <Fragment>
+        {render({
+          follow,
+          onScroll: this.handleScroll,
+          startFollowing: this.startFollowing,
+          stopFollowing: this.stopFollowing,
+        })}
+      </Fragment>
+    );
   }
 }

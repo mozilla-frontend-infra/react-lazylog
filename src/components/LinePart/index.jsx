@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import { func, object, shape, string } from 'prop-types';
 import * as styles from './index.module.css';
 
@@ -34,7 +34,7 @@ const getClassName = part => {
  * and styled separately (colors, text formatting, etc.) from the
  * rest of the line's content.
  */
-export default class LinePart extends PureComponent {
+export default class LinePart extends Component {
   static propTypes = {
     /**
      * The pieces of data to render in a line. Will typically

@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import { arrayOf, bool, func, number, object, shape, string } from 'prop-types';
 import LineNumber from '../LineNumber';
 import LineContent from '../LineContent';
@@ -13,15 +13,15 @@ import {
  * A single row of content, containing both the line number
  * and any text content within the line.
  */
-export default class Line extends PureComponent {
+export default class Line extends Component {
   static propTypes = {
     data: arrayOf(
       shape({
         text: string,
       })
     ).isRequired,
-    number: number.isRequired,
-    rowHeight: number.isRequired,
+    number,
+    rowHeight: number,
     highlight: bool,
     selectable: bool,
     style: object,

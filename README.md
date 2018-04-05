@@ -2,7 +2,7 @@
 
 React component that loads and views remote text in the browser lazily and efficiently.
 
-See the demo on the styleguide at https://mozilla-rpweb.github.io/react-lazylog
+See the demo on the styleguide at https://mozilla-frontend-infra.github.io/react-lazylog
 
 ## Features
 
@@ -13,6 +13,7 @@ See the demo on the styleguide at https://mozilla-rpweb.github.io/react-lazylog
 - Line highlighting
 - Customizable styling
 - Works in latest browser versions, including iOS Safari and Android Chrome
+- v3+ requires React 16.3+
 
 ## Getting started
 
@@ -37,13 +38,13 @@ const { LazyLog } = require('react-lazylog');
 ```
 
 **Important! If you are using Create React App, you will need to import the ES5 versions of components.
-These are located `react-lazylog/build/LazyLog.es5.js`, e.g.:**
+These are located `react-lazylog/es5`, e.g.:**
 
 ```js
-import LazyLog from 'react-lazylog/build/LazyLog.es5';
+import { LazyLog } from 'react-lazylog/es5';
 
 // using require
-const LazyLog = require('react-lazylog/build/LazyLog.es5');
+const { LazyLog } = require('react-lazylog/es5');
 ```
 
 ## `<LazyLog />`
@@ -71,7 +72,7 @@ If you are going to be rendering a complete file, or an endpoint which can be do
 If you are going to be requesting a streaming or chunked response, use the `<LazyLog stream />` component with the
 `stream` prop of `true` for quicker upfront rendering as content can be decoded as it arrives.
 
-[See the styleguide](https://mozilla-rpweb.github.io/react-lazylog) for a listing of complete props and a demo.
+[See the styleguide](https://mozilla-frontend-infra.github.io/react-lazylog) for a listing of complete props and a demo.
 
 In addition to the props listed for `LazyLog`, most of the properties available to
 [react-virtualized List](https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md)

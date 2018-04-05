@@ -1,4 +1,4 @@
-import { PureComponent } from 'react';
+import { Component } from 'react';
 import { bool, func, number, object } from 'prop-types';
 import { lineNumber, lineNumberHighlight } from './index.module.css';
 
@@ -9,7 +9,7 @@ import { lineNumber, lineNumberHighlight } from './index.module.css';
  * The anchor contained within is interactive, and will highlight the
  * entire line upon selection.
  */
-export default class LineNumber extends PureComponent {
+export default class LineNumber extends Component {
   static propTypes = {
     /**
      * The line number to display in the anchor.

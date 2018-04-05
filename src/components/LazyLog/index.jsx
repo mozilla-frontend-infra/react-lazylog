@@ -1,4 +1,4 @@
-import { PureComponent, Fragment } from 'react';
+import { Component, Fragment } from 'react';
 import {
   arrayOf,
   bool,
@@ -19,7 +19,11 @@ import request from '../../request';
 import stream from '../../stream';
 import { lazyLog } from './index.module.css';
 
-export default class LazyLog extends PureComponent {
+// Setting a hard limit on lines since browsers have trouble with heights
+// starting at around 16.7 million pixels and up
+const BROWSER_PIXEL_LIMIT = 16.7 * 1000000;
+
+export default class LazyLog extends Component {
   static propTypes = {
     /**
      * The URL from which to fetch content. Subject to same-origin policy,
@@ -139,41 +143,54 @@ export default class LazyLog extends PureComponent {
     fetchOptions: { credentials: 'omit' },
   };
 
-  constructor(props) {
-    super(props);
-    this.state = this.propsToState(props, true);
+  static getDerivedStateFromProps(
+    { highlight, follow, scrollToLine, rowHeight, url },
+    { count, offset, lines, loaded, error }
+  ) {
+    return {
+      scrollToIndex: getScrollIndex({
+        follow,
+        scrollToLine,
+        count,
+        offset,
+      }),
+      highlight: getHighlightRange(highlight),
+      lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
+      lines: url ? List() : lines,
+      count: url ? 0 : count,
+      offset: url ? 0 : offset,
+      loaded: url ? false : loaded,
+      error: url ? null : error,
+    };
   }
 
-  componentWillMount() {
+  state = {};
+
+  componentDidMount() {
     this.request();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevProps.url !== this.props.url) {
       this.request();
+    }
+
+    if (prevState.loaded !== this.state.loaded && this.props.onLoad) {
+      this.props.onLoad();
+    } else if (this.state.error && this.props.onError) {
+      this.props.onError(this.state.error);
+    }
+
+    if (
+      prevProps.highlight !== this.props.highlight &&
+      this.props.onHighlight
+    ) {
+      this.props.onHighlight(this.state.highlight);
     }
   }
 
   componentWillUnmount() {
     this.endRequest();
-  }
-
-  componentWillReceiveProps(props) {
-    this.setState(this.propsToState(props), () => {
-      if (props.url !== this.props.url) {
-        this.request();
-      }
-
-      if (this.state.loaded && this.props.onLoad) {
-        this.props.onLoad();
-      } else if (this.state.error && this.props.onError) {
-        this.props.onError(this.state.error);
-      }
-
-      if (props.highlight && this.props.onHighlight) {
-        this.props.onHighlight(this.state.highlight);
-      }
-    });
   }
 
   request() {
@@ -197,33 +214,6 @@ export default class LazyLog extends PureComponent {
       this.emitter.off('error', this.handleError);
       this.emitter = null;
     }
-  }
-
-  propsToState(
-    { highlight, follow, scrollToLine, rowHeight, url },
-    force = false
-  ) {
-    return {
-      scrollToIndex: getScrollIndex({
-        follow,
-        scrollToLine,
-        count: this.state && this.state.count,
-        offset: this.state && this.state.offset,
-      }),
-      highlight: getHighlightRange(highlight),
-      // Setting a hard limit on lines since browsers have trouble with heights
-      // starting at around 16.7 million pixels and up
-      lineLimit: Math.floor(16.7 * 1000000 / rowHeight),
-      ...(force || url !== this.props.url
-        ? {
-            lines: List(),
-            count: 0,
-            offset: 0,
-            loaded: false,
-            error: null,
-          }
-        : {}),
-    };
   }
 
   handleUpdate = moreLines => {
