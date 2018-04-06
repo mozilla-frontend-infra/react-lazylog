@@ -6,5 +6,10 @@ module.exports = {
         extract: false,
       }
     }],
+    (neutrino) => {
+      if (neutrino.options.command === 'styleguide:start') {
+        neutrino.config.module.rules.delete('lint');
+      }
+    },
   ],
 };

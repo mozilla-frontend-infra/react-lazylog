@@ -32,17 +32,13 @@ export default class LineNumber extends Component {
     onClick: null,
   };
 
-  handleClick = () => {
-    this.props.onClick(this.props.number);
-  };
-
   render() {
     const { highlight, onClick, number, style } = this.props;
 
     return (
       <a
         id={number}
-        onClick={onClick ? this.handleClick : null}
+        onClick={onClick}
         className={highlight ? lineNumberHighlight : lineNumber}
         style={style}
       />

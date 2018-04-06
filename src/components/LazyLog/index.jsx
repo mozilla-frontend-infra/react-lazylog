@@ -261,14 +261,24 @@ export default class LazyLog extends Component {
     }
   };
 
-  handleHighlight = lineNumber => ({ shiftKey }) => {
+  handleHighlight = e => {
+    if (!e.target.id) {
+      return;
+    }
+
+    const lineNumber = +e.target.id;
+
+    if (!lineNumber) {
+      return;
+    }
+
     const first = this.state.highlight.first();
     const last = this.state.highlight.last();
     let range;
 
     if (first === lineNumber) {
       range = null;
-    } else if (!shiftKey || !first) {
+    } else if (!e.shiftKey || !first) {
       range = lineNumber;
     } else if (lineNumber > first) {
       range = [first, lineNumber];
@@ -354,7 +364,7 @@ export default class LazyLog extends Component {
         formatPart={formatPart}
         selectable={selectableLines}
         highlight={highlight.includes(number)}
-        onLineNumberClick={this.handleHighlight(number)}
+        onLineNumberClick={this.handleHighlight}
         data={ansiparse(decode(lines.get(index)))}
       />
     );
