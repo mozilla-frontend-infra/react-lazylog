@@ -2,12 +2,7 @@ import { Component } from 'react';
 import { arrayOf, bool, func, number, object, shape, string } from 'prop-types';
 import LineNumber from '../LineNumber';
 import LineContent from '../LineContent';
-import {
-  line,
-  lineHighlight,
-  lineHover,
-  lineSelectable,
-} from './index.module.css';
+import { line, lineHighlight, lineSelectable } from './index.module.css';
 
 /**
  * A single row of content, containing both the line number
@@ -28,6 +23,8 @@ export default class Line extends Component {
     formatPart: func,
     onLineNumberClick: func,
     onRowClick: func,
+    className: string,
+    highlightClassName: string,
   };
 
   static defaultProps = {
@@ -37,10 +34,8 @@ export default class Line extends Component {
     formatPart: null,
     onLineNumberClick: null,
     onRowClick: null,
-  };
-
-  handleHover = ({ currentTarget, type }) => {
-    currentTarget.classList.toggle(lineHover, type === 'mouseenter');
+    className: '',
+    highlightClassName: '',
   };
 
   render() {
@@ -54,10 +49,14 @@ export default class Line extends Component {
       number,
       rowHeight,
       style,
+      className,
+      highlightClassName,
     } = this.props;
-    const highlightClass = highlight ? ` ${lineHighlight}` : '';
     const selectableClass = selectable ? ` ${lineSelectable}` : '';
-    const className = `${line}${highlightClass}${selectableClass}`;
+    const highlightClass = highlight
+      ? ` ${lineHighlight} ${highlightClassName}`
+      : '';
+    const classes = `${line}${selectableClass}${highlightClass} ${className}`;
     const lineStyle = {
       ...style,
       lineHeight: `${style ? style.height || rowHeight : rowHeight}px`,
@@ -66,11 +65,7 @@ export default class Line extends Component {
     };
 
     return (
-      <div
-        className={className}
-        style={lineStyle}
-        onMouseEnter={this.handleHover}
-        onMouseLeave={this.handleHover}>
+      <div className={classes} style={lineStyle}>
         <LineNumber
           number={number}
           highlight={highlight}

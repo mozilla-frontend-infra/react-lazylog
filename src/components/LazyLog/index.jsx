@@ -1,5 +1,6 @@
 import { Component, Fragment } from 'react';
 import {
+  any,
   arrayOf,
   bool,
   func,
@@ -118,6 +119,18 @@ export default class LazyLog extends Component {
      * virtual `LazyList` element.
      */
     style: object,
+    /**
+     * Specify an alternate component to use when loading.
+     */
+    loadingComponent: any,
+    /**
+     * Specify an additional className to append to lines.
+     */
+    lineClassName: string,
+    /**
+     * Specify an additional className to append to highlighted lines.
+     */
+    highlightLineClassName: string,
   };
 
   static defaultProps = {
@@ -141,6 +154,9 @@ export default class LazyLog extends Component {
     onLoad: null,
     formatPart: null,
     fetchOptions: { credentials: 'omit' },
+    loadingComponent: Loading,
+    lineClassName: '',
+    highlightLineClassName: '',
   };
 
   static getDerivedStateFromProps(
@@ -296,12 +312,14 @@ export default class LazyLog extends Component {
   };
 
   renderError() {
-    const { url } = this.props;
+    const { url, lineClassName, highlightLineClassName } = this.props;
     const { error } = this.state;
 
     return (
       <Fragment>
         <Line
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
           number="Error"
           key="error-line-0"
           data={[
@@ -316,6 +334,8 @@ export default class LazyLog extends Component {
         />
         <Line
           key="error-line-1"
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
           data={[
             {
               bold: true,
@@ -325,6 +345,8 @@ export default class LazyLog extends Component {
         />
         <Line
           key="error-line-2"
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
           data={[
             {
               bold: true,
@@ -332,9 +354,16 @@ export default class LazyLog extends Component {
             },
           ]}
         />
-        <Line key="error-line-3" data={[]} />
+        <Line
+          key="error-line-3"
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
+          data={[]}
+        />
         <Line
           key="error-line-4"
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
           data={[
             {
               foreground: 'blue',
@@ -351,12 +380,20 @@ export default class LazyLog extends Component {
   }
 
   renderRow = ({ key, index, style }) => {
-    const { rowHeight, formatPart, selectableLines } = this.props;
+    const {
+      rowHeight,
+      formatPart,
+      selectableLines,
+      lineClassName,
+      highlightLineClassName,
+    } = this.props;
     const { highlight, lines, offset } = this.state;
     const number = index + 1 + offset;
 
     return (
       <Line
+        className={lineClassName}
+        highlightClassName={highlightLineClassName}
         rowHeight={rowHeight}
         style={style}
         key={key}
@@ -371,6 +408,11 @@ export default class LazyLog extends Component {
   };
 
   renderNoRows = () => {
+    const {
+      loadingComponent: Loading,
+      lineClassName,
+      highlightLineClassName,
+    } = this.props;
     const { error, loaded } = this.state;
 
     if (error) {
@@ -378,7 +420,13 @@ export default class LazyLog extends Component {
     }
 
     if (loaded) {
-      return <Line data={[{ bold: true, text: 'No content' }]} />;
+      return (
+        <Line
+          className={lineClassName}
+          highlightClassName={highlightLineClassName}
+          data={[{ bold: true, text: 'No content' }]}
+        />
+      );
     }
 
     return <Loading />;
