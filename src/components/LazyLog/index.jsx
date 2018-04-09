@@ -70,7 +70,7 @@ export default class LazyLog extends Component {
      * inclusively (e.g. `highlight={[5, 10]}` highlights lines 5-10).
      * This is 1-indexed, i.e. line numbers start at `1`.
      */
-    highlight: oneOfType([number, arrayOf([number, number])]),
+    highlight: oneOfType([number, arrayOf(number)]),
     /**
      * Make the text selectable, allowing to copy & paste. Defaults to `false`.
      */
