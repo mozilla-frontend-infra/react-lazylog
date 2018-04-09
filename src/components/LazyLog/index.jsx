@@ -160,8 +160,8 @@ export default class LazyLog extends Component {
   };
 
   static getDerivedStateFromProps(
-    { highlight, follow, scrollToLine, rowHeight, url },
-    { count, offset, lines, loaded, error }
+    { highlight, follow, scrollToLine, rowHeight, url: nextUrl },
+    { count, offset, url: previousUrl }
   ) {
     return {
       scrollToIndex: getScrollIndex({
@@ -172,11 +172,16 @@ export default class LazyLog extends Component {
       }),
       highlight: getHighlightRange(highlight),
       lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
-      lines: url ? List() : lines,
-      count: url ? 0 : count,
-      offset: url ? 0 : offset,
-      loaded: url ? false : loaded,
-      error: url ? null : error,
+      ...(nextUrl && nextUrl !== previousUrl
+        ? {
+            url: nextUrl,
+            lines: List(),
+            count: 0,
+            offset: 0,
+            loaded: false,
+            error: null,
+          }
+        : null),
     };
   }
 
@@ -187,17 +192,26 @@ export default class LazyLog extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.url !== this.props.url) {
+    if (prevProps.url !== this.props.url || prevState.url !== this.state.url) {
       this.request();
     }
 
-    if (prevState.loaded !== this.state.loaded && this.props.onLoad) {
+    if (
+      !this.state.loaded &&
+      prevState.loaded !== this.state.loaded &&
+      this.props.onLoad
+    ) {
       this.props.onLoad();
-    } else if (this.state.error && this.props.onError) {
+    } else if (
+      this.state.error &&
+      prevState.error !== this.state.error &&
+      this.props.onError
+    ) {
       this.props.onError(this.state.error);
     }
 
     if (
+      this.props.highlight &&
       prevProps.highlight !== this.props.highlight &&
       this.props.onHighlight
     ) {
