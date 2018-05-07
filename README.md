@@ -117,6 +117,7 @@ can be provided and will be passed through to the component. _Here are a few use
 | `overscanRowCount` | Number |  | Number of rows to render above/below the visible bounds of the list. This can help reduce flickering during scrolling on certain browsers/devices. Defaults to `100`. |
 | `scrollToAlignment` | String |  | Controls the alignment of scrolled-to-rows. The default (`'auto'`) scrolls the least amount possible to ensure that the specified row is fully visible. Use `'start'` to always align rows to the top of the list and `'end'` to align them bottom. Use `'center'` to align them in the middle of container. |
 | `onScroll` | Function |  | Callback invoked whenever the scroll offset changes within the inner scrollable region: `({ clientHeight: number, scrollHeight: number, scrollTop: number }): void` |
+| `extraLines` | Number | | Number of extra lines to show at the bottom of the log; set this to 1 so that Linux users can see the last line of the log output. |
 
 ## `<ScrollFollow />`
 
