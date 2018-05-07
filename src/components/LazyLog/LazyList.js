@@ -153,6 +153,7 @@ export class LazyList extends React.PureComponent {
 
   renderRow = ({ key, index, style }) => {
     const number = index + 1 + this.state.offset;
+    const line = this.state.lines.get(index);
 
     return (
       <Line
@@ -164,7 +165,7 @@ export class LazyList extends React.PureComponent {
         selectable={this.props.selectableLines}
         highlight={this.state.highlight.includes(number)}
         onLineNumberClick={this.handleHighlight.bind(this, number)}>
-        {ansiparse(decode(this.state.lines.get(index)))}
+        {line && ansiparse(decode(line))}
       </Line>
     );
   };
@@ -187,7 +188,7 @@ export class LazyList extends React.PureComponent {
         {({ height, width }) => (
           <VirtualList
             className={`react-lazylog ${lazyLog}`}
-            rowCount={this.state.count}
+            rowCount={this.state.count + this.props.extraLines}
             rowRenderer={this.renderRow}
             noRowsRenderer={() => this.renderNoRows()}
             {...this.props}
@@ -215,5 +216,6 @@ LazyList.defaultProps = {
     maxWidth: 'initial',
     overflowX: 'scroll'
   },
-  style: {}
+  style: {},
+  extraLines: 0
 };
