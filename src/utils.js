@@ -52,6 +52,7 @@ export const bufferConcat = (a, b) => {
 export const convertBufferToLines = (current, previous) => {
   const buffer = previous ? bufferConcat(previous, current) : current;
   const { length } = buffer;
+  const linesRanges = [];
   let lastNewlineIndex = 0;
   let index = 0;
   const lines = List().withMutations(lines => {
@@ -67,6 +68,7 @@ export const convertBufferToLines = (current, previous) => {
             : index + 1;
 
         index = lastNewlineIndex;
+        linesRanges.push(index);
       } else {
         index += 1;
       }
