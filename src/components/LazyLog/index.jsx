@@ -535,6 +535,21 @@ export default class LazyLog extends Component {
     }
   };
 
+  calculateListHeight = autoSizerHeight => {
+    const { height } = this.props;
+    const { enableSearch } = this.props;
+
+    if (enableSearch) {
+      const searchBarHeight = 45;
+
+      return height === 'auto'
+        ? autoSizerHeight - searchBarHeight
+        : height - searchBarHeight;
+    }
+
+    return height === 'auto' ? autoSizerHeight : height;
+  };
+
   render() {
     return (
       <Fragment>
@@ -549,7 +564,7 @@ export default class LazyLog extends Component {
               rowRenderer={row => this.renderRow(row)}
               noRowsRenderer={this.renderNoRows}
               {...this.props}
-              height={this.props.height === 'auto' ? height : this.props.height}
+              height={this.calculateListHeight(height)}
               width={this.props.width === 'auto' ? width : this.props.width}
               scrollToIndex={
                 this.state.scrollToIndex || this.props.scrollToIndex
