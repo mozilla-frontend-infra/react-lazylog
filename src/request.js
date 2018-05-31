@@ -27,10 +27,12 @@ export default (url, options) => {
       }
 
       const arrayBuffer = await response.arrayBuffer();
-      const { lines } = convertBufferToLines(new Uint8Array(arrayBuffer));
+      const { lines, linesRanges } = convertBufferToLines(
+        new Uint8Array(arrayBuffer)
+      );
 
       emitter.emit('update', lines);
-      emitter.emit('end');
+      emitter.emit('end', { arrayBuffer, linesRanges });
     } catch (err) {
       emitter.emit('error', err);
     }
