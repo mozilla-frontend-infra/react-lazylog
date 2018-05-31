@@ -1,4 +1,5 @@
 import { List, Range } from 'immutable';
+import reactStringReplace from 'react-string-replace';
 
 export const ENCODED_NEWLINE = 10; // \n
 export const ENCODED_CARRIAGE_RETURN = 13; // \r
@@ -77,7 +78,26 @@ export const convertBufferToLines = (current, previous) => {
 
   return {
     lines,
+    linesRanges,
     remaining:
       index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null,
   };
+};
+
+export const searchFormatPart = ({
+  searchKeywords,
+  nextFormatPart,
+  replaceJsx,
+}) => part => {
+  let formattedPart = part;
+
+  if (nextFormatPart) {
+    formattedPart = nextFormatPart(part);
+  }
+
+  if (part.indexOf(searchKeywords) > -1) {
+    return reactStringReplace(formattedPart, searchKeywords, replaceJsx);
+  }
+
+  return formattedPart;
 };

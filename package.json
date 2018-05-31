@@ -41,6 +41,7 @@
     "mitt": "^1.1.2",
     "prop-types": "^15.6.1",
     "react-virtualized": "^9.21.0",
+    "react-string-replace": "^0.4.1",
     "text-encoding-utf-8": "^1.0.1",
     "whatwg-fetch": "^2.0.4"
   },
