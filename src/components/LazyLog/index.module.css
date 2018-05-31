@@ -9,3 +9,8 @@
   font-weight: 400;
   will-change: initial;
 }
+
+.searchMatch {
+  background-color: #ffff00;
+  color: #222222;
+}

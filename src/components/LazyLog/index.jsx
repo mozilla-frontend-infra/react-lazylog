@@ -12,13 +12,19 @@ import {
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
-import decode from '../../encoding';
-import { getScrollIndex, getHighlightRange } from '../../utils';
+import { decode } from '../../encoding';
+import {
+  getScrollIndex,
+  getHighlightRange,
+  searchFormatPart,
+} from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
+import SearchBar from '../SearchBar';
 import request from '../../request';
 import stream from '../../stream';
-import { lazyLog } from './index.module.css';
+import { searchLines } from '../../search';
+import { lazyLog, searchMatch } from './index.module.css';
 
 // Setting a hard limit on lines since browsers have trouble with heights
 // starting at around 16.7 million pixels and up
@@ -75,6 +81,10 @@ export default class LazyLog extends Component {
      * Make the text selectable, allowing to copy & paste. Defaults to `false`.
      */
     selectableLines: bool,
+    /**
+     * Enable the search feature.
+     */
+    enableSearch: bool,
     /**
      * Execute a function against each string part of a line,
      * returning a new line part. Is passed a single argument which is
@@ -147,6 +157,7 @@ export default class LazyLog extends Component {
     scrollToLine: 0,
     highlight: null,
     selectableLines: false,
+    enableSearch: false,
     rowHeight: 19,
     overscanRowCount: 100,
     containerStyle: {
@@ -168,15 +179,21 @@ export default class LazyLog extends Component {
 
   static getDerivedStateFromProps(
     { highlight, follow, scrollToLine, rowHeight, url: nextUrl },
-    { count, offset, url: previousUrl, highlight: previousHighlight }
+    {
+      count,
+      offset,
+      url: previousUrl,
+      highlight: previousHighlight,
+      isSearching,
+      scrollToIndex,
+    }
   ) {
+    const newScrollToIndex = isSearching
+      ? scrollToIndex
+      : getScrollIndex({ follow, scrollToLine, count, offset });
+
     return {
-      scrollToIndex: getScrollIndex({
-        follow,
-        scrollToLine,
-        count,
-        offset,
-      }),
+      scrollToIndex: newScrollToIndex,
       lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
       highlight: highlight
         ? getHighlightRange(highlight)
@@ -284,8 +301,8 @@ export default class LazyLog extends Component {
     });
   };
 
-  handleEnd = () => {
-    this.setState({ loaded: true });
+  handleEnd = ({ arrayBuffer, linesRanges } = {}) => {
+    this.setState({ loaded: true, rawFileBuffer: arrayBuffer, linesRanges });
 
     if (this.props.onLoad) {
       this.props.onLoad();
@@ -332,6 +349,54 @@ export default class LazyLog extends Component {
         this.props.onHighlight(highlight);
       }
     });
+  };
+
+  handleSearch = keywords => {
+    const {
+      rawFileBuffer,
+      linesRanges,
+      resultLines,
+      searchKeywords,
+      currentResultLine = 0,
+    } = this.state;
+    let currentResultLines = resultLines;
+    let resultLine = currentResultLine;
+
+    if (keywords !== searchKeywords) {
+      currentResultLines = searchLines(keywords, rawFileBuffer, linesRanges);
+      resultLine = 0;
+    } else {
+      // Restart navigating through the result lines if the current
+      // line is the last one.
+      resultLine = resultLine === resultLines.length - 1 ? 0 : resultLine + 1;
+    }
+
+    this.setState({
+      resultLines: currentResultLines,
+      currentResultLine: resultLine,
+      isSearching: true,
+      searchKeywords: keywords,
+      scrollToIndex: currentResultLines[resultLine],
+    });
+  };
+
+  handleFormatPart = () => {
+    const { formatPart } = this.props;
+    const { isSearching, searchKeywords } = this.state;
+
+    if (isSearching) {
+      return searchFormatPart({
+        searchKeywords,
+        formatPart,
+        replaceJsx: (text, key) => (
+          <span key={key} className={searchMatch}>
+            {text}
+          </span>
+        ),
+      });
+    }
+
+    return formatPart;
   };
 
   renderError() {
@@ -405,7 +470,6 @@ export default class LazyLog extends Component {
   renderRow = ({ key, index, style }) => {
     const {
       rowHeight,
-      formatPart,
       selectableLines,
       lineClassName,
       highlightLineClassName,
@@ -422,7 +486,7 @@ export default class LazyLog extends Component {
         style={style}
         key={key}
         number={number}
-        formatPart={formatPart}
+        formatPart={this.handleFormatPart()}
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
@@ -456,24 +520,44 @@ export default class LazyLog extends Component {
     return <Loading />;
   };
 
+  renderSearchBar = () => {
+    const { enableSearch } = this.props;
+
+    if (enableSearch) {
+      const { resultLines = 0 } = this.state;
+
+      return (
+        <SearchBar
+          onSearch={this.handleSearch}
+          resultsCount={resultLines.length}
+        />
+      );
+    }
+  };
+
   render() {
     return (
-      <AutoSizer
-        disableHeight={this.props.height !== 'auto'}
-        disableWidth={this.props.width !== 'auto'}>
-        {({ height, width }) => (
-          <VirtualList
-            className={`react-lazylog ${lazyLog}`}
-            rowCount={this.state.count + this.props.extraLines}
-            rowRenderer={row => this.renderRow(row)}
-            noRowsRenderer={this.renderNoRows}
-            {...this.props}
-            height={this.props.height === 'auto' ? height : this.props.height}
-            width={this.props.width === 'auto' ? width : this.props.width}
-            scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
-          />
-        )}
-      </AutoSizer>
+      <Fragment>
+        {this.renderSearchBar()}
+        <AutoSizer
+          disableHeight={this.props.height !== 'auto'}
+          disableWidth={this.props.width !== 'auto'}>
+          {({ height, width }) => (
+            <VirtualList
+              className={`react-lazylog ${lazyLog}`}
+              rowCount={this.state.count + this.props.extraLines}
+              rowRenderer={row => this.renderRow(row)}
+              noRowsRenderer={this.renderNoRows}
+              {...this.props}
+              height={this.props.height === 'auto' ? height : this.props.height}
+              width={this.props.width === 'auto' ? width : this.props.width}
+              scrollToIndex={
+                this.state.scrollToIndex || this.props.scrollToIndex
+              }
+            />
+          )}
+        </AutoSizer>
+      </Fragment>
     );
   }
 }
