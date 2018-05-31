@@ -5,4 +5,5 @@ if (!('TextDecoder' in self)) {
   });
 }
 
-export default value => new TextDecoder('utf-8').decode(value);
+export const encode = value => new TextEncoder('utf-8').encode(value);
+export const decode = value => new TextDecoder('utf-8').decode(value);
