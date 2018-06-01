@@ -357,27 +357,53 @@ export default class LazyLog extends Component {
       linesRanges,
       resultLines,
       searchKeywords,
-      currentResultLine = 0,
     } = this.state;
     let currentResultLines = resultLines;
-    let resultLine = currentResultLine;
 
     if (keywords !== searchKeywords) {
       currentResultLines = searchLines(keywords, rawFileBuffer, linesRanges);
-      resultLine = 0;
-    } else {
-      // Restart navigating through the result lines if the current
-      // line is the last one.
-      resultLine = resultLine === resultLines.length - 1 ? 0 : resultLine + 1;
     }
 
     this.setState({
       resultLines: currentResultLines,
-      currentResultLine: resultLine,
       isSearching: true,
       searchKeywords: keywords,
-      scrollToIndex: currentResultLines[resultLine],
     });
+  };
+
+  handleClearSearch = () => {
+    this.setState({
+      isSearching: false,
+      searchKeywords: '',
+      resultLines: [],
+      filteredLines: List(),
+      resultLineUniqueIndexes: [],
+      isFilteringLinesWithMatches: false,
+      scrollToIndex: 0,
+    });
+  };
+
+  handleFilterLinesWithMatches = isFilteringLinesWithMatches => {
+    const { resultLines = [], lines } = this.state;
+
+    this.setState({
+      isFilteringLinesWithMatches,
+      filteredLines: List(),
+      resultLineUniqueIndexes: [],
+    });
+
+    if (resultLines.length > 0 && isFilteringLinesWithMatches) {
+      const resultLineUniqueIndexes = [...new Set(resultLines)];
+
+      this.setState({
+        resultLineUniqueIndexes,
+        filteredLines: lines.filter((line, index) =>
+          resultLineUniqueIndexes.some(
+            resultLineIndex => index + 1 === resultLineIndex
+          )
+        ),
+      });
+    }
   };
 
   handleFormatPart = () => {
@@ -474,9 +500,18 @@ export default class LazyLog extends Component {
       lineClassName,
       highlightLineClassName,
     } = this.props;
-    const { highlight, lines, offset } = this.state;
-    const number = index + 1 + offset;
-    const line = lines.get(index);
+    const {
+      highlight,
+      lines,
+      offset,
+      isFilteringLinesWithMatches,
+      filteredLines,
+      resultLineUniqueIndexes,
+    } = this.state;
+    const linesToRender = isFilteringLinesWithMatches ? filteredLines : lines;
+    const number = isFilteringLinesWithMatches
+      ? resultLineUniqueIndexes[index]
+      : index + 1 + offset;
 
     return (
       <Line
@@ -490,7 +525,7 @@ export default class LazyLog extends Component {
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
-        data={line && ansiparse(decode(line))}
+        data={ansiparse(decode(linesToRender.get(index)))}
       />
     );
   };
@@ -524,11 +559,13 @@ export default class LazyLog extends Component {
     const { enableSearch } = this.props;
 
     if (enableSearch) {
-      const { resultLines = 0 } = this.state;
+      const { resultLines = [] } = this.state;
 
       return (
         <SearchBar
           onSearch={this.handleSearch}
+          onClearSearch={this.handleClearSearch}
+          onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
           resultsCount={resultLines.length}
         />
       );
@@ -551,6 +588,13 @@ export default class LazyLog extends Component {
   };
 
   render() {
+    const {
+      isFilteringLinesWithMatches,
+      filteredLines = List(),
+      count,
+    } = this.state;
+    const rowCount = isFilteringLinesWithMatches ? filteredLines.size : count;
+
     return (
       <Fragment>
         {this.renderSearchBar()}
@@ -560,7 +604,7 @@ export default class LazyLog extends Component {
           {({ height, width }) => (
             <VirtualList
               className={`react-lazylog ${lazyLog}`}
-              rowCount={this.state.count + this.props.extraLines}
+              rowCount={rowCount + this.props.extraLines}
               rowRenderer={row => this.renderRow(row)}
               noRowsRenderer={this.renderNoRows}
               {...this.props}

@@ -19,3 +19,13 @@
   border: 1px solid #4e4e4e;
   margin-right: 10px;
 }
+
+.filterLinesIcon {
+  height: 15px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.filterLinesIcon:hover {
+  filter: invert(.5);
+}

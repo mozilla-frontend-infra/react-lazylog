@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { func, number } from 'prop-types';
-import { searchBar, searchInput } from './index.module.css';
+import { searchBar, searchInput, filterLinesIcon } from './index.module.css';
+import filterLinesSvg from './icons/filter-lines.svg';
 
 export default class SearchBar extends Component {
   static propTypes = {
@@ -10,6 +11,15 @@ export default class SearchBar extends Component {
      */
     onSearch: func,
     /**
+     * Executes a function when the search input has been cleared.
+     */
+    onClearSearch: func,
+    /**
+     * Executes a function when the option `Filter Lines With Matches`
+     * is enable.
+     */
+    onFilterLinesWithMatches: func,
+    /**
      * Number of search results. Should come from the component
      * executing the search algorithm.
      */
@@ -18,28 +28,39 @@ export default class SearchBar extends Component {
 
   static defaultProps = {
     onSearch: null,
+    onClearSearch: null,
+    onFilterLinesWithMatches: null,
     resultsCount: 0,
   };
 
   constructor(props) {
     super(props);
 
-    this.state = { keywords: '' };
+    this.state = { keywords: '', filterLines: false };
   }
 
-  handleKeyPress = e => {
-    if (e.key === 'Enter') {
-      const { keywords } = this.state;
-      const { onSearch } = this.props;
+  handleOnChange = e => {
+    const { value: keywords } = e.target;
+    const { onSearch, onClearSearch } = this.props;
 
-      if (keywords) {
-        onSearch(keywords);
-      }
+    this.setState({ keywords });
+
+    if (keywords && keywords.length > 2) {
+      onSearch(keywords);
+    } else {
+      onClearSearch();
     }
   };
 
-  handleOnChange = e => {
-    this.setState({ keywords: e.target.value });
+  handleFilterLinesWithMatches = () => {
+    const { onFilterLinesWithMatches } = this.props;
+
+    this.setState(
+      {
+        filterLines: !this.state.filterLines,
+      },
+      () => onFilterLinesWithMatches(this.state.filterLines)
+    );
   };
 
   render() {
@@ -54,9 +75,15 @@ export default class SearchBar extends Component {
           placeholder="Search"
           className={searchInput}
           onChange={this.handleOnChange}
-          onKeyPress={this.handleKeyPress}
           value={this.state.keywords}
         />
+        <div onClick={this.handleFilterLinesWithMatches}>
+          <img
+            className={filterLinesIcon}
+            src={filterLinesSvg}
+            alt="Filter lines with matches"
+          />
+        </div>
         <span>
           {this.props.resultsCount} {matchesLabel}
         </span>
