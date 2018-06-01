@@ -1,11 +1,11 @@
 import { encode } from './encoding';
+import { getLinesLengthRanges } from './utils';
 
-export const searchIndexes = (rawKeywords, rawFileBuffer) => {
+export const searchIndexes = (rawKeywords, rawLog) => {
   const keywords = Array.from(encode(rawKeywords));
-  const file = new Uint8Array(rawFileBuffer);
   const table = [-1, 0];
   const keywordsLength = keywords.length;
-  const fileLength = file.length;
+  const fileLength = rawLog.length;
   const maxKeywordsIndex = keywordsLength - 1;
   let keywordsIndex = 0;
   let fileIndex = 0;
@@ -32,7 +32,7 @@ export const searchIndexes = (rawKeywords, rawFileBuffer) => {
   // Scan the haystack.
   // This takes O(haystackLength) steps.
   while (fileIndex + index < fileLength) {
-    if (keywords[index] === file[fileIndex + index]) {
+    if (keywords[index] === rawLog[fileIndex + index]) {
       if (index === maxKeywordsIndex) {
         results.push(fileIndex);
       }
@@ -50,8 +50,9 @@ export const searchIndexes = (rawKeywords, rawFileBuffer) => {
   return results;
 };
 
-export const searchLines = (rawKeywords, rawFileBuffer, linesRanges) => {
-  const results = searchIndexes(rawKeywords, rawFileBuffer);
+export const searchLines = (rawKeywords, rawLog) => {
+  const results = searchIndexes(rawKeywords, rawLog);
+  const linesRanges = getLinesLengthRanges(rawLog);
   const maxLineRangeIndex = linesRanges.length;
   const maxResultIndex = results.length;
   const resultLines = [];

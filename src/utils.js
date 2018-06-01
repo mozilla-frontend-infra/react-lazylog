@@ -53,7 +53,6 @@ export const bufferConcat = (a, b) => {
 export const convertBufferToLines = (current, previous) => {
   const buffer = previous ? bufferConcat(previous, current) : current;
   const { length } = buffer;
-  const linesRanges = [];
   let lastNewlineIndex = 0;
   let index = 0;
   const lines = List().withMutations(lines => {
@@ -69,7 +68,6 @@ export const convertBufferToLines = (current, previous) => {
             : index + 1;
 
         index = lastNewlineIndex;
-        linesRanges.push(index);
       } else {
         index += 1;
       }
@@ -78,10 +76,35 @@ export const convertBufferToLines = (current, previous) => {
 
   return {
     lines,
-    linesRanges,
     remaining:
       index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null,
   };
+};
+
+export const getLinesLengthRanges = rawLog => {
+  const { length } = rawLog;
+  const linesRanges = [];
+  let lastNewlineIndex = 0;
+  let index = 0;
+
+  while (index < length) {
+    const current = rawLog[index];
+    const next = rawLog[index + 1];
+
+    if (isNewline(current, next)) {
+      lastNewlineIndex =
+        current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
+          ? index + 2
+          : index + 1;
+
+      index = lastNewlineIndex;
+      linesRanges.push(index);
+    } else {
+      index += 1;
+    }
+  }
+
+  return linesRanges;
 };
 
 export const searchFormatPart = ({
@@ -100,4 +123,22 @@ export const searchFormatPart = ({
   }
 
   return formattedPart;
+};
+
+export const concatenateUint8Arrays = (...arrays) => {
+  let totalLength = 0;
+
+  arrays.forEach(array => {
+    totalLength += array.length;
+  });
+
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+
+  arrays.forEach(array => {
+    result.set(array, offset);
+    offset += array.length;
+  });
+
+  return result;
 };

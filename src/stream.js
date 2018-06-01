@@ -1,6 +1,6 @@
 import { List } from 'immutable';
 import mitt from 'mitt';
-import { convertBufferToLines } from './utils';
+import { convertBufferToLines, concatenateUint8Arrays } from './utils';
 
 const fetcher = Promise.resolve().then(
   () =>
@@ -32,8 +32,11 @@ export const recurseReaderAsEvent = async (reader, emitter) => {
 export default (url, options) => {
   const emitter = mitt();
   let overage = null;
+  let encodedLog = new Uint8Array();
 
   emitter.on('data', data => {
+    encodedLog = concatenateUint8Arrays(encodedLog, new Uint8Array(data));
+
     const { lines, remaining } = convertBufferToLines(data, overage);
 
     overage = remaining;
@@ -45,7 +48,7 @@ export default (url, options) => {
       emitter.emit('update', List.of(overage));
     }
 
-    emitter.emit('end');
+    emitter.emit('end', encodedLog);
   });
 
   emitter.on('start', async () => {

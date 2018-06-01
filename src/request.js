@@ -27,12 +27,11 @@ export default (url, options) => {
       }
 
       const arrayBuffer = await response.arrayBuffer();
-      const { lines, linesRanges } = convertBufferToLines(
-        new Uint8Array(arrayBuffer)
-      );
+      const encodedLog = new Uint8Array(arrayBuffer);
+      const { lines } = convertBufferToLines(encodedLog);
 
       emitter.emit('update', lines);
-      emitter.emit('end', { arrayBuffer, linesRanges });
+      emitter.emit('end', encodedLog);
     } catch (err) {
       emitter.emit('error', err);
     }
