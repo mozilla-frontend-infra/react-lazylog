@@ -1,0 +1,10 @@
+.filterLinesIcon {
+  height: 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  fill: #464646;
+}
+
+.filterLinesIcon:hover {
+  filter: invert(.5);
+}

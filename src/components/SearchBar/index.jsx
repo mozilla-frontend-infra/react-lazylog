@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { func, number } from 'prop-types';
-import { searchBar, searchInput, filterLinesIcon } from './index.module.css';
-import filterLinesSvg from './icons/filter-lines.svg';
+import FilterLinesIcon from './FilterLinesIcon';
+import { searchBar, searchInput } from './index.module.css';
 
 export default class SearchBar extends Component {
   static propTypes = {
@@ -76,11 +76,7 @@ export default class SearchBar extends Component {
           value={this.state.keywords}
         />
         <div onClick={this.handleFilterLinesWithMatches}>
-          <img
-            className={filterLinesIcon}
-            src={filterLinesSvg}
-            alt="Filter lines with matches"
-          />
+          <FilterLinesIcon />
         </div>
         <span>
           {this.props.resultsCount} {matchesLabel}
