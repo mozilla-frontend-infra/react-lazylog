@@ -304,7 +304,8 @@ export default class LazyLog extends Component {
   };
 
   handleEnd = encodedLog => {
-    this.setState({ loaded: true, encodedLog });
+    this.encodedLog = encodedLog;
+    this.setState({ loaded: true });
 
     if (this.props.onLoad) {
       this.props.onLoad();
@@ -354,12 +355,11 @@ export default class LazyLog extends Component {
   };
 
   handleSearch = keywords => {
-    const { encodedLog, resultLines, searchKeywords } = this.state;
-    let currentResultLines = resultLines;
-
-    if (keywords !== searchKeywords) {
-      currentResultLines = searchLines(keywords, encodedLog);
-    }
+    const { resultLines, searchKeywords } = this.state;
+    const currentResultLines =
+      keywords === searchKeywords
+        ? resultLines
+        : searchLines(keywords, this.encodedLog);
 
     this.setState({
       resultLines: currentResultLines,
@@ -389,7 +389,7 @@ export default class LazyLog extends Component {
       resultLineUniqueIndexes: [],
     });
 
-    if (resultLines.length > 0 && isFilteringLinesWithMatches) {
+    if (resultLines.length && isFilteringLinesWithMatches) {
       const resultLineUniqueIndexes = [...new Set(resultLines)];
 
       this.setState({
@@ -404,13 +404,12 @@ export default class LazyLog extends Component {
   };
 
   handleFormatPart = () => {
-    const { formatPart } = this.props;
     const { isSearching, searchKeywords } = this.state;
 
     if (isSearching) {
       return searchFormatPart({
         searchKeywords,
-        formatPart,
+        formatPart: this.props.formatPart,
         replaceJsx: (text, key) => (
           <span key={key} className={searchMatch}>
             {text}
@@ -419,7 +418,7 @@ export default class LazyLog extends Component {
       });
     }
 
-    return formatPart;
+    return this.props.formatPart;
   };
 
   renderError() {
@@ -553,25 +552,20 @@ export default class LazyLog extends Component {
   };
 
   renderSearchBar = () => {
-    const { enableSearch } = this.props;
-
-    if (enableSearch) {
-      const { resultLines } = this.state;
-
+    if (this.props.enableSearch) {
       return (
         <SearchBar
           onSearch={this.handleSearch}
           onClearSearch={this.handleClearSearch}
           onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
-          resultsCount={resultLines.length}
+          resultsCount={this.state.resultLines.length}
         />
       );
     }
   };
 
   calculateListHeight = autoSizerHeight => {
-    const { height } = this.props;
-    const { enableSearch } = this.props;
+    const { height, enableSearch } = this.props;
 
     if (enableSearch) {
       const searchBarHeight = 45;

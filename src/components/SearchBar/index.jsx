@@ -6,8 +6,7 @@ import filterLinesSvg from './icons/filter-lines.svg';
 export default class SearchBar extends Component {
   static propTypes = {
     /**
-     * Executes a function when the user has typed search keywords
-     * and presses enter.
+     * Executes a function when the user starts typing.
      */
     onSearch: func,
     /**
@@ -33,11 +32,10 @@ export default class SearchBar extends Component {
     resultsCount: 0,
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = { keywords: '', filterLines: false };
-  }
+  state = {
+    keywords: '',
+    filterLines: false,
+  };
 
   handleOnChange = e => {
     const { value: keywords } = e.target;

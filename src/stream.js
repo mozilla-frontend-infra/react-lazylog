@@ -1,6 +1,6 @@
 import { List } from 'immutable';
 import mitt from 'mitt';
-import { convertBufferToLines, concatenateUint8Arrays } from './utils';
+import { convertBufferToLines, bufferConcat } from './utils';
 
 const fetcher = Promise.resolve().then(
   () =>
@@ -35,7 +35,7 @@ export default (url, options) => {
   let encodedLog = new Uint8Array();
 
   emitter.on('data', data => {
-    encodedLog = concatenateUint8Arrays(encodedLog, new Uint8Array(data));
+    encodedLog = bufferConcat(encodedLog, new Uint8Array(data));
 
     const { lines, remaining } = convertBufferToLines(data, overage);
 

@@ -118,27 +118,9 @@ export const searchFormatPart = ({
     formattedPart = nextFormatPart(part);
   }
 
-  if (part.indexOf(searchKeywords) > -1) {
+  if (part.includes(searchKeywords)) {
     return reactStringReplace(formattedPart, searchKeywords, replaceJsx);
   }
 
   return formattedPart;
-};
-
-export const concatenateUint8Arrays = (...arrays) => {
-  let totalLength = 0;
-
-  arrays.forEach(array => {
-    totalLength += array.length;
-  });
-
-  const result = new Uint8Array(totalLength);
-  let offset = 0;
-
-  arrays.forEach(array => {
-    result.set(array, offset);
-    offset += array.length;
-  });
-
-  return result;
 };
