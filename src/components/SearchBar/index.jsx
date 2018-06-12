@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { func, number } from 'prop-types';
-import FilterLinesIcon from './FilterLinesIcon';
+import FilterLinesToggle from './FilterLinesToggle';
 import { searchBar, searchInput } from './index.module.css';
 
 export default class SearchBar extends Component {
@@ -26,15 +26,14 @@ export default class SearchBar extends Component {
   };
 
   static defaultProps = {
-    onSearch: null,
-    onClearSearch: null,
-    onFilterLinesWithMatches: null,
+    onSearch: () => {},
+    onClearSearch: () => {},
+    onFilterLinesWithMatches: () => {},
     resultsCount: 0,
   };
 
   state = {
     keywords: '',
-    filterLines: false,
   };
 
   handleOnChange = e => {
@@ -50,19 +49,8 @@ export default class SearchBar extends Component {
     }
   };
 
-  handleFilterLinesWithMatches = () => {
-    const { onFilterLinesWithMatches } = this.props;
-
-    this.setState(
-      {
-        filterLines: !this.state.filterLines,
-      },
-      () => onFilterLinesWithMatches(this.state.filterLines)
-    );
-  };
-
   render() {
-    const { resultsCount } = this.props;
+    const { resultsCount, onFilterLinesWithMatches } = this.props;
     const matchesLabel = `match${resultsCount === 1 ? '' : 'es'}`;
 
     return (
@@ -75,9 +63,7 @@ export default class SearchBar extends Component {
           onChange={this.handleOnChange}
           value={this.state.keywords}
         />
-        <div onClick={this.handleFilterLinesWithMatches}>
-          <FilterLinesIcon />
-        </div>
+        <FilterLinesToggle onToggle={onFilterLinesWithMatches} />
         <span>
           {this.props.resultsCount} {matchesLabel}
         </span>

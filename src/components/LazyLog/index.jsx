@@ -361,11 +361,14 @@ export default class LazyLog extends Component {
         ? resultLines
         : searchLines(keywords, this.encodedLog);
 
-    this.setState({
-      resultLines: currentResultLines,
-      isSearching: true,
-      searchKeywords: keywords,
-    });
+    this.setState(
+      {
+        resultLines: currentResultLines,
+        isSearching: true,
+        searchKeywords: keywords,
+      },
+      this.filterLinesWithMatches
+    );
   };
 
   handleClearSearch = () => {
@@ -375,19 +378,24 @@ export default class LazyLog extends Component {
       resultLines: [],
       filteredLines: List(),
       resultLineUniqueIndexes: [],
-      isFilteringLinesWithMatches: false,
+      isFilteringLinesWithMatches: this.state.isFilteringLinesWithMatches,
       scrollToIndex: 0,
     });
   };
 
-  handleFilterLinesWithMatches = isFilteringLinesWithMatches => {
-    const { resultLines, lines } = this.state;
+  handleFilterLinesWithMatches = isFilterEnabled => {
+    this.setState(
+      {
+        isFilteringLinesWithMatches: isFilterEnabled,
+        filteredLines: List(),
+        resultLineUniqueIndexes: [],
+      },
+      this.filterLinesWithMatches
+    );
+  };
 
-    this.setState({
-      isFilteringLinesWithMatches,
-      filteredLines: List(),
-      resultLineUniqueIndexes: [],
-    });
+  filterLinesWithMatches = () => {
+    const { resultLines, lines, isFilteringLinesWithMatches } = this.state;
 
     if (resultLines.length && isFilteringLinesWithMatches) {
       const resultLineUniqueIndexes = [...new Set(resultLines)];
