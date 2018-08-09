@@ -1,38 +1,35 @@
 {
-  "name": "react-lazylog",
-  "version": "3.1.3",
-  "description": "React Lazy Logviewer",
+  "name": "document-viewer",
+  "version": "1.0.0",
+  "description": "Document viewer",
   "license": "MPL-2.0",
-  "repository": "mozilla-frontend-infra/react-lazylog",
+  "repository": "SpotlightData/react-lazylog",
   "main": "build/index.js",
   "files": [
     "build",
-    "es5",
-    "src"
+    "es5"
   ],
   "keywords": [
     "react",
-    "log",
-    "viewer",
-    "logviewer",
-    "lazy",
-    "lazylog"
+    "document",
+    "viewer"
   ],
   "scripts": {
     "build": "neutrino build",
-    "prepare": "neutrino build",
+    "start": "neutrino start",
     "lint": "neutrino lint",
-    "start": "neutrino styleguide:start",
-    "precommit": "neutrino stage",
-    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
+    "test": "neutrino test"
   },
   "devDependencies": {
-    "babel-polyfill": "^6.26.0",
-    "gh-pages": "^1.1.0",
-    "neutrino": "^8.2.1",
-    "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
-    "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "@neutrinojs/airbnb": "^8.3.0",
+    "@neutrinojs/jest": "^8.3.0",
+    "@neutrinojs/react": "^8.3.0",
+    "@neutrinojs/react-components": "^8.3.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "neutrino": "^8.3.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2"
   },
   "dependencies": {
     "fetch-readablestream": "^0.1.0",

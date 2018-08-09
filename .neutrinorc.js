@@ -1,15 +1,6 @@
 module.exports = {
-  use: [
-    'neutrino-preset-mozilla-frontend-infra/styleguide',
-    ['neutrino-preset-mozilla-frontend-infra/react-components', {
-      style: {
-        extract: false,
-      }
-    }],
-    (neutrino) => {
-      if (neutrino.options.command === 'styleguide:start') {
-        neutrino.config.module.rules.delete('lint');
-      }
-    },
-  ],
+  use: ['@neutrinojs/react-components', '@neutrinojs/jest'],
+  options: {
+    mains: {},
+  },
 };

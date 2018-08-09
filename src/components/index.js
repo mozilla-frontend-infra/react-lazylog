@@ -1,2 +1,1 @@
-export { default as LazyLog } from './LazyLog';
-export { default as ScrollFollow } from './ScrollFollow';
+export { default as DocumentViewer } from './DocumentViewer';
