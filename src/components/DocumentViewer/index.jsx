@@ -1,20 +1,11 @@
 import { Component, Fragment } from 'react';
-import {
-  any,
-  arrayOf,
-  bool,
-  func,
-  number,
-  object,
-  oneOfType,
-  string,
-} from 'prop-types';
+import { any, arrayOf, bool, func, number, object, oneOfType, string } from 'prop-types';
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
 import decode from '../../encoding';
 import { getScrollIndex, getHighlightRange } from '../../utils';
-import Line from '../Line';
+import Line from '../DocumentLine';
 import Loading from '../Loading';
 import request from '../../request';
 import stream from '../../stream';
@@ -131,6 +122,15 @@ export default class LazyLog extends Component {
      * Specify an additional className to append to highlighted lines.
      */
     highlightLineClassName: string,
+    /**
+     * The array of searches to be performed
+     */
+    search: arrayOf(object),
+    /**
+     * Function that all of lines and search array will be passed to
+     * Should return a promise
+     */
+    highlighter: func,
   };
 
   static defaultProps = {
@@ -198,17 +198,9 @@ export default class LazyLog extends Component {
       this.request();
     }
 
-    if (
-      !this.state.loaded &&
-      prevState.loaded !== this.state.loaded &&
-      this.props.onLoad
-    ) {
+    if (!this.state.loaded && prevState.loaded !== this.state.loaded && this.props.onLoad) {
       this.props.onLoad();
-    } else if (
-      this.state.error &&
-      prevState.error !== this.state.error &&
-      this.props.onError
-    ) {
+    } else if (this.state.error && prevState.error !== this.state.error && this.props.onError) {
       this.props.onError(this.state.error);
     }
 
@@ -229,9 +221,7 @@ export default class LazyLog extends Component {
     const { url, fetchOptions, stream: isStream } = this.props;
 
     this.endRequest();
-    this.emitter = isStream
-      ? stream(url, fetchOptions)
-      : request(url, fetchOptions);
+    this.emitter = isStream ? stream(url, fetchOptions) : request(url, fetchOptions);
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
@@ -278,11 +268,12 @@ export default class LazyLog extends Component {
   };
 
   handleEnd = () => {
-    this.setState({ loaded: true });
-
-    if (this.props.onLoad) {
-      this.props.onLoad();
-    }
+    this.props.highlighter(this.state.lines, this.props.search).then(lines => {
+      this.setState({ loaded: true, lines });
+      if (this.props.onLoad) {
+        this.props.onLoad();
+      }
+    });
   };
 
   handleError = err => {
@@ -403,8 +394,11 @@ export default class LazyLog extends Component {
       lineClassName,
       highlightLineClassName,
     } = this.props;
-    const { highlight, lines, offset } = this.state;
+    const { highlight, lines, offset, loaded } = this.state;
     const number = index + 1 + offset;
+    if (!loaded) {
+      return null;
+    }
 
     return (
       <Line
@@ -418,17 +412,13 @@ export default class LazyLog extends Component {
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
-        data={ansiparse(decode(lines.get(index)))}
+        data={lines[index]}
       />
     );
   };
 
   renderNoRows = () => {
-    const {
-      loadingComponent: Loading,
-      lineClassName,
-      highlightLineClassName,
-    } = this.props;
+    const { loadingComponent: Loading, lineClassName, highlightLineClassName } = this.props;
     const { error, loaded } = this.state;
 
     if (error) {
@@ -452,7 +442,8 @@ export default class LazyLog extends Component {
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
-        disableWidth={this.props.width !== 'auto'}>
+        disableWidth={this.props.width !== 'auto'}
+      >
         {({ height, width }) => (
           <VirtualList
             className={`react-lazylog ${lazyLog}`}
