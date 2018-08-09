@@ -1,6 +1,7 @@
 import { Component, Fragment } from 'react';
 import { any, arrayOf, bool, func, number, object, oneOfType, string } from 'prop-types';
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
+import { equals } from 'ramda';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
 import decode from '../../encoding';
@@ -211,6 +212,9 @@ export default class LazyLog extends Component {
     ) {
       this.props.onHighlight(this.state.highlight);
     }
+    if (!equals(prevProps.search, this.props.search)) {
+      this.setState({ loaded: false }, () => this.handleEnd());
+    }
   }
 
   componentWillUnmount() {
@@ -268,8 +272,8 @@ export default class LazyLog extends Component {
   };
 
   handleEnd = () => {
-    this.props.highlighter(this.state.lines, this.props.search).then(lines => {
-      this.setState({ loaded: true, lines });
+    this.props.highlighter(this.state.lines, this.props.search).then(({ lines }) => {
+      this.setState({ loaded: true, parsedLines: lines });
       if (this.props.onLoad) {
         this.props.onLoad();
       }
@@ -394,8 +398,9 @@ export default class LazyLog extends Component {
       lineClassName,
       highlightLineClassName,
     } = this.props;
-    const { highlight, lines, offset, loaded } = this.state;
+    const { highlight, parsedLines, offset, loaded } = this.state;
     const number = index + 1 + offset;
+
     if (!loaded) {
       return null;
     }
@@ -412,7 +417,7 @@ export default class LazyLog extends Component {
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
-        data={lines[index]}
+        data={parsedLines[index]}
       />
     );
   };

@@ -1,61 +1,55 @@
 // Should be removed in the future
+import React from 'react';
 import { render } from 'react-dom';
-import DocumentViewer from './components/DocumentViewer';
-import Worker from './search.worker';
+import DocumentSearch from './components/DocumentSearch';
 
 import { items } from './temp';
 const root = document.getElementById('root');
 
+class NameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { value: '' };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({ value: event.target.value });
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    let search = items;
+    if (this.state.value.length > 4) {
+      search = items.concat([
+        {
+          value: this.state.value,
+          type: 'text',
+          color: 'yellow',
+          caseSensitive: true,
+        },
+      ]);
+    }
+
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <DocumentSearch height={500} width={902} url={url} search={search} selectableLines />
+      </form>
+    );
+  }
+}
+
 const url = 'http://localhost:3002/text3';
-const highlighter = (lines, search) => {
-  const worker = new Worker();
-  return new Promise(res => {
-    worker.onmessage = ({ data }) => {
-      res(data);
-    };
-    // Need to convert it to regular array, else it can't be transfered
-    worker.postMessage({ lines: lines.toArray(), search });
-  });
-};
 
-const search = [
-  {
-    value: 'Annual Report and Accounts',
-    caseSensitive: true,
-    type: 'text',
-    color: 'yellow',
-  },
-  {
-    value: 'Ministry',
-    color: 'red',
-    type: 'location',
-    position: {
-      start: 0,
-      end: 9,
-    },
-  },
-  {
-    value: 'try',
-    color: 'blue',
-    type: 'text',
-    position: {
-      start: 6,
-      end: 9,
-    },
-  },
-].concat(items);
-
-const time = performance.now();
-
-render(
-  <DocumentViewer
-    height={500}
-    width={902}
-    url={url}
-    highlighter={highlighter}
-    search={search}
-    onLoad={() => console.log(performance.now() - time)}
-    selectableLines
-  />,
-  root
-);
+// render(<DocumentSearch height={500} width={902} url={url} search={search} selectableLines />, root);
+render(<NameForm />, root);
