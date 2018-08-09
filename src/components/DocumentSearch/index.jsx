@@ -18,7 +18,6 @@ export default class DocumentSearch extends PureComponent {
   highlighter = (lines, search) => {
     return new Promise(res => {
       this.state.worker.onmessage = e => {
-        this.state.worker.onmessage = undefined;
         res({ lines: e.data });
       };
       // Need to convert it to regular array, else it can't be transfered

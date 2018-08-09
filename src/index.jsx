@@ -2,6 +2,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import DocumentSearch from './components/DocumentSearch';
+import DocumentMinimap from './components/DocumentMinimap';
 
 import { items } from './temp';
 const root = document.getElementById('root');
@@ -43,7 +44,14 @@ class NameForm extends React.Component {
           Name:
           <input type="text" value={this.state.value} onChange={this.handleChange} />
         </label>
-        <DocumentSearch height={500} width={902} url={url} search={search} selectableLines />
+        <DocumentSearch
+          height={500}
+          width={902}
+          url={url}
+          search={search}
+          selectableLines
+          extraContentRender={props => <DocumentMinimap {...props} />}
+        />
       </form>
     );
   }

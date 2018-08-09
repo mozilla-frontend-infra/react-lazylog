@@ -12,6 +12,9 @@ import request from '../../request';
 import stream from '../../stream';
 import { lazyLog } from './index.module.css';
 
+const pxToNum = px => {
+  return typeof px === 'string' ? parseInt(px.replace('px', ''), 10) : px;
+};
 // Setting a hard limit on lines since browsers have trouble with heights
 // starting at around 16.7 million pixels and up
 const BROWSER_PIXEL_LIMIT = 16.7 * 1000000;
@@ -132,6 +135,10 @@ export default class LazyLog extends Component {
      * Should return a promise
      */
     highlighter: func,
+    /**
+     * Renders any extra content
+     */
+    extraContentRender: func,
   };
 
   static defaultProps = {
@@ -158,6 +165,7 @@ export default class LazyLog extends Component {
     loadingComponent: Loading,
     lineClassName: '',
     highlightLineClassName: '',
+    extraContentRender: null,
   };
 
   static getDerivedStateFromProps(
@@ -444,23 +452,45 @@ export default class LazyLog extends Component {
   };
 
   render() {
+    const { parsedLines } = this.state;
+    const { extraContentRender, rowHeight } = this.props;
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
         disableWidth={this.props.width !== 'auto'}
       >
-        {({ height, width }) => (
-          <VirtualList
-            className={`react-lazylog ${lazyLog}`}
-            rowCount={this.state.count}
-            rowRenderer={row => this.renderRow(row)}
-            noRowsRenderer={this.renderNoRows}
-            {...this.props}
-            height={this.props.height === 'auto' ? height : this.props.height}
-            width={this.props.width === 'auto' ? width : this.props.width}
-            scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
-          />
-        )}
+        {({ height, width }) => {
+          const sizes = {
+            height: this.props.height === 'auto' ? height : pxToNum(this.props.height),
+            width: this.props.width === 'auto' ? width : pxToNum(this.props.width),
+          };
+          let content = null;
+          if (extraContentRender && parsedLines && parsedLines.length !== 0) {
+            content = extraContentRender({
+              ...sizes,
+              lines: parsedLines,
+              rowCount: this.state.count,
+              rowHeight,
+            });
+          }
+          return (
+            <div style={{ position: 'relative', width: sizes.width, height: sizes.height }}>
+              <Fragment>
+                {content}
+                <VirtualList
+                  className={`react-lazylog ${lazyLog}`}
+                  rowCount={this.state.count}
+                  rowRenderer={row => this.renderRow(row)}
+                  noRowsRenderer={this.renderNoRows}
+                  {...this.props}
+                  height={sizes.height}
+                  width={sizes.width}
+                  scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
+                />
+              </Fragment>
+            </div>
+          );
+        }}
       </AutoSizer>
     );
   }

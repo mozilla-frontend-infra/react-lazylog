@@ -49,7 +49,7 @@ export default class Line extends Component {
       highlightClassName,
     } = this.props;
     const selectableClass = selectable ? ` ${lineSelectable}` : '';
-    const highlightClass = highlight ? ` ${lineHighlight} ${highlightClassName}` : '';
+    const highlightClass = highlight ? ` ${highlightClassName}` : '';
     const classes = `${line}${selectableClass}${highlightClass} ${className}`;
     const lineStyle = {
       ...style,
