@@ -467,10 +467,14 @@ export default class LazyLog extends Component {
           let content = null;
           if (extraContentRender && parsedLines && parsedLines.length !== 0) {
             content = extraContentRender({
-              ...sizes,
+              sizes,
               lines: parsedLines,
-              rowCount: this.state.count,
+              selector: '.viewer-grid > div',
               rowHeight,
+              // Need a better apporach in the future. Maybe use even listener?
+              addListener: fn => {
+                this.onScroll = fn;
+              },
             });
           }
           return (
@@ -478,10 +482,15 @@ export default class LazyLog extends Component {
               <Fragment>
                 {content}
                 <VirtualList
-                  className={`react-lazylog ${lazyLog}`}
+                  className={`react-lazylog viewer-grid ${lazyLog}`}
                   rowCount={this.state.count}
                   rowRenderer={row => this.renderRow(row)}
                   noRowsRenderer={this.renderNoRows}
+                  onScroll={meta => {
+                    if (this.onScroll) {
+                      this.onScroll(meta);
+                    }
+                  }}
                   {...this.props}
                   height={sizes.height}
                   width={sizes.width}

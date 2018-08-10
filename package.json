@@ -34,9 +34,11 @@
   "dependencies": {
     "fetch-readablestream": "^0.1.0",
     "immutable": "^3.8.2",
+    "lodash.throttle": "^4.1.1",
     "mitt": "^1.1.2",
     "prop-types": "^15.6.1",
     "react-virtualized": "^9.10.1",
+    "shortid": "^2.2.12",
     "text-encoding-utf-8": "^1.0.1",
     "web-streams-polyfill": "^1.3.2",
     "whatwg-fetch": "^2.0.4"

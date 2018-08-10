@@ -45,12 +45,12 @@ class NameForm extends React.Component {
           <input type="text" value={this.state.value} onChange={this.handleChange} />
         </label>
         <DocumentSearch
-          height={500}
+          height={600}
           width={902}
           url={url}
           search={search}
           selectableLines
-          extraContentRender={props => <DocumentMinimap {...props} />}
+          extraContentRender={props => <DocumentMinimap {...props} height={400} width={200} />}
         />
       </form>
     );
