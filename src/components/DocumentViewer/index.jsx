@@ -3,6 +3,7 @@ import { any, arrayOf, bool, func, number, object, oneOfType, string } from 'pro
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { equals } from 'ramda';
 import { List } from 'immutable';
+import cn from 'classnames';
 import ansiparse from '../../ansiparse';
 import decode from '../../encoding';
 import { getScrollIndex, getHighlightRange } from '../../utils';
@@ -141,6 +142,7 @@ export default class LazyLog extends Component {
     extraContentRender: func,
     backgroundColor: string,
     color: string,
+    className: string,
   };
 
   static defaultProps = {
@@ -170,6 +172,7 @@ export default class LazyLog extends Component {
     extraContentRender: null,
     backgroundColor: '#fff',
     color: '#000',
+    className: '',
   };
 
   static getDerivedStateFromProps(
@@ -461,7 +464,16 @@ export default class LazyLog extends Component {
 
   render() {
     const { parsedLines } = this.state;
-    const { extraContentRender, rowHeight, backgroundColor, color } = this.props;
+    const {
+      extraContentRender,
+      rowHeight,
+      backgroundColor,
+      color,
+      className,
+      ...restProps
+    } = this.props;
+    const virtualClass = cn(['react-lazylog', 'viewer-grid', lazyLog, className]);
+    console.log(virtualClass);
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
@@ -491,8 +503,9 @@ export default class LazyLog extends Component {
               <Fragment>
                 {content}
                 <VirtualList
-                  className={`react-lazylog viewer-grid ${lazyLog}`}
+                  className={cn(['react-lazylog', 'viewer-grid', lazyLog, className])}
                   style={{ backgroundColor, color }}
+                  rowHeight={rowHeight}
                   rowCount={this.state.count}
                   rowRenderer={row => this.renderRow(row)}
                   noRowsRenderer={this.renderNoRows}
@@ -501,7 +514,7 @@ export default class LazyLog extends Component {
                       this.onScroll(meta);
                     }
                   }}
-                  {...this.props}
+                  {...restProps}
                   height={sizes.height}
                   width={sizes.width}
                   scrollTop={this.state.scrollTop}
