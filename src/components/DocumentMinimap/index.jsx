@@ -9,19 +9,13 @@ import * as classes from './index.module.css';
 import { Canvas } from './Canvas';
 import { Core } from './Core';
 
-// const getTop = element => {
-//   if (element.style.top.length === 0) {
-//     return 0;
-//   }
-//   return parseInt(element.style.top.replace('px', '0'), 10);
-// };
-
 export default class DocumentMinimap extends PureComponent {
   static propTypes = {
     height: number.isRequired,
     width: number.isRequired,
     selector: string.isRequired,
     addListener: func.isRequired,
+    updateScroll: func.isRequired,
     throttle: number,
     backgroundColor: string,
   };
@@ -40,6 +34,7 @@ export default class DocumentMinimap extends PureComponent {
       width: props.width,
       height: props.height,
       rowHeight: props.rowHeight,
+      updateContainerScroll: props.updateScroll,
     });
     this.syncronise = throttle(this.core.synchronise, props.throttle);
     this.state = {
@@ -57,26 +52,6 @@ export default class DocumentMinimap extends PureComponent {
       backgroundColor: this.props.backgroundColor,
     });
   };
-  // getElement() {
-  //   return document.querySelector(this.props.selector);
-  // }
-
-  // init() {
-  //   const { width, height, lines, rowHeight } = this.props;
-
-  //   const element = this.getElement();
-  //   const { scrollWidth, scrollHeight, scrollTop, scrollLeft } = element;
-
-  //   const ratioX = width / scrollWidth;
-  //   const ratioY = height / scrollHeight;
-
-  //   const lineHeight = Math.max(ratioY * rowHeight, 2);
-  //   const charWidth = Math.max(ratioX * fontSize, 2);
-
-  //   const rows = resizeEntries(lines, lineHeight, charWidth);
-  //   // console.log({ lines, rows });
-  //   this.canvas.drawEntries(rows);
-  // }
 
   render() {
     const { width, height } = this.props;
@@ -87,12 +62,12 @@ export default class DocumentMinimap extends PureComponent {
           height: height,
           width,
         }}
-        onMouseDown={this.core.down}
-        onTouchStart={this.core.down}
+        onMouseDown={this.core.onMouseDown}
+        onTouchStart={this.core.onMouseDown}
         onTouchMove={this.core.move}
         onMouseMove={this.core.move}
-        onTouchEnd={this.core.up}
-        onMouseUp={this.core.up}
+        onTouchEnd={this.core.onMouseUp}
+        onMouseUp={this.core.onMouseUp}
       >
         <div ref={this.core.setScroll} className={classes.scroll} style={{ width }} />
         <canvas height={height} width={width} ref={this.setCanvas} />

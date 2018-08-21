@@ -451,6 +451,10 @@ export default class LazyLog extends Component {
     return <Loading />;
   };
 
+  updateScroll = scrollTop => {
+    this.setState({ scrollTop });
+  };
+
   render() {
     const { parsedLines } = this.state;
     const { extraContentRender, rowHeight } = this.props;
@@ -475,6 +479,7 @@ export default class LazyLog extends Component {
               addListener: fn => {
                 this.onScroll = fn;
               },
+              updateScroll: this.updateScroll,
             });
           }
           return (
@@ -494,6 +499,7 @@ export default class LazyLog extends Component {
                   {...this.props}
                   height={sizes.height}
                   width={sizes.width}
+                  scrollTop={this.state.scrollTop}
                   scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
                 />
               </Fragment>
