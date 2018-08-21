@@ -26,7 +26,7 @@ export class Core {
 
   calculateSizes(lines, rowHeight, fontSize) {
     const { width, height } = this.settings;
-    const { scrollWidth, scrollHeight, scrollTop, scrollLeft } = this.getContainer();
+    const { scrollWidth, scrollHeight } = this.getContainer();
 
     const ratioX = width / scrollWidth;
     const ratioY = height / scrollHeight;
