@@ -17,11 +17,11 @@ app.get('/text', (req, res) => {
     .then(resp => res.send(resp));
 });
 
-app.get('/text3', (req, res) => {
+app.get('/api/text3', (req, res) => {
   const text = fs.readFileSync(path.join(__dirname, 'test3.txt'), 'utf8');
   res.send(text);
 });
-app.get('/text2', (req, res) => {
+app.get('/api/text2', (req, res) => {
   const text = fs.readFileSync(path.join(__dirname, 'test.txt'), 'utf8');
   res.send(text);
 });

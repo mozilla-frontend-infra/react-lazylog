@@ -1,0 +1,13 @@
+.container {
+  position: absolute;
+  top: 0;
+  right: 1em;
+  z-index: 200;
+}
+
+.scroll {
+  position: absolute;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: top 0.2s;
+}

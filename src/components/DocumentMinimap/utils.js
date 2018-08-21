@@ -11,10 +11,10 @@ export function resizeEntries(lines, lineHeight, charWidth) {
           return { entries, position: newPosition };
         }
         const newEntry = {
-          top: Math.floor(rowIndex * lineHeight) + 10,
+          top: Math.floor(rowIndex * lineHeight),
           left: Math.floor(position * charWidth),
-          width: Math.max(Math.floor(itemLength(column) * charWidth), 2),
-          height: Math.max(1, lineHeight),
+          width: Math.floor(itemLength(column) * charWidth),
+          height: lineHeight,
           color: column.color,
           value: column.value,
         };
