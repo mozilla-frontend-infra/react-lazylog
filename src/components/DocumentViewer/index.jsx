@@ -139,6 +139,8 @@ export default class LazyLog extends Component {
      * Renders any extra content
      */
     extraContentRender: func,
+    backgroundColor: string,
+    color: string,
   };
 
   static defaultProps = {
@@ -166,6 +168,8 @@ export default class LazyLog extends Component {
     lineClassName: '',
     highlightLineClassName: '',
     extraContentRender: null,
+    backgroundColor: '#fff',
+    color: '#000',
   };
 
   static getDerivedStateFromProps(
@@ -457,7 +461,7 @@ export default class LazyLog extends Component {
 
   render() {
     const { parsedLines } = this.state;
-    const { extraContentRender, rowHeight } = this.props;
+    const { extraContentRender, rowHeight, backgroundColor, color } = this.props;
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
@@ -488,6 +492,7 @@ export default class LazyLog extends Component {
                 {content}
                 <VirtualList
                   className={`react-lazylog viewer-grid ${lazyLog}`}
+                  style={{ backgroundColor, color }}
                   rowCount={this.state.count}
                   rowRenderer={row => this.renderRow(row)}
                   noRowsRenderer={this.renderNoRows}
