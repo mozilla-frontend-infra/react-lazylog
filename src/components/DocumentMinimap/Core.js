@@ -1,3 +1,5 @@
+import { resizeEntries } from './utils';
+
 export class Core {
   constructor({ selector, container, width, height, updateContainerScroll, scrollHeight }) {
     this.containerData = {
@@ -22,8 +24,16 @@ export class Core {
     return root.querySelector(selector);
   }
 
-  calculateSizes(items) {
-    return [];
+  calculateSizes(lines, rowHeight, fontSize) {
+    const { width, height } = this.settings;
+    const { scrollWidth, scrollHeight, scrollTop, scrollLeft } = this.getContainer();
+
+    const ratioX = width / scrollWidth;
+    const ratioY = height / scrollHeight;
+
+    const lineHeight = ratioY * rowHeight;
+    const charWidth = ratioX * fontSize;
+    return resizeEntries(lines, lineHeight, charWidth);
   }
 
   synchronise = ({ scrollTop, scrollHeight }) => {

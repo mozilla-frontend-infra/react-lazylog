@@ -19,12 +19,14 @@ export default class DocumentMinimap extends PureComponent {
     throttle: number,
     backgroundColor: string,
     scrollHeight: number,
+    fontSize: number,
   };
 
   static defaultProps = {
     throttle: 50,
     backgroundColor: 'rgba(211,211,211, 0.5)',
     scrollHeight: 40,
+    fontSize: 14,
   };
 
   constructor(props) {
@@ -35,7 +37,6 @@ export default class DocumentMinimap extends PureComponent {
       container: window.document,
       width: props.width,
       height: props.height,
-      rowHeight: props.rowHeight,
       updateContainerScroll: props.updateScroll,
       scrollHeight: props.scrollHeight,
     });
@@ -47,7 +48,9 @@ export default class DocumentMinimap extends PureComponent {
 
   componentDidMount() {
     this.props.addListener(this.syncronise);
-    this.canvas.drawEntries(this.core.calculateSizes(this.props.lines));
+    this.canvas.drawEntries(
+      this.core.calculateSizes(this.props.lines, this.props.rowHeight, this.props.fontSize)
+    );
   }
 
   setCanvas = node => {

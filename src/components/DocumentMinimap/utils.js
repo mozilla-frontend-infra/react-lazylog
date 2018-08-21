@@ -1,6 +1,4 @@
-export const fontSize = 14;
-export const itemLength = item => (typeof item === 'string' ? item.length : item.value.length);
-export const rowCharCount = row => row.reduce((sum, item) => sum + itemLength(item), 0);
+const itemLength = item => (typeof item === 'string' ? item.length : item.value.length);
 
 export function resizeEntries(lines, lineHeight, charWidth) {
   return lines.reduce((list, row, rowIndex) => {
@@ -11,10 +9,10 @@ export function resizeEntries(lines, lineHeight, charWidth) {
           return { entries, position: newPosition };
         }
         const newEntry = {
-          top: Math.floor(rowIndex * lineHeight),
+          top: Math.floor(rowIndex * lineHeight) + 1,
           left: Math.floor(position * charWidth),
           width: Math.floor(itemLength(column) * charWidth),
-          height: lineHeight,
+          height: Math.round(lineHeight),
           color: column.color,
           value: column.value,
         };

@@ -34,7 +34,7 @@ export class Canvas {
     this.reset();
     entries.map(entry => {
       this.ctx.fillStyle = entry.color;
-      this.ctx.fillRect(entry.top, entry.left, entry.width, entry.height);
+      this.ctx.fillRect(entry.left, entry.top, entry.width, entry.height);
     });
   }
 }
