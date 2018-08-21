@@ -33,6 +33,7 @@
     "react-dom": "^16.4.2"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "fetch-readablestream": "^0.1.0",
     "immutable": "^3.8.2",
     "lodash.throttle": "^4.1.1",

@@ -2,12 +2,15 @@ import { PureComponent } from 'react';
 import { number, string, func } from 'prop-types';
 import throttle from 'lodash.throttle';
 import sid from 'shortid';
+import cn from 'classnames';
 
 import { rowCharCount, resizeEntries, fontSize } from './utils';
 import * as classes from './index.module.css';
 
 import { Canvas } from './Canvas';
 import { Core } from './Core';
+
+const hiddenOpacity = '0.4';
 
 export default class DocumentMinimap extends PureComponent {
   static propTypes = {
@@ -20,6 +23,7 @@ export default class DocumentMinimap extends PureComponent {
     backgroundColor: string,
     scrollHeight: number,
     fontSize: number,
+    className: string,
   };
 
   static defaultProps = {
@@ -27,6 +31,7 @@ export default class DocumentMinimap extends PureComponent {
     backgroundColor: 'rgba(211,211,211, 0.5)',
     scrollHeight: 40,
     fontSize: 14,
+    className: '',
   };
 
   constructor(props) {
@@ -42,7 +47,8 @@ export default class DocumentMinimap extends PureComponent {
     });
     this.syncronise = throttle(this.core.synchronise, props.throttle);
     this.state = {
-      scrollTop: 0,
+      // opacity: hiddenOpacity,
+      opacity: 0.8,
     };
   }
 
@@ -59,14 +65,26 @@ export default class DocumentMinimap extends PureComponent {
     });
   };
 
+  onMouseEnter = e => {
+    e.preventDefault();
+    this.setState({ opacity: '0.8' });
+  };
+
+  onMouseLeave = e => {
+    e.preventDefault();
+    this.setState({ opacity: hiddenOpacity });
+  };
+
   render() {
-    const { width, height, scrollHeight } = this.props;
+    const { opacity } = this.state;
+    const { width, height, scrollHeight, className } = this.props;
     return (
       <div
-        className={classes.container}
+        className={cn(classes.container, className)}
         style={{
           height: height,
           width,
+          opacity,
         }}
         onMouseDown={this.core.onMouseDown}
         onTouchStart={this.core.onMouseDown}
@@ -75,6 +93,8 @@ export default class DocumentMinimap extends PureComponent {
         onTouchEnd={this.core.onMouseUp}
         onMouseUp={this.core.onMouseUp}
         onWheel={this.core.onWheel}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
       >
         <div
           ref={this.core.setScroll}

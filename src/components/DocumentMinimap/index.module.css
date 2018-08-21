@@ -3,6 +3,7 @@
   top: 0;
   right: 1em;
   z-index: 200;
+  transition: opacity 0.3s linear;
 }
 
 .scroll {
