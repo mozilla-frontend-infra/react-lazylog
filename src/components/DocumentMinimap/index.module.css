@@ -7,7 +7,6 @@
 
 .scroll {
   position: absolute;
-  height: 40px;
   background-color: rgba(0, 0, 0, 0.5);
-  transition: top 0.2s;
+  transition: top 0.1s linear;
 }

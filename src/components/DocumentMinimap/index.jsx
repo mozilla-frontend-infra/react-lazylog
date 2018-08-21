@@ -18,11 +18,13 @@ export default class DocumentMinimap extends PureComponent {
     updateScroll: func.isRequired,
     throttle: number,
     backgroundColor: string,
+    scrollHeight: number,
   };
 
   static defaultProps = {
     throttle: 50,
     backgroundColor: 'rgba(211,211,211, 0.5)',
+    scrollHeight: 40,
   };
 
   constructor(props) {
@@ -35,6 +37,7 @@ export default class DocumentMinimap extends PureComponent {
       height: props.height,
       rowHeight: props.rowHeight,
       updateContainerScroll: props.updateScroll,
+      scrollHeight: props.scrollHeight,
     });
     this.syncronise = throttle(this.core.synchronise, props.throttle);
     this.state = {
@@ -54,7 +57,7 @@ export default class DocumentMinimap extends PureComponent {
   };
 
   render() {
-    const { width, height } = this.props;
+    const { width, height, scrollHeight } = this.props;
     return (
       <div
         className={classes.container}
@@ -69,7 +72,11 @@ export default class DocumentMinimap extends PureComponent {
         onTouchEnd={this.core.onMouseUp}
         onMouseUp={this.core.onMouseUp}
       >
-        <div ref={this.core.setScroll} className={classes.scroll} style={{ width }} />
+        <div
+          ref={this.core.setScroll}
+          className={classes.scroll}
+          style={{ width, height: scrollHeight }}
+        />
         <canvas height={height} width={width} ref={this.setCanvas} />
       </div>
     );

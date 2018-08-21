@@ -1,10 +1,10 @@
 export class Core {
-  constructor({ selector, container, width, height, updateContainerScroll }) {
+  constructor({ selector, container, width, height, updateContainerScroll, scrollHeight }) {
     this.containerData = {
       selector,
       root: container,
     };
-    this.settings = { width, height };
+    this.settings = { width, height, scrollHeight };
     this.isMoving = false;
     this.updateContainerScroll = updateContainerScroll;
   }
@@ -42,6 +42,17 @@ export class Core {
     this.scrollElement.style.top = `${px}px`;
   }
 
+  inBounds(number) {
+    if (number < 0) {
+      return 0;
+    }
+    const maxTop = this.settings.height - this.settings.scrollHeight;
+    if (number > maxTop) {
+      return maxTop;
+    }
+    return number;
+  }
+
   onMouseUp = e => {
     e.preventDefault();
     this.isMoving = false;
@@ -69,7 +80,7 @@ export class Core {
     const container = this.getContainer();
     const parentRect = this.scrollElement.parentNode.getBoundingClientRect();
     // TODO center on that point?
-    const scrollDiff = event.clientY - parentRect.y;
+    const scrollDiff = this.inBounds(event.clientY - parentRect.y - this.settings.scrollHeight / 2);
     const ratioY = this.settings.height / container.scrollHeight;
     const containerScroll = Math.floor(scrollDiff / ratioY);
     this.scrollTo(scrollDiff);
