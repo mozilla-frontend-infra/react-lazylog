@@ -14,7 +14,6 @@ export function resizeEntries(lines, lineHeight, charWidth) {
           width: Math.floor(itemLength(column) * charWidth),
           height: Math.round(lineHeight),
           color: column.color,
-          value: column.value,
         };
         return { entries: [...entries, newEntry], position: newPosition };
       },

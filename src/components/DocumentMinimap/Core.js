@@ -33,7 +33,7 @@ export class Core {
 
     const lineHeight = ratioY * rowHeight;
     const charWidth = ratioX * fontSize;
-    return resizeEntries(lines, lineHeight, charWidth);
+    return { entries: resizeEntries(lines, lineHeight, charWidth), width, height, padding: 1 };
   }
 
   synchronise = ({ scrollTop, scrollHeight }) => {
@@ -73,6 +73,12 @@ export class Core {
     this.move(e);
   };
 
+  onWheel = e => {
+    e.preventDefault();
+    const rect = this.scrollElement.getBoundingClientRect();
+    this.updateScroll(rect.top + e.deltaY / 2);
+  };
+
   move = e => {
     e.preventDefault();
     if (!this.isMoving) {
@@ -87,13 +93,16 @@ export class Core {
     } else {
       event = e;
     }
-    const container = this.getContainer();
     const parentRect = this.scrollElement.parentNode.getBoundingClientRect();
-    // TODO center on that point?
-    const scrollDiff = this.inBounds(event.clientY - parentRect.y - this.settings.scrollHeight / 2);
+    this.updateScroll(event.clientY - parentRect.y);
+  };
+
+  updateScroll(diff) {
+    const container = this.getContainer();
+    const scrollDiff = this.inBounds(diff - this.settings.scrollHeight / 2);
     const ratioY = this.settings.height / container.scrollHeight;
     const containerScroll = Math.floor(scrollDiff / ratioY);
     this.scrollTo(scrollDiff);
     this.updateContainerScroll(container.scrollTop + containerScroll);
-  };
+  }
 }

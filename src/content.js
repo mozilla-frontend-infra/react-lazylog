@@ -49,7 +49,7 @@ export default class NameForm extends React.Component {
           url={url}
           search={search}
           selectableLines
-          extraContentRender={props => <DocumentMinimap {...props} height={550} width={150} />}
+          extraContentRender={props => <DocumentMinimap {...props} height={550} width={200} />}
         />
       </form>
     );

@@ -74,6 +74,7 @@ export default class DocumentMinimap extends PureComponent {
         onMouseMove={this.core.move}
         onTouchEnd={this.core.onMouseUp}
         onMouseUp={this.core.onMouseUp}
+        onWheel={this.core.onWheel}
       >
         <div
           ref={this.core.setScroll}

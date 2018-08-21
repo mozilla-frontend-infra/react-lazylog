@@ -27,14 +27,16 @@ export class Canvas {
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
 
-  drawEntries(entries) {
+  drawEntries({ entries, width, height, padding }) {
     if (!this.canvas) {
       return;
     }
     this.reset();
     entries.map(entry => {
       this.ctx.fillStyle = entry.color;
-      this.ctx.fillRect(entry.left, entry.top, entry.width, entry.height);
+      const left = Math.min(width, Math.max(0, entry.left - padding));
+      const top = Math.min(height, Math.max(0, entry.top - padding));
+      this.ctx.fillRect(left, top, entry.width + padding, entry.height + padding);
     });
   }
 }
