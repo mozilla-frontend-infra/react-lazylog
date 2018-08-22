@@ -1,10 +1,15 @@
 {
-  "name": "document-viewer",
+  "name": "@spotlightdata/document-viewer",
   "version": "1.0.0",
   "description": "Document viewer",
   "license": "MPL-2.0",
-  "repository": "SpotlightData/react-lazylog",
   "main": "build/index.js",
+  "module": "es/index.js",
+  "author": "Augustinas <augustinas@spotlightdata.co.uk>",
+  "repository": "git@github.com:SpotlightData/react-lazylog.git",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "build",
     "es5"
@@ -15,8 +20,8 @@
     "viewer"
   ],
   "scripts": {
-    "build": "neutrino build",
     "start": "neutrino start",
+    "build": "neutrino build",
     "lint": "neutrino lint",
     "test": "neutrino test"
   },
