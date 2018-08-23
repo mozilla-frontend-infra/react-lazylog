@@ -5,7 +5,7 @@ import { equals } from 'ramda';
 import { List } from 'immutable';
 import cn from 'classnames';
 import ansiparse from '../../ansiparse';
-import decode from '../../encoding';
+import { decode, encode } from '../../encoding';
 import { getScrollIndex, getHighlightRange } from '../../utils';
 import Line from '../DocumentLine';
 import Loading from '../Loading';
@@ -138,11 +138,28 @@ export default class DocumentViewer extends Component {
     highlighter: func,
     /**
      * Renders any extra content
+     * Can be used to render DocumentMinimap
      */
     extraContentRender: func,
+    /**
+     * Background color of the text container
+     */
     backgroundColor: string,
+    /**
+     * Color of the regular, unmarked text
+     */
     color: string,
+    /**
+     * Optional classname added to the container
+     */
     className: string,
+    /**
+     * Alternative to retrieving data from http.
+     * Allows to customise the text input that will be displayed.
+     * MUST return an emmiter and emmit encoded text.
+     * encode function will be passed as a first argument
+     */
+    textEmmiter: func,
   };
 
   static defaultProps = {
@@ -173,6 +190,7 @@ export default class DocumentViewer extends Component {
     backgroundColor: '#fff',
     color: '#000',
     className: '',
+    textEmmiter: undefined,
   };
 
   static getDerivedStateFromProps(
@@ -237,10 +255,14 @@ export default class DocumentViewer extends Component {
   }
 
   request() {
-    const { url, fetchOptions, stream: isStream } = this.props;
+    const { url, fetchOptions, stream: isStream, textEmmiter } = this.props;
 
     this.endRequest();
-    this.emitter = isStream ? stream(url, fetchOptions) : request(url, fetchOptions);
+    if (textEmmiter) {
+      this.emitter = textEmmiter(encode);
+    } else {
+      this.emitter = isStream ? stream(url, fetchOptions) : request(url, fetchOptions);
+    }
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
