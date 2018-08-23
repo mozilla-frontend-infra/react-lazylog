@@ -24,7 +24,8 @@
     "build": "neutrino build",
     "lint": "neutrino lint",
     "test": "neutrino test",
-    "docs": "NEUTRINO_ENV=docs neutrino styleguide:start"
+    "docs": "NEUTRINO_ENV=docs neutrino styleguide:start",
+    "verify-tag": "verify-git-tag"
   },
   "devDependencies": {
     "@neutrinojs/airbnb": "^8.3.0",
@@ -37,7 +38,8 @@
     "neutrino": "^8.3.0",
     "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "verify-git-tag": "^0.3.0"
   },
   "dependencies": {
     "classnames": "^2.2.6",

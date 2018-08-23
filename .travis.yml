@@ -22,6 +22,7 @@ deploy:
   provider: npm
   email: $NPM_EMAIL
   api_key: $NPM_TOKEN
+  before_deploy: yarn verify-tag
   on:
     branch: master
     tags: true
