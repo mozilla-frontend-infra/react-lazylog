@@ -15,13 +15,25 @@ export default class DocumentSearch extends PureComponent {
     }
   }
 
+  waitForWorker(cb) {
+    if (this.state.worker) {
+      cb(this.state.worker);
+    } else {
+      setTimeout(() => {
+        this.waitForWorker(cb);
+      }, 300);
+    }
+  }
+
   highlighter = (lines, search) => {
     return new Promise(res => {
-      this.state.worker.onmessage = e => {
-        res({ lines: e.data });
-      };
-      // Need to convert it to regular array, else it can't be transfered
-      this.state.worker.postMessage({ lines: lines.toArray(), search });
+      this.waitForWorker(worker => {
+        worker.onmessage = e => {
+          res({ lines: e.data });
+        };
+        // Need to convert it to regular array, else it can't be transfered
+        worker.postMessage({ lines: lines.toArray(), search });
+      });
     });
   };
 
