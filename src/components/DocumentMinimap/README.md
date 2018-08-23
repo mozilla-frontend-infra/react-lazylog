@@ -320,6 +320,7 @@ const textSearch = {
   color: 'yellow',
   caseSensitive: true,
   value: 'manager',
+  className: 'acronym',
 };
 const entitySearch = {
   color: '#7676c3',
@@ -329,6 +330,7 @@ const entitySearch = {
     start: 58,
     end: 72,
   },
+  className: 'acronym',
 };
 window.text = text;
 const search = [entitySearch, textSearch];
@@ -340,7 +342,9 @@ const search = [entitySearch, textSearch];
     search={search}
     selectableLines
     textEmitter={textEmitter}
-    extraContentRender={props => <DocumentMinimap {...props} height={550} width={200} />}
+    extraContentRender={props =>
+      console.log(props) || <DocumentMinimap {...props} height={550} width={200} />
+    }
   />
 </div>;
 ```

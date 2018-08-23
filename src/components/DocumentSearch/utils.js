@@ -59,6 +59,7 @@ export const markPositionalSearches = markSearchesWith(({ chunks, text, startInd
     start: position.start,
     end: position.end,
     type: mark.type,
+    className: mark.className,
   };
   return {
     chunks: [...chunks, chunk],
@@ -75,6 +76,7 @@ export const markTextSearches = markSearchesWith(({ chunks, text, startIndex }, 
     end: index + mark.value.length,
     color: mark.color,
     type: mark.type,
+    className: mark.className,
   }));
   return {
     chunks: chunks.concat(newChunks),
@@ -126,6 +128,7 @@ export const markEntries = markSearchesWith(({ chunks, text, startIndex }, mark,
     color: mark.color,
     start: mark.start,
     end: mark.end,
+    className: mark.className,
   };
   let newChunks = [chunk];
   if (left.length !== 0) {

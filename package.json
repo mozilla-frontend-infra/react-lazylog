@@ -1,6 +1,6 @@
 {
   "name": "@spotlightdata/document-viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Document viewer",
   "license": "MPL-2.0",
   "main": "build/index.js",

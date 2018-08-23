@@ -32,7 +32,7 @@ export default class LineContent extends Component {
       return <span key={key}>{entry}</span>;
     }
     return (
-      <span key={key} style={{ backgroundColor: entry.color }}>
+      <span key={key} style={{ backgroundColor: entry.color }} className={entry.className}>
         {entry.value}
       </span>
     );
