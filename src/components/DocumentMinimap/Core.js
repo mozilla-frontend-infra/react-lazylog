@@ -93,11 +93,12 @@ export class Core {
     } else {
       event = e;
     }
-    const parentRect = this.scrollElement.parentNode.getBoundingClientRect();
-    this.updateScroll(event.clientY - parentRect.y);
+    this.updateScroll(event.clientY);
   };
 
-  updateScroll(diff) {
+  updateScroll(change) {
+    const parentRect = this.scrollElement.parentNode.getBoundingClientRect();
+    const diff = change - parentRect.y;
     const container = this.getContainer();
     const scrollDiff = this.inBounds(diff - this.settings.scrollHeight / 2);
     const ratioY = this.settings.height / container.scrollHeight;
