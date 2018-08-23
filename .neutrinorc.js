@@ -3,9 +3,28 @@ const defaultRewrite = {
   pathRewrite: path => path.replace(/\/$/, ''),
 };
 
-module.exports = {
-  use: [
+let use;
+if (process.env.NEUTRINO_ENV === 'docs') {
+  use = [
+    'neutrino-preset-mozilla-frontend-infra/styleguide',
     [
+      'neutrino-preset-mozilla-frontend-infra/react-components',
+      {
+        style: {
+          extract: false,
+        },
+      },
+    ],
+    neutrino => {
+      if (neutrino.options.command === 'styleguide:start') {
+        neutrino.config.module.rules.delete('lint');
+      }
+    },
+  ];
+} else {
+  use = [
+    [
+      'neutrino-preset-mozilla-frontend-infra/styleguide',
       '@neutrinojs/react-components',
       {
         devServer: {
@@ -17,5 +36,9 @@ module.exports = {
       },
     ],
     '@neutrinojs/jest',
-  ],
+  ];
+}
+
+module.exports = {
+  use,
 };
