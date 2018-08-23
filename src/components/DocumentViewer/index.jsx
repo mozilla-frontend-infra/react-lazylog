@@ -4,6 +4,7 @@ import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { equals } from 'ramda';
 import { List } from 'immutable';
 import cn from 'classnames';
+import mitt from 'mitt';
 import ansiparse from '../../ansiparse';
 import { decode, encode } from '../../encoding';
 import { getScrollIndex, getHighlightRange } from '../../utils';
@@ -26,7 +27,7 @@ export default class DocumentViewer extends Component {
      * The URL from which to fetch content. Subject to same-origin policy,
      * so must be accessible via fetch on same domain or via CORS.
      */
-    url: string.isRequired,
+    url: string,
     /**
      * Options object which will be passed through to the `fetch` request.
      * Defaults to `{ credentials: 'omit' }`.
@@ -158,8 +159,9 @@ export default class DocumentViewer extends Component {
      * Allows to customise the text input that will be displayed.
      * MUST return an emmiter and emmit encoded text.
      * encode function will be passed as a first argument
+     * emitter creation function will be passed as a second argument
      */
-    textEmmiter: func,
+    textEmitter: func,
   };
 
   static defaultProps = {
@@ -190,12 +192,13 @@ export default class DocumentViewer extends Component {
     backgroundColor: '#fff',
     color: '#000',
     className: '',
+    url: '',
     textEmmiter: undefined,
   };
 
   static getDerivedStateFromProps(
     { highlight, follow, scrollToLine, rowHeight, url: nextUrl },
-    { count, offset, url: previousUrl, highlight: previousHighlight }
+    { count, offset, url: previousUrl, highlight: previousHighlight, lines }
   ) {
     return {
       scrollToIndex: getScrollIndex({
@@ -208,20 +211,17 @@ export default class DocumentViewer extends Component {
       highlight: highlight
         ? getHighlightRange(highlight)
         : previousHighlight || getHighlightRange(previousHighlight),
-      ...(nextUrl && nextUrl !== previousUrl
-        ? {
-            url: nextUrl,
-            lines: List(),
-            count: 0,
-            offset: 0,
-            loaded: false,
-            error: null,
-          }
-        : null),
     };
   }
 
-  state = { parsedLines: [], count: 0 };
+  state = {
+    lines: List(),
+    count: 0,
+    offset: 0,
+    loaded: false,
+    error: null,
+    parsedLines: [],
+  };
 
   componentDidMount() {
     this.request();
@@ -255,11 +255,11 @@ export default class DocumentViewer extends Component {
   }
 
   request() {
-    const { url, fetchOptions, stream: isStream, textEmmiter } = this.props;
+    const { url, fetchOptions, stream: isStream, textEmitter } = this.props;
 
     this.endRequest();
-    if (textEmmiter) {
-      this.emitter = textEmmiter(encode);
+    if (textEmitter) {
+      this.emitter = textEmitter(encode, mitt);
     } else {
       this.emitter = isStream ? stream(url, fetchOptions) : request(url, fetchOptions);
     }
@@ -279,42 +279,55 @@ export default class DocumentViewer extends Component {
     }
   }
 
-  handleUpdate = moreLines => {
-    const { scrollToLine, follow } = this.props;
-    const { lineLimit, count: previousCount } = this.state;
-    let offset = 0;
-    let lines = this.state.lines.concat(moreLines);
-    let count = lines.count();
+  handleUpdate = moreLines =>
+    this.setState((prevState, props) => {
+      const { scrollToLine, follow } = props;
+      const { lineLimit, count: previousCount } = prevState;
+      let offset = 0;
+      let lines = prevState.lines.concat(moreLines);
+      let count = lines.count();
+      if (count > lineLimit) {
+        offset = count - lineLimit;
+        lines = lines.slice(-lineLimit);
+        count = lines.count();
+      }
 
-    if (count > lineLimit) {
-      offset = count - lineLimit;
-      lines = lines.slice(-lineLimit);
-      count = lines.count();
-    }
+      const scrollToIndex = getScrollIndex({
+        follow,
+        scrollToLine,
+        previousCount,
+        count,
+        offset,
+      });
 
-    const scrollToIndex = getScrollIndex({
-      follow,
-      scrollToLine,
-      previousCount,
-      count,
-      offset,
+      return {
+        lines,
+        offset,
+        count,
+        scrollToIndex,
+      };
     });
-
-    this.setState({
-      lines,
-      offset,
-      count,
-      scrollToIndex,
-    });
-  };
 
   handleEnd = () => {
-    this.props.highlighter(this.state.lines, this.props.search).then(({ lines }) => {
-      this.setState({ loaded: true, parsedLines: lines });
-      if (this.props.onLoad) {
-        this.props.onLoad();
-      }
-    });
+    const { search, highlighter, onLoad } = this.props;
+
+    if (highlighter) {
+      highlighter(this.state.lines, search).then(({ lines }) => {
+        this.setState({ loaded: true, parsedLines: lines }, () => {
+          if (onLoad) {
+            onLoad();
+          }
+        });
+      });
+    } else {
+      // Need to have a callback here, else if the data is received too fast, it will not schedule properly
+      this.setState((prevState, props) => {
+        return {
+          parsedLines: prevState.lines.toArray().map(row => [decode(row)]),
+          loaded: true,
+        };
+      });
+    }
   };
 
   handleError = err => {
@@ -438,7 +451,7 @@ export default class DocumentViewer extends Component {
     const { highlight, parsedLines, offset, loaded } = this.state;
     const number = index + 1 + offset;
 
-    if (!loaded) {
+    if (!loaded || parsedLines[index] === undefined) {
       return null;
     }
 
@@ -473,6 +486,7 @@ export default class DocumentViewer extends Component {
           className={lineClassName}
           highlightClassName={highlightLineClassName}
           data={[{ bold: true, text: 'No content' }]}
+          number={0}
         />
       );
     }
@@ -527,6 +541,7 @@ export default class DocumentViewer extends Component {
               <Fragment>
                 {content}
                 <VirtualList
+                  {...restProps}
                   className={cn(['react-lazylog', 'viewer-grid', lazyLog, className])}
                   style={{ backgroundColor, color }}
                   rowHeight={rowHeight}
@@ -542,7 +557,6 @@ export default class DocumentViewer extends Component {
                   width={sizes.width}
                   scrollTop={scrollTop}
                   scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
-                  {...restProps}
                 />
               </Fragment>
             </div>
