@@ -20,7 +20,7 @@ const pxToNum = px => {
 // starting at around 16.7 million pixels and up
 const BROWSER_PIXEL_LIMIT = 16.7 * 1000000;
 
-export default class LazyLog extends Component {
+export default class DocumentViewer extends Component {
   static propTypes = {
     /**
      * The URL from which to fetch content. Subject to same-origin policy,
@@ -472,8 +472,6 @@ export default class LazyLog extends Component {
       className,
       ...restProps
     } = this.props;
-    const virtualClass = cn(['react-lazylog', 'viewer-grid', lazyLog, className]);
-    console.log(virtualClass);
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
