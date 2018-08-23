@@ -332,7 +332,6 @@ const entitySearch = {
   },
   className: 'acronym',
 };
-window.text = text;
 const search = [entitySearch, textSearch];
 
 <div>
