@@ -24,7 +24,6 @@ if (process.env.NEUTRINO_ENV === 'docs') {
 } else {
   use = [
     [
-      'neutrino-preset-mozilla-frontend-infra/styleguide',
       '@neutrinojs/react-components',
       {
         devServer: {

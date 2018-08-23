@@ -203,7 +203,7 @@ export default class DocumentViewer extends Component {
     };
   }
 
-  state = {};
+  state = { parsedLines: [], count: 0 };
 
   componentDidMount() {
     this.request();
@@ -472,6 +472,7 @@ export default class DocumentViewer extends Component {
       className,
       ...restProps
     } = this.props;
+    console.log(parsedLines);
     return (
       <AutoSizer
         disableHeight={this.props.height !== 'auto'}
