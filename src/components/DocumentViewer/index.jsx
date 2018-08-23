@@ -463,26 +463,29 @@ export default class DocumentViewer extends Component {
   };
 
   render() {
-    const { parsedLines } = this.state;
+    const { parsedLines, scrollTop, count } = this.state;
     const {
       extraContentRender,
       rowHeight,
       backgroundColor,
       color,
       className,
+      height,
+      width,
       ...restProps
     } = this.props;
-    console.log(parsedLines);
+
+    const isAutoHeight = height === 'auto';
+    const isAutoWidth = width === 'auto';
+
     return (
-      <AutoSizer
-        disableHeight={this.props.height !== 'auto'}
-        disableWidth={this.props.width !== 'auto'}
-      >
-        {({ height, width }) => {
+      <AutoSizer disableHeight={!isAutoHeight} disableWidth={!isAutoWidth}>
+        {({ height: newHeight, width: newWidth }) => {
           const sizes = {
-            height: this.props.height === 'auto' ? height : pxToNum(this.props.height),
-            width: this.props.width === 'auto' ? width : pxToNum(this.props.width),
+            height: isAutoHeight ? newHeight : pxToNum(height),
+            width: isAutoWidth ? newWidth : pxToNum(width),
           };
+
           let content = null;
           if (extraContentRender && parsedLines && parsedLines.length !== 0) {
             content = extraContentRender({
@@ -505,19 +508,19 @@ export default class DocumentViewer extends Component {
                   className={cn(['react-lazylog', 'viewer-grid', lazyLog, className])}
                   style={{ backgroundColor, color }}
                   rowHeight={rowHeight}
-                  rowCount={this.state.count}
-                  rowRenderer={row => this.renderRow(row)}
+                  rowCount={count}
+                  rowRenderer={this.renderRow}
                   noRowsRenderer={this.renderNoRows}
                   onScroll={meta => {
                     if (this.onScroll) {
                       this.onScroll(meta);
                     }
                   }}
-                  {...restProps}
                   height={sizes.height}
                   width={sizes.width}
-                  scrollTop={this.state.scrollTop}
+                  scrollTop={scrollTop}
                   scrollToIndex={this.state.scrollToIndex || this.props.scrollToIndex}
+                  {...restProps}
                 />
               </Fragment>
             </div>
