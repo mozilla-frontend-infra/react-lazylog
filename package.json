@@ -4,7 +4,7 @@
   "description": "Document viewer",
   "license": "MPL-2.0",
   "main": "build/index.js",
-  "module": "es/index.js",
+  "module": "es5/index.js",
   "author": "Augustinas <augustinas@spotlightdata.co.uk>",
   "repository": "git@github.com:SpotlightData/react-lazylog.git",
   "publishConfig": {
@@ -31,9 +31,6 @@
     "@neutrinojs/jest": "^8.3.0",
     "@neutrinojs/react": "^8.3.0",
     "@neutrinojs/react-components": "^8.3.0",
-    "body-parser": "^1.18.3",
-    "express": "^4.16.3",
-    "isomorphic-fetch": "^2.2.1",
     "neutrino": "^8.3.0",
     "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
     "react": "^16.4.2",
