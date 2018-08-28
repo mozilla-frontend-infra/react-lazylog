@@ -162,6 +162,10 @@ export default class DocumentViewer extends Component {
      * emitter creation function will be passed as a second argument
      */
     textEmitter: func,
+    /**
+     * Allows to inject raw text at once, to improve large text performance
+     */
+    rawText: arrayOf(string),
   };
 
   static defaultProps = {
@@ -255,11 +259,13 @@ export default class DocumentViewer extends Component {
   }
 
   request() {
-    const { url, fetchOptions, stream: isStream, textEmitter } = this.props;
+    const { url, fetchOptions, stream: isStream, textEmitter, rawText } = this.props;
 
     this.endRequest();
     if (textEmitter) {
       this.emitter = textEmitter(encode, mitt);
+    } else if (rawText) {
+      this.emitter = this.injectRaw(rawText);
     } else {
       this.emitter = isStream ? stream(url, fetchOptions) : request(url, fetchOptions);
     }
@@ -277,6 +283,43 @@ export default class DocumentViewer extends Component {
       this.emitter.off('error', this.handleError);
       this.emitter = null;
     }
+  }
+
+  injectRaw(text) {
+    const emitter = mitt();
+    emitter.on('start', () => {
+      this.setState(
+        (prevState, props) => {
+          const { scrollToLine, follow } = props;
+          const { lineLimit, count: previousCount } = prevState;
+          const offset = 0;
+          const lines = List().withMutations(lines => {
+            let index = 0;
+            while (index < text.length) {
+              lines.push(encode(text[index]));
+              index += 1;
+            }
+          });
+          const count = lines.count();
+          const scrollToIndex = getScrollIndex({
+            follow,
+            scrollToLine,
+            previousCount,
+            count,
+            offset,
+          });
+
+          return {
+            lines,
+            offset,
+            count,
+            scrollToIndex,
+          };
+        },
+        () => emitter.emit('end')
+      );
+    });
+    return emitter;
   }
 
   handleUpdate = moreLines =>

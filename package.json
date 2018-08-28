@@ -20,7 +20,7 @@
     "viewer"
   ],
   "scripts": {
-    "start": "neutrino start",
+    "start": "neutrino styleguide:start",
     "build": "NODE_ENV=production neutrino build",
     "lint": "neutrino lint",
     "test": "neutrino test",

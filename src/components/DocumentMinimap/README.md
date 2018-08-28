@@ -340,10 +340,8 @@ const search = [entitySearch, textSearch];
     width={902}
     search={search}
     selectableLines
-    textEmitter={textEmitter}
-    extraContentRender={props =>
-      console.log(props) || <DocumentMinimap {...props} height={550} width={200} />
-    }
+    rawText={text.split('\n')}
+    extraContentRender={props => <DocumentMinimap {...props} height={550} width={200} />}
   />
 </div>;
 ```
