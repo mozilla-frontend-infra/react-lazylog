@@ -10,6 +10,7 @@ module.exports = {
       },
     ],
     neutrino => {
+      // Because we use prettier, we don't care about linting
       neutrino.config.module.rules.delete('lint');
     },
   ],

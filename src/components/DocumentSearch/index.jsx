@@ -1,18 +1,20 @@
 import { PureComponent } from 'react';
 import DocumentViewer from '../DocumentViewer';
 import Worker from './search.worker';
+import Search from '../Search';
 
 export default class DocumentSearch extends PureComponent {
-  state = { worker: undefined };
+  constructor(props) {
+    super(props);
+    this.search = Search.create(() => new Worker());
+  }
 
   componentDidMount() {
-    this.setState({ worker: new Worker() });
+    this.search.start();
   }
 
   componentWillUnmount() {
-    if (this.state.worker) {
-      this.state.worker.terminate();
-    }
+    this.search.remove();
   }
 
   waitForWorker(cb) {
@@ -25,19 +27,7 @@ export default class DocumentSearch extends PureComponent {
     }
   }
 
-  highlighter = (lines, search) => {
-    return new Promise(res => {
-      this.waitForWorker(worker => {
-        worker.onmessage = e => {
-          res({ lines: e.data });
-        };
-        // Need to convert it to regular array, else it can't be transfered
-        worker.postMessage({ lines: lines.toArray(), search });
-      });
-    });
-  };
-
   render() {
-    return <DocumentViewer highlighter={this.highlighter} {...this.props} />;
+    return <DocumentViewer highlighter={this.search.highlighter} {...this.props} />;
   }
 }
