@@ -1,45 +1,50 @@
 {
-  "name": "react-lazylog",
-  "version": "3.1.3",
-  "description": "React Lazy Logviewer",
+  "name": "@spotlightdata/document-viewer",
+  "version": "1.0.2",
+  "description": "Document viewer",
   "license": "MPL-2.0",
-  "repository": "mozilla-frontend-infra/react-lazylog",
   "main": "build/index.js",
+  "module": "es5/index.js",
+  "author": "Augustinas <augustinas@spotlightdata.co.uk>",
+  "repository": "git@github.com:SpotlightData/react-lazylog.git",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "build",
-    "es5",
-    "src"
+    "es5"
   ],
   "keywords": [
     "react",
-    "log",
-    "viewer",
-    "logviewer",
-    "lazy",
-    "lazylog"
+    "document",
+    "viewer"
   ],
   "scripts": {
-    "build": "neutrino build",
-    "prepare": "neutrino build",
-    "lint": "neutrino lint",
     "start": "neutrino styleguide:start",
-    "precommit": "neutrino stage",
-    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
+    "build": "NODE_ENV=production neutrino build",
+    "lint": "neutrino lint",
+    "test": "neutrino test",
+    "docs": "NEUTRINO_ENV=docs neutrino styleguide:start"
   },
   "devDependencies": {
-    "babel-polyfill": "^6.26.0",
-    "gh-pages": "^1.1.0",
-    "neutrino": "^8.2.1",
+    "@neutrinojs/airbnb": "^8.3.0",
+    "@neutrinojs/jest": "^8.3.0",
+    "@neutrinojs/react": "^8.3.0",
+    "@neutrinojs/react-components": "^8.3.0",
+    "neutrino": "^8.3.0",
     "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
-    "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "fetch-readablestream": "^0.1.0",
     "immutable": "^3.8.2",
+    "lodash.throttle": "^4.1.1",
     "mitt": "^1.1.2",
     "prop-types": "^15.6.1",
     "react-virtualized": "^9.10.1",
+    "shortid": "^2.2.12",
     "text-encoding-utf-8": "^1.0.1",
     "web-streams-polyfill": "^1.3.2",
     "whatwg-fetch": "^2.0.4"

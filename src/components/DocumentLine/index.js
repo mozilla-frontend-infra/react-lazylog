@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import { arrayOf, bool, func, number, object, shape, string } from 'prop-types';
+import { arrayOf, bool, func, number, object, shape, string, oneOfType } from 'prop-types';
 import LineNumber from '../LineNumber';
-import LineContent from '../LineContent';
-import { line, lineHighlight, lineSelectable } from './index.module.css';
+import LineContent from '../DocumentLineContent';
+import { line, lineSelectable } from './index.module.css';
 
 /**
  * A single row of content, containing both the line number
@@ -10,11 +10,7 @@ import { line, lineHighlight, lineSelectable } from './index.module.css';
  */
 export default class Line extends Component {
   static propTypes = {
-    data: arrayOf(
-      shape({
-        text: string,
-      })
-    ).isRequired,
+    data: arrayOf(oneOfType([object, string])).isRequired,
     number,
     rowHeight: number,
     highlight: bool,
@@ -53,9 +49,7 @@ export default class Line extends Component {
       highlightClassName,
     } = this.props;
     const selectableClass = selectable ? ` ${lineSelectable}` : '';
-    const highlightClass = highlight
-      ? ` ${lineHighlight} ${highlightClassName}`
-      : '';
+    const highlightClass = highlight ? ` ${highlightClassName}` : '';
     const classes = `${line}${selectableClass}${highlightClass} ${className}`;
     const lineStyle = {
       ...style,
@@ -63,20 +57,10 @@ export default class Line extends Component {
       minWidth: style ? style.width || '100%' : '100%',
       width: null,
     };
-
     return (
       <div className={classes} style={lineStyle}>
-        <LineNumber
-          number={number}
-          highlight={highlight}
-          onClick={onLineNumberClick}
-        />
-        <LineContent
-          number={number}
-          onClick={onRowClick}
-          formatPart={formatPart}
-          data={data}
-        />
+        <LineNumber number={number} highlight={highlight} onClick={onLineNumberClick} />
+        <LineContent number={number} onClick={onRowClick} formatPart={formatPart} data={data} />
       </div>
     );
   }

@@ -1,2 +1,3 @@
-export { default as LazyLog } from './LazyLog';
-export { default as ScrollFollow } from './ScrollFollow';
+export { default as DocumentViewer } from './DocumentViewer';
+export { default as DocumentMinimap } from './DocumentMinimap';
+export { default as Search } from './Search';

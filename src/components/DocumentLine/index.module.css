@@ -1,0 +1,9 @@
+.line {
+  margin: 0;
+  user-select: none;
+  display: flex;
+}
+
+.lineSelectable {
+  user-select: text;
+}
