@@ -17,16 +17,6 @@ export default class DocumentSearch extends PureComponent {
     this.search.remove();
   }
 
-  waitForWorker(cb) {
-    if (this.state.worker) {
-      cb(this.state.worker);
-    } else {
-      setTimeout(() => {
-        this.waitForWorker(cb);
-      }, 300);
-    }
-  }
-
   render() {
     return <DocumentViewer highlighter={this.search.highlighter} {...this.props} />;
   }
