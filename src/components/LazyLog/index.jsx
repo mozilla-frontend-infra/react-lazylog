@@ -131,6 +131,12 @@ export default class LazyLog extends Component {
      * Specify an additional className to append to highlighted lines.
      */
     highlightLineClassName: string,
+    /**
+     * Number of extra lines to show at the bottom of the log.
+     * Set this to 1 so that Linux users can see the last line
+     * of the log output.
+     */
+    extraLines: number,
   };
 
   static defaultProps = {
@@ -149,6 +155,7 @@ export default class LazyLog extends Component {
       overflowX: 'scroll',
     },
     style: {},
+    extraLines: 0,
     onError: null,
     onHighlight: null,
     onLoad: null,
@@ -405,6 +412,7 @@ export default class LazyLog extends Component {
     } = this.props;
     const { highlight, lines, offset } = this.state;
     const number = index + 1 + offset;
+    const line = lines.get(index);
 
     return (
       <Line
@@ -418,7 +426,7 @@ export default class LazyLog extends Component {
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
-        data={ansiparse(decode(lines.get(index)))}
+        data={line && ansiparse(decode(line))}
       />
     );
   };
@@ -456,7 +464,7 @@ export default class LazyLog extends Component {
         {({ height, width }) => (
           <VirtualList
             className={`react-lazylog ${lazyLog}`}
-            rowCount={this.state.count}
+            rowCount={this.state.count + this.props.extraLines}
             rowRenderer={row => this.renderRow(row)}
             noRowsRenderer={this.renderNoRows}
             {...this.props}

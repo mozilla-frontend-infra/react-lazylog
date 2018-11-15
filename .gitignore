@@ -62,3 +62,6 @@ lib
 build
 styleguide
 es5
+
+# Webstorm project specific settings
+.idea/
