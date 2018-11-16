@@ -6,11 +6,13 @@ const fetcher = Promise.resolve().then(
   () =>
     'ReadableStream' in self && 'body' in self.Response.prototype
       ? self.fetch
-      : import('web-streams-polyfill').then(({ ReadableStream }) => {
-          self.ReadableStream = ReadableStream;
+      : import('@mattiasbuelens/web-streams-polyfill/ponyfill').then(
+          ({ ReadableStream }) => {
+            self.ReadableStream = ReadableStream;
 
-          return import('fetch-readablestream');
-        })
+            return import('fetch-readablestream');
+          }
+        )
 );
 
 export const recurseReaderAsEvent = async (reader, emitter) => {

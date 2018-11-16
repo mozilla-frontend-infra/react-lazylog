@@ -35,13 +35,13 @@
     "react-dom": "^16.3.1"
   },
   "dependencies": {
-    "fetch-readablestream": "^0.1.0",
+    "@mattiasbuelens/web-streams-polyfill": "^0.2.0",
+    "fetch-readablestream": "^0.2.0",
     "immutable": "^3.8.2",
     "mitt": "^1.1.2",
     "prop-types": "^15.6.1",
-    "react-virtualized": "^9.10.1",
+    "react-virtualized": "^9.21.0",
     "text-encoding-utf-8": "^1.0.1",
-    "web-streams-polyfill": "^1.3.2",
     "whatwg-fetch": "^2.0.4"
   },
   "peerDependencies": {
