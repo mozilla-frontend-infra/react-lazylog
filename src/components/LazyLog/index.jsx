@@ -569,13 +569,15 @@ export default class LazyLog extends Component {
       lineClassName,
       highlightLineClassName,
     } = this.props;
-    const { error, loaded } = this.state;
+    const { error, count } = this.state;
 
     if (error) {
       return this.renderError();
     }
 
-    if (loaded) {
+    // We don't do `if (loaded) {}` in order to handle
+    // the edge case where the log is streaming
+    if (count) {
       return (
         <Line
           className={lineClassName}
@@ -619,6 +621,7 @@ export default class LazyLog extends Component {
             onClearSearch={this.handleClearSearch}
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
+            disabled={count === 0}
           />
         )}
         <AutoSizer
@@ -627,7 +630,9 @@ export default class LazyLog extends Component {
           {({ height, width }) => (
             <VirtualList
               className={`react-lazylog ${lazyLog}`}
-              rowCount={rowCount + this.props.extraLines}
+              rowCount={
+                rowCount === 0 ? rowCount : rowCount + this.props.extraLines
+              }
               rowRenderer={row => this.renderRow(row)}
               noRowsRenderer={this.renderNoRows}
               {...this.props}

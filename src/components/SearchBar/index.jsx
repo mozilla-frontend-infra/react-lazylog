@@ -34,6 +34,10 @@ export default class SearchBar extends Component {
      * If true, then only lines that match the search term will be displayed.
      */
     filterActive: bool,
+    /**
+     * If true, the input field and filter button will be disabled.
+     */
+    disabled: bool,
   };
 
   static defaultProps = {
@@ -42,6 +46,7 @@ export default class SearchBar extends Component {
     onFilterLinesWithMatches: () => {},
     resultsCount: 0,
     filterActive: false,
+    disabled: false,
   };
 
   state = {
@@ -70,7 +75,7 @@ export default class SearchBar extends Component {
   };
 
   render() {
-    const { resultsCount, filterActive } = this.props;
+    const { resultsCount, filterActive, disabled } = this.props;
     const matchesLabel = `match${resultsCount === 1 ? '' : 'es'}`;
     const filterIcon = filterActive ? active : inactive;
 
@@ -84,8 +89,10 @@ export default class SearchBar extends Component {
           className={`react-lazylog-searchbar-input ${searchInput}`}
           onChange={this.handleSearchChange}
           value={this.state.keywords}
+          disabled={disabled}
         />
         <button
+          disabled={disabled}
           className={`react-lazylog-searchbar-filter ${button} ${filterIcon}`}
           onClick={this.handleFilterToggle}>
           <FilterLinesIcon />
