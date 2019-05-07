@@ -30,7 +30,7 @@ export default (url, options) => {
       const encodedLog = new Uint8Array(arrayBuffer);
       const { lines } = convertBufferToLines(encodedLog);
 
-      emitter.emit('update', lines);
+      emitter.emit('update', { lines });
       emitter.emit('end', encodedLog);
     } catch (err) {
       emitter.emit('error', err);

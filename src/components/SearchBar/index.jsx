@@ -1,7 +1,14 @@
 import { Component } from 'react';
-import { func, number } from 'prop-types';
-import FilterLinesToggle from './FilterLinesToggle';
-import { searchBar, searchInput } from './index.module.css';
+import { bool, func, number } from 'prop-types';
+import FilterLinesIcon from './FilterLinesIcon';
+import { SEARCH_MIN_KEYWORDS } from '../../utils';
+import {
+  searchBar,
+  searchInput,
+  button,
+  active,
+  inactive,
+} from './index.module.css';
 
 export default class SearchBar extends Component {
   static propTypes = {
@@ -23,6 +30,10 @@ export default class SearchBar extends Component {
      * executing the search algorithm.
      */
     resultsCount: number,
+    /**
+     * If true, then only lines that match the search term will be displayed.
+     */
+    filterActive: bool,
   };
 
   static defaultProps = {
@@ -30,19 +41,28 @@ export default class SearchBar extends Component {
     onClearSearch: () => {},
     onFilterLinesWithMatches: () => {},
     resultsCount: 0,
+    filterActive: false,
   };
 
   state = {
     keywords: '',
   };
 
-  handleOnChange = e => {
+  handleFilterToggle = () => {
+    this.props.onFilterLinesWithMatches(!this.props.filterActive);
+  };
+
+  handleSearchChange = e => {
     const { value: keywords } = e.target;
+
+    this.setState({ keywords }, () => this.search());
+  };
+
+  search = () => {
+    const { keywords } = this.state;
     const { onSearch, onClearSearch } = this.props;
 
-    this.setState({ keywords });
-
-    if (keywords && keywords.length > 2) {
+    if (keywords && keywords.length > SEARCH_MIN_KEYWORDS) {
       onSearch(keywords);
     } else {
       onClearSearch();
@@ -50,22 +70,31 @@ export default class SearchBar extends Component {
   };
 
   render() {
-    const { resultsCount, onFilterLinesWithMatches } = this.props;
+    const { resultsCount, filterActive } = this.props;
     const matchesLabel = `match${resultsCount === 1 ? '' : 'es'}`;
+    const filterIcon = filterActive ? active : inactive;
 
     return (
-      <div className={searchBar}>
+      <div className={`react-lazylog-searchbar ${searchBar}`}>
         <input
+          autoComplete="off"
           type="text"
           name="search"
           placeholder="Search"
-          className={searchInput}
-          onChange={this.handleOnChange}
+          className={`react-lazylog-searchbar-input ${searchInput}`}
+          onChange={this.handleSearchChange}
           value={this.state.keywords}
         />
-        <FilterLinesToggle onToggle={onFilterLinesWithMatches} />
-        <span>
-          {this.props.resultsCount} {matchesLabel}
+        <button
+          className={`react-lazylog-searchbar-filter ${button} ${filterIcon}`}
+          onClick={this.handleFilterToggle}>
+          <FilterLinesIcon />
+        </button>
+        <span
+          className={`react-lazylog-searchbar-matches ${
+            resultsCount ? active : inactive
+          }`}>
+          {resultsCount} {matchesLabel}
         </span>
       </div>
     );

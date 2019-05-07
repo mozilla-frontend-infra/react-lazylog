@@ -14,6 +14,8 @@ import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
 import { decode } from '../../encoding';
 import {
+  SEARCH_BAR_HEIGHT,
+  SEARCH_MIN_KEYWORDS,
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
@@ -274,8 +276,9 @@ export default class LazyLog extends Component {
     }
   }
 
-  handleUpdate = moreLines => {
-    const { scrollToLine, follow } = this.props;
+  handleUpdate = ({ lines: moreLines, encodedLog }) => {
+    this.encodedLog = encodedLog;
+    const { scrollToLine, follow, stream } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
     let lines = this.state.lines.concat(moreLines);
@@ -301,6 +304,10 @@ export default class LazyLog extends Component {
       count,
       scrollToIndex,
     });
+
+    if (stream) {
+      this.forceSearch();
+    }
   };
 
   handleEnd = encodedLog => {
@@ -321,6 +328,9 @@ export default class LazyLog extends Component {
   };
 
   handleHighlight = e => {
+    const { onHighlight } = this.props;
+    const { isFilteringLinesWithMatches } = this.state;
+
     if (!e.target.id) {
       return;
     }
@@ -346,10 +356,21 @@ export default class LazyLog extends Component {
     }
 
     const highlight = getHighlightRange(range);
+    const state = { highlight };
 
-    this.setState({ highlight }, () => {
-      if (this.props.onHighlight) {
-        this.props.onHighlight(highlight);
+    if (isFilteringLinesWithMatches) {
+      Object.assign(state, {
+        scrollToIndex: getScrollIndex({ scrollToLine: lineNumber }),
+      });
+    }
+
+    this.setState(state, () => {
+      if (onHighlight) {
+        onHighlight(highlight);
+      }
+
+      if (isFilteringLinesWithMatches) {
+        this.handleFilterLinesWithMatches(false);
       }
     });
   };
@@ -357,7 +378,7 @@ export default class LazyLog extends Component {
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
     const currentResultLines =
-      keywords === searchKeywords
+      !this.props.stream && keywords === searchKeywords
         ? resultLines
         : searchLines(keywords, this.encodedLog);
 
@@ -369,6 +390,14 @@ export default class LazyLog extends Component {
       },
       this.filterLinesWithMatches
     );
+  };
+
+  forceSearch = () => {
+    const { searchKeywords } = this.state;
+
+    if (searchKeywords && searchKeywords.length > SEARCH_MIN_KEYWORDS) {
+      this.handleSearch(this.state.searchKeywords);
+    }
   };
 
   handleClearSearch = () => {
@@ -559,35 +588,22 @@ export default class LazyLog extends Component {
     return <Loading />;
   };
 
-  renderSearchBar = () => {
-    if (this.props.enableSearch) {
-      return (
-        <SearchBar
-          onSearch={this.handleSearch}
-          onClearSearch={this.handleClearSearch}
-          onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
-          resultsCount={this.state.resultLines.length}
-        />
-      );
-    }
-  };
-
   calculateListHeight = autoSizerHeight => {
     const { height, enableSearch } = this.props;
 
     if (enableSearch) {
-      const searchBarHeight = 45;
-
       return height === 'auto'
-        ? autoSizerHeight - searchBarHeight
-        : height - searchBarHeight;
+        ? autoSizerHeight - SEARCH_BAR_HEIGHT
+        : height - SEARCH_BAR_HEIGHT;
     }
 
     return height === 'auto' ? autoSizerHeight : height;
   };
 
   render() {
+    const { enableSearch } = this.props;
     const {
+      resultLines,
       isFilteringLinesWithMatches,
       filteredLines = List(),
       count,
@@ -596,7 +612,15 @@ export default class LazyLog extends Component {
 
     return (
       <Fragment>
-        {this.renderSearchBar()}
+        {enableSearch && (
+          <SearchBar
+            filterActive={isFilteringLinesWithMatches}
+            onSearch={this.handleSearch}
+            onClearSearch={this.handleClearSearch}
+            onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
+            resultsCount={resultLines.length}
+          />
+        )}
         <AutoSizer
           disableHeight={this.props.height !== 'auto'}
           disableWidth={this.props.width !== 'auto'}>

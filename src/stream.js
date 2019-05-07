@@ -40,12 +40,12 @@ export default (url, options) => {
     const { lines, remaining } = convertBufferToLines(data, overage);
 
     overage = remaining;
-    emitter.emit('update', lines);
+    emitter.emit('update', { lines, encodedLog });
   });
 
   emitter.on('done', () => {
     if (overage) {
-      emitter.emit('update', List.of(overage));
+      emitter.emit('update', { lines: List.of(overage), encodedLog });
     }
 
     emitter.emit('end', encodedLog);

@@ -8,6 +8,7 @@
   color: #d6d6d6;
   font-weight: 400;
   will-change: initial;
+  outline: none;
 }
 
 .searchMatch {
