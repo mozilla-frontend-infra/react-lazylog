@@ -1,9 +1,8 @@
 import mitt from 'mitt';
 import { convertBufferToLines } from './utils';
 
-const fetcher = Promise.resolve().then(
-  () =>
-    'fetch' in self ? self.fetch : import('whatwg-fetch').then(() => self.fetch)
+const fetcher = Promise.resolve().then(() =>
+  'fetch' in self ? self.fetch : import('whatwg-fetch').then(() => self.fetch)
 );
 
 export default (url, options) => {

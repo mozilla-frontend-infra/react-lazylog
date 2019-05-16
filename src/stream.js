@@ -2,17 +2,16 @@ import { List } from 'immutable';
 import mitt from 'mitt';
 import { convertBufferToLines } from './utils';
 
-const fetcher = Promise.resolve().then(
-  () =>
-    'ReadableStream' in self && 'body' in self.Response.prototype
-      ? self.fetch
-      : import('@mattiasbuelens/web-streams-polyfill/ponyfill').then(
-          ({ ReadableStream }) => {
-            self.ReadableStream = ReadableStream;
+const fetcher = Promise.resolve().then(() =>
+  'ReadableStream' in self && 'body' in self.Response.prototype
+    ? self.fetch
+    : import('@mattiasbuelens/web-streams-polyfill/ponyfill').then(
+        ({ ReadableStream }) => {
+          self.ReadableStream = ReadableStream;
 
-            return import('fetch-readablestream');
-          }
-        )
+          return import('fetch-readablestream');
+        }
+      )
 );
 
 export const recurseReaderAsEvent = async (reader, emitter) => {
