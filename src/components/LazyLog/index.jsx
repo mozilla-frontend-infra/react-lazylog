@@ -426,7 +426,7 @@ export default class LazyLog extends Component {
   filterLinesWithMatches = () => {
     const { resultLines, lines, isFilteringLinesWithMatches } = this.state;
 
-    if (resultLines.length && isFilteringLinesWithMatches) {
+    if (resultLines.length > 0 && isFilteringLinesWithMatches) {
       const resultLineUniqueIndexes = [...new Set(resultLines)];
 
       this.setState({

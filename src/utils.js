@@ -94,13 +94,13 @@ export const getLinesLengthRanges = rawLog => {
     const next = rawLog[index + 1];
 
     if (isNewline(current, next)) {
+      linesRanges.push(index);
       lastNewlineIndex =
         current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
           ? index + 2
           : index + 1;
 
       index = lastNewlineIndex;
-      linesRanges.push(index);
     } else {
       index += 1;
     }
