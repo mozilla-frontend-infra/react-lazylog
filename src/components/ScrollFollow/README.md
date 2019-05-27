@@ -10,7 +10,7 @@ const url = 'https://runkit.io/eliperelman/streaming-endpoint/branches/master';
   <ScrollFollow
     startFollowing
     render={({ onScroll, follow, startFollowing, stopFollowing }) => (
-      <LazyLog url={url} stream onScroll={onScroll} follow={follow} />
+      <LazyLog extraLines={1} enableSearch url={url} stream onScroll={onScroll} follow={follow} />
     )}
   />
 </div>

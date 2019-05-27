@@ -1,7 +1,10 @@
 import { List, Range } from 'immutable';
+import reactStringReplace from 'react-string-replace';
 
 export const ENCODED_NEWLINE = 10; // \n
 export const ENCODED_CARRIAGE_RETURN = 13; // \r
+export const SEARCH_BAR_HEIGHT = 45;
+export const SEARCH_MIN_KEYWORDS = 2;
 
 export const isNewline = current =>
   current === ENCODED_NEWLINE || current === ENCODED_CARRIAGE_RETURN;
@@ -78,4 +81,48 @@ export const convertBufferToLines = (current, previous) => {
     remaining:
       index !== lastNewlineIndex ? buffer.slice(lastNewlineIndex) : null,
   };
+};
+
+export const getLinesLengthRanges = rawLog => {
+  const { length } = rawLog;
+  const linesRanges = [];
+  let lastNewlineIndex = 0;
+  let index = 0;
+
+  while (index < length) {
+    const current = rawLog[index];
+    const next = rawLog[index + 1];
+
+    if (isNewline(current, next)) {
+      linesRanges.push(index);
+      lastNewlineIndex =
+        current === ENCODED_CARRIAGE_RETURN && next === ENCODED_NEWLINE
+          ? index + 2
+          : index + 1;
+
+      index = lastNewlineIndex;
+    } else {
+      index += 1;
+    }
+  }
+
+  return linesRanges;
+};
+
+export const searchFormatPart = ({
+  searchKeywords,
+  nextFormatPart,
+  replaceJsx,
+}) => part => {
+  let formattedPart = part;
+
+  if (nextFormatPart) {
+    formattedPart = nextFormatPart(part);
+  }
+
+  if (part.includes(searchKeywords)) {
+    return reactStringReplace(formattedPart, searchKeywords, replaceJsx);
+  }
+
+  return formattedPart;
 };
