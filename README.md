@@ -12,6 +12,7 @@ See the demo on the styleguide at https://mozilla-frontend-infra.github.io/react
 - Supports remote text files as well as chunked/streamed responses
 - Line highlighting
 - Customizable styling
+- Searching through log
 - Works in latest browser versions, including iOS Safari and Android Chrome
 - v3+ requires React 16.3+
 
