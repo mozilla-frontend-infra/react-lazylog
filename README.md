@@ -38,16 +38,6 @@ import { LazyLog } from 'react-lazylog';
 const { LazyLog } = require('react-lazylog');
 ```
 
-**Important! If you are using Create React App, you will need to import the ES5 versions of components.
-These are located `react-lazylog/es5`, e.g.:**
-
-```js
-import { LazyLog } from 'react-lazylog/es5';
-
-// using require
-const { LazyLog } = require('react-lazylog/es5');
-```
-
 ## `<LazyLog />`
 
 ### Usage
