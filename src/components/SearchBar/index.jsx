@@ -93,14 +93,16 @@ export default class SearchBar extends Component {
         />
         <button
           disabled={disabled}
-          className={`react-lazylog-searchbar-filter ${button} ${filterIcon}`}
+          className={`react-lazylog-searchbar-filter ${
+            filterActive ? 'active' : 'inactive'
+          } ${button} ${filterIcon}`}
           onClick={this.handleFilterToggle}>
           <FilterLinesIcon />
         </button>
         <span
           className={`react-lazylog-searchbar-matches ${
-            resultsCount ? active : inactive
-          }`}>
+            resultsCount ? 'active' : 'inactive'
+          } ${resultsCount ? active : inactive}`}>
           {resultsCount} {matchesLabel}
         </span>
       </div>
