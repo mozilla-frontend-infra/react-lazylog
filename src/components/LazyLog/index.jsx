@@ -19,6 +19,7 @@ import {
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
+  convertBufferToLines,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -38,7 +39,11 @@ export default class LazyLog extends Component {
      * The URL from which to fetch content. Subject to same-origin policy,
      * so must be accessible via fetch on same domain or via CORS.
      */
-    url: string.isRequired,
+    url: string,
+    /**
+     * String containing Text to display.
+     */
+    text: string,
     /**
      * Options object which will be passed through to the `fetch` request.
      * Defaults to `{ credentials: 'omit' }`.
@@ -259,7 +264,24 @@ export default class LazyLog extends Component {
   }
 
   request() {
-    const { url, fetchOptions, stream: isStream } = this.props;
+    const { url, fetchOptions, stream: isStream, text } = this.props;
+
+    if (text) {
+      const buf = new ArrayBuffer(text.length * 2); // 2 bytes for each char
+      const bufView = new Uint16Array(buf);
+
+      for (let i = 0, strLen = text.length; i < strLen; i += 1) {
+        bufView[i] = text.charCodeAt(i);
+      }
+
+      const encodedLog = bufView;
+      const { lines } = convertBufferToLines(encodedLog);
+
+      this.handleUpdate({ lines, encodedLog });
+      this.handleEnd(encodedLog);
+
+      return;
+    }
 
     this.endRequest();
     this.emitter = isStream
@@ -286,7 +308,7 @@ export default class LazyLog extends Component {
     const { scrollToLine, follow, stream } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
-    let lines = this.state.lines.concat(moreLines);
+    let lines = (this.state.lines || List()).concat(moreLines);
     let count = lines.count();
 
     if (count > lineLimit) {
