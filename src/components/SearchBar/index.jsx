@@ -63,6 +63,12 @@ export default class SearchBar extends Component {
     this.setState({ keywords }, () => this.search());
   };
 
+  handleSearchKeyPress = e => {
+    if (e.key === 'Enter') {
+      this.handleFilterToggle();
+    }
+  };
+
   search = () => {
     const { keywords } = this.state;
     const { onSearch, onClearSearch } = this.props;
@@ -88,6 +94,7 @@ export default class SearchBar extends Component {
           placeholder="Search"
           className={`react-lazylog-searchbar-input ${searchInput}`}
           onChange={this.handleSearchChange}
+          onKeyPress={this.handleSearchKeyPress}
           value={this.state.keywords}
           disabled={disabled}
         />
