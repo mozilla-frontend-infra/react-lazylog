@@ -23,7 +23,9 @@
     "lint": "neutrino lint",
     "start": "neutrino styleguide:start",
     "precommit": "neutrino stage",
-    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
+    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
@@ -42,9 +44,11 @@
     "react-string-replace": "^0.4.1",
     "react-virtualized": "^9.21.0",
     "text-encoding-utf-8": "^1.0.1",
-    "whatwg-fetch": "^2.0.4"
+    "whatwg-fetch": "^2.0.4",
+    "snyk": "^1.189.0"
   },
   "peerDependencies": {
     "react": ">=16.3.0"
-  }
+  },
+  "snyk": true
 }
