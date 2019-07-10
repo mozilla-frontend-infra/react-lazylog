@@ -181,21 +181,17 @@ export default class LazyLog extends Component {
 
   static getDerivedStateFromProps(
     { highlight, follow, scrollToLine, rowHeight, url: nextUrl },
-    {
+    { count, offset, url: previousUrl, highlight: previousHighlight }
+  ) {
+    const scrollToIndex = getScrollIndex({
+      follow,
+      scrollToLine,
       count,
       offset,
-      url: previousUrl,
-      highlight: previousHighlight,
-      isSearching,
-      scrollToIndex,
-    }
-  ) {
-    const newScrollToIndex = isSearching
-      ? scrollToIndex
-      : getScrollIndex({ follow, scrollToLine, count, offset });
+    });
 
     return {
-      scrollToIndex: newScrollToIndex,
+      scrollToIndex,
       lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
       highlight: highlight
         ? getHighlightRange(highlight)
