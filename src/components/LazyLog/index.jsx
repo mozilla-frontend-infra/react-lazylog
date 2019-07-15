@@ -638,9 +638,7 @@ export default class LazyLog extends Component {
               {...this.props}
               height={this.calculateListHeight(height)}
               width={this.props.width === 'auto' ? width : this.props.width}
-              scrollToIndex={
-                this.state.scrollToIndex || this.props.scrollToIndex
-              }
+              scrollToIndex={this.state.scrollToIndex}
             />
           )}
         </AutoSizer>
