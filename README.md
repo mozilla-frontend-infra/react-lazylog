@@ -1,5 +1,7 @@
 # React Lazylog
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/mozilla-frontend-infra/react-lazylog.svg)](https://greenkeeper.io/)
+
 React component that loads and views remote text in the browser lazily and efficiently.
 
 See the demo on the styleguide at https://mozilla-frontend-infra.github.io/react-lazylog
