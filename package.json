@@ -27,14 +27,14 @@
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
-    "gh-pages": "^1.1.0",
+    "gh-pages": "^2.0.1",
     "neutrino": "^8.2.1",
     "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
     "react": "^16.3.1",
     "react-dom": "^16.3.1"
   },
   "dependencies": {
-    "@mattiasbuelens/web-streams-polyfill": "^0.2.0",
+    "@mattiasbuelens/web-streams-polyfill": "^0.3.2",
     "fetch-readablestream": "^0.2.0",
     "immutable": "^3.8.2",
     "mitt": "^1.1.2",
@@ -42,7 +42,7 @@
     "react-string-replace": "^0.4.1",
     "react-virtualized": "^9.21.0",
     "text-encoding-utf-8": "^1.0.1",
-    "whatwg-fetch": "^2.0.4"
+    "whatwg-fetch": "^3.0.0"
   },
   "peerDependencies": {
     "react": ">=16.3.0"
