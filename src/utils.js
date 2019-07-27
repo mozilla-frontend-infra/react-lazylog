@@ -112,6 +112,7 @@ export const getLinesLengthRanges = rawLog => {
 export const searchFormatPart = ({
   searchKeywords,
   nextFormatPart,
+  caseInsensitive,
   replaceJsx,
 }) => part => {
   let formattedPart = part;
@@ -120,7 +121,11 @@ export const searchFormatPart = ({
     formattedPart = nextFormatPart(part);
   }
 
-  if (part.includes(searchKeywords)) {
+  if (caseInsensitive) {
+    if (part.toLowerCase().includes(searchKeywords.toLowerCase())) {
+      return reactStringReplace(formattedPart, searchKeywords, replaceJsx);
+    }
+  } else if (part.includes(searchKeywords)) {
     return reactStringReplace(formattedPart, searchKeywords, replaceJsx);
   }
 
