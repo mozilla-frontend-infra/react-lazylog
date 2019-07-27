@@ -38,6 +38,10 @@ export default class SearchBar extends Component {
      * If true, the input field and filter button will be disabled.
      */
     disabled: bool,
+    /**
+     * If true, search will match words regardless of case.
+     */
+    caseInsensitive: bool,
   };
 
   static defaultProps = {
@@ -47,6 +51,7 @@ export default class SearchBar extends Component {
     resultsCount: 0,
     filterActive: false,
     disabled: false,
+    caseInsensitive: false,
   };
 
   state = {
@@ -71,10 +76,10 @@ export default class SearchBar extends Component {
 
   search = () => {
     const { keywords } = this.state;
-    const { onSearch, onClearSearch } = this.props;
+    const { onSearch, onClearSearch, caseInsensitive } = this.props;
 
     if (keywords && keywords.length > SEARCH_MIN_KEYWORDS) {
-      onSearch(keywords);
+      onSearch(keywords, caseInsensitive);
     } else {
       onClearSearch();
     }

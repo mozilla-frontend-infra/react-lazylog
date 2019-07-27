@@ -149,6 +149,10 @@ export default class LazyLog extends Component {
      * of the log output.
      */
     extraLines: number,
+    /**
+     * If true, search will match words regardless of case.
+     */
+    caseInsensitive: bool,
   };
 
   static defaultProps = {
@@ -177,6 +181,7 @@ export default class LazyLog extends Component {
     loadingComponent: Loading,
     lineClassName: '',
     highlightLineClassName: '',
+    caseInsensitive: false,
   };
 
   static getDerivedStateFromProps(
@@ -375,12 +380,12 @@ export default class LazyLog extends Component {
     });
   };
 
-  handleSearch = keywords => {
+  handleSearch = (keywords, caseInsensitive) => {
     const { resultLines, searchKeywords } = this.state;
     const currentResultLines =
       !this.props.stream && keywords === searchKeywords
         ? resultLines
-        : searchLines(keywords, this.encodedLog);
+        : searchLines(keywords, this.encodedLog, caseInsensitive);
 
     this.setState(
       {
@@ -452,6 +457,7 @@ export default class LazyLog extends Component {
             {text}
           </span>
         ),
+        caseInsensitive: this.props.caseInsensitive,
       });
     }
 
@@ -622,6 +628,7 @@ export default class LazyLog extends Component {
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
             disabled={count === 0}
+            caseInsensitive={this.props.caseInsensitive}
           />
         )}
         <AutoSizer
