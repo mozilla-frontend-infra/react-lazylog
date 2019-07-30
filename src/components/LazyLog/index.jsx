@@ -12,7 +12,7 @@ import {
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
-import { encode, decode } from '../../encoding';
+import { decode } from '../../encoding';
 import {
   SEARCH_BAR_HEIGHT,
   SEARCH_MIN_KEYWORDS,
@@ -382,23 +382,17 @@ export default class LazyLog extends Component {
 
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
-    let inputKeywords = keywords;
-
-    if (this.props.caseInsensitive) {
-      inputKeywords = inputKeywords.toLowerCase();
-      this.encodedLog = encode(decode(this.encodedLog).toLowerCase());
-    }
-
+    const { caseInsensitive, stream } = this.props;
     const currentResultLines =
-      !this.props.stream && inputKeywords === searchKeywords
+      !stream && keywords === searchKeywords
         ? resultLines
-        : searchLines(inputKeywords, this.encodedLog);
+        : searchLines(keywords, this.encodedLog, caseInsensitive);
 
     this.setState(
       {
         resultLines: currentResultLines,
         isSearching: true,
-        searchKeywords: inputKeywords,
+        searchKeywords: keywords,
       },
       this.filterLinesWithMatches
     );
