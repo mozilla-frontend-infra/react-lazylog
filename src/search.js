@@ -1,4 +1,4 @@
-import { encode } from './encoding';
+import { decode, encode } from './encoding';
 import { getLinesLengthRanges } from './utils';
 
 export const searchIndexes = (rawKeywords, rawLog) => {
@@ -50,9 +50,17 @@ export const searchIndexes = (rawKeywords, rawLog) => {
   return results;
 };
 
-export const searchLines = (rawKeywords, rawLog) => {
-  const results = searchIndexes(rawKeywords, rawLog);
-  const linesRanges = getLinesLengthRanges(rawLog);
+export const searchLines = (rawKeywords, rawLog, isCaseInsensitive) => {
+  let keywords = rawKeywords;
+  let log = rawLog;
+
+  if (isCaseInsensitive) {
+    keywords = keywords.toLowerCase();
+    log = encode(decode(log).toLowerCase());
+  }
+
+  const results = searchIndexes(keywords, log);
+  const linesRanges = getLinesLengthRanges(log);
   const maxLineRangeIndex = linesRanges.length;
   const maxResultIndex = results.length;
   const resultLines = [];
