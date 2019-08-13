@@ -576,10 +576,15 @@ export default class LazyLog extends Component {
       lineClassName,
       highlightLineClassName,
     } = this.props;
-    const { error, count } = this.state;
+    const { error, count, loaded } = this.state;
 
     if (error) {
       return this.renderError();
+    }
+
+    // Handle case where log is empty
+    if (!count && loaded) {
+      return null;
     }
 
     // We don't do `if (loaded) {}` in order to handle
