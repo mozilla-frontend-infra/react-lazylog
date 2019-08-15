@@ -25,6 +25,7 @@ import Loading from '../Loading';
 import SearchBar from '../SearchBar';
 import request from '../../request';
 import stream from '../../stream';
+import websocket from '../../websocket';
 import { searchLines } from '../../search';
 import { lazyLog, searchMatch } from './index.module.css';
 
@@ -45,10 +46,21 @@ export default class LazyLog extends Component {
      */
     fetchOptions: object,
     /**
+     * Options object which will be passed through to websocket.
+     * Available options are: `onOpen: (event, socket)`, `onClose: (event)`,
+     * `onError: (event)`, `formatMessage: (message: event.data)`.
+     */
+    websocketOptions: object,
+    /**
      * Set to `true` to specify remote URL will be streaming chunked data.
      * Defaults to `false` to download data until completion.
      */
     stream: bool,
+    /**
+     * Set to `true` to specify that url is a websocket URL.
+     * Defaults to `false` to download data until completion.
+     */
+    websocket: bool,
     /**
      * Set the height in pixels for the component.
      * Defaults to `'auto'` if unspecified. When the `height` is `'auto'`,
@@ -157,6 +169,7 @@ export default class LazyLog extends Component {
 
   static defaultProps = {
     stream: false,
+    websocket: false,
     height: 'auto',
     width: 'auto',
     follow: false,
@@ -177,6 +190,7 @@ export default class LazyLog extends Component {
     onHighlight: null,
     onLoad: null,
     formatPart: null,
+    websocketOptions: {},
     fetchOptions: { credentials: 'omit' },
     loadingComponent: Loading,
     lineClassName: '',
@@ -259,12 +273,25 @@ export default class LazyLog extends Component {
   }
 
   request() {
-    const { url, fetchOptions, stream: isStream } = this.props;
+    const {
+      url,
+      fetchOptions,
+      websocketOptions,
+      stream: isStream,
+      websocket: isWebsocket,
+    } = this.props;
 
     this.endRequest();
-    this.emitter = isStream
-      ? stream(url, fetchOptions)
-      : request(url, fetchOptions);
+
+    // which emitter do we use?
+    if (isWebsocket) {
+      this.emitter = websocket(url, websocketOptions);
+    } else {
+      this.emitter = isStream
+        ? stream(url, fetchOptions)
+        : request(url, fetchOptions);
+    }
+
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
@@ -283,7 +310,7 @@ export default class LazyLog extends Component {
 
   handleUpdate = ({ lines: moreLines, encodedLog }) => {
     this.encodedLog = encodedLog;
-    const { scrollToLine, follow, stream } = this.props;
+    const { scrollToLine, follow, stream, websocket } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
     let lines = this.state.lines.concat(moreLines);
@@ -310,7 +337,7 @@ export default class LazyLog extends Component {
       scrollToIndex,
     });
 
-    if (stream) {
+    if (stream || websocket) {
       this.forceSearch();
     }
   };
@@ -382,9 +409,9 @@ export default class LazyLog extends Component {
 
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
-    const { caseInsensitive, stream } = this.props;
+    const { caseInsensitive, stream, websocket } = this.props;
     const currentResultLines =
-      !stream && keywords === searchKeywords
+      !stream && !websocket && keywords === searchKeywords
         ? resultLines
         : searchLines(keywords, this.encodedLog, caseInsensitive);
 
