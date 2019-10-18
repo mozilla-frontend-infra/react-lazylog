@@ -267,7 +267,7 @@ export default class LazyLog extends Component {
 
   componentWillUnmount() {
     this.endRequest();
-    this.pollInterval && clearInterval(this.pollInterval);
+    this.interval && clearInterval(this.interval);
   }
 
   request() {
