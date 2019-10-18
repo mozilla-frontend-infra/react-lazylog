@@ -153,6 +153,11 @@ export default class LazyLog extends Component {
      * Flag to enable/disable case insensitive search
      */
     caseInsensitive: bool,
+    /**
+     * If provided, the frequency of polling the provided `props.url` in
+     * milliseconds
+     */
+    pollInterval: number,
   };
 
   static defaultProps = {
@@ -182,6 +187,7 @@ export default class LazyLog extends Component {
     lineClassName: '',
     highlightLineClassName: '',
     caseInsensitive: false,
+    pollInterval: null,
   };
 
   static getDerivedStateFromProps(
@@ -224,11 +230,16 @@ export default class LazyLog extends Component {
 
   componentDidMount() {
     this.request();
+    this.schedulePoll();
   }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.url !== this.props.url || prevState.url !== this.state.url) {
       this.request();
+    }
+
+    if (prevProps.pollInterval !== this.props.pollInterval) {
+      this.schedulePoll();
     }
 
     if (
@@ -256,6 +267,13 @@ export default class LazyLog extends Component {
 
   componentWillUnmount() {
     this.endRequest();
+
+    if (props.pollInterval !== null) {
+      this.interval = setInterval(
+        this.request.bind(this),
+        this.props.pollInterval
+      )
+    }
   }
 
   request() {
@@ -279,6 +297,10 @@ export default class LazyLog extends Component {
       this.emitter.off('error', this.handleError);
       this.emitter = null;
     }
+  }
+
+  schedulePoll() {
+    this.interval && clearInterval(this.interval)
   }
 
   handleUpdate = ({ lines: moreLines, encodedLog }) => {
