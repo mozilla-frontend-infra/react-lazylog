@@ -267,7 +267,7 @@ export default class LazyLog extends Component {
 
   componentWillUnmount() {
     this.endRequest();
-    this.interval && clearInterval(this.interval);
+    this.cancelPoll();
   }
 
   request() {
@@ -299,7 +299,14 @@ export default class LazyLog extends Component {
         this.request.bind(this),
         this.props.pollInterval
       );
+    } else {
+      this.cancelPoll();
     }
+  }
+
+  cancelPoll() {
+    this.interval && clearInterval(this.interval);
+    this.interval = null;
   }
 
   handleUpdate = ({ lines: moreLines, encodedLog }) => {
