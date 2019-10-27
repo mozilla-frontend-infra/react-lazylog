@@ -12,7 +12,7 @@ import {
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
-import { decode } from '../../encoding';
+import { decode, encode } from '../../encoding';
 import {
   SEARCH_BAR_HEIGHT,
   SEARCH_MIN_KEYWORDS,
@@ -41,7 +41,7 @@ export default class LazyLog extends Component {
      */
     url: string,
     /**
-     * String containing Text to display.
+     * String containing text to display.
      */
     text: string,
     /**
@@ -263,30 +263,33 @@ export default class LazyLog extends Component {
     this.endRequest();
   }
 
-  request() {
-    const { url, fetchOptions, stream: isStream, text } = this.props;
+  initEmitter() {
+    const { stream: isStream, url, fetchOptions } = this.props;
 
-    if (text) {
-      const buf = new ArrayBuffer(text.length * 2); // 2 bytes for each char
-      const bufView = new Uint16Array(buf);
-
-      for (let i = 0, strLen = text.length; i < strLen; i += 1) {
-        bufView[i] = text.charCodeAt(i);
-      }
-
-      const encodedLog = bufView;
-      const { lines } = convertBufferToLines(encodedLog);
-
-      this.handleUpdate({ lines, encodedLog });
-      this.handleEnd(encodedLog);
-
-      return;
+    if (isStream) {
+      return stream(url, fetchOptions);
     }
 
+    return request(url, fetchOptions);
+  }
+
+  request() {
+    const { text } = this.props;
+
     this.endRequest();
-    this.emitter = isStream
-      ? stream(url, fetchOptions)
-      : request(url, fetchOptions);
+
+    if (text) {
+      const encodedLog = encode(text);
+      const { lines, remaining } = convertBufferToLines(encodedLog);
+
+      this.handleUpdate({
+        lines: remaining ? lines.concat(remaining) : lines,
+        encodedLog,
+      });
+      this.handleEnd(encodedLog);
+    }
+
+    this.emitter = this.initEmitter();
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
