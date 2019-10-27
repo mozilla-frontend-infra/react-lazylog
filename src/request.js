@@ -27,9 +27,11 @@ export default (url, options) => {
 
       const arrayBuffer = await response.arrayBuffer();
       const encodedLog = new Uint8Array(arrayBuffer);
-      const { lines } = convertBufferToLines(encodedLog);
+      const { lines, remaining } = convertBufferToLines(encodedLog);
 
-      emitter.emit('update', { lines });
+      emitter.emit('update', {
+        lines: remaining ? lines.concat(remaining) : lines,
+      });
       emitter.emit('end', encodedLog);
     } catch (err) {
       emitter.emit('error', err);

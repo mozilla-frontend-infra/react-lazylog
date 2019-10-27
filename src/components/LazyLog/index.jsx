@@ -12,13 +12,14 @@ import {
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
 import ansiparse from '../../ansiparse';
-import { decode } from '../../encoding';
+import { decode, encode } from '../../encoding';
 import {
   SEARCH_BAR_HEIGHT,
   SEARCH_MIN_KEYWORDS,
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
+  convertBufferToLines,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -38,7 +39,11 @@ export default class LazyLog extends Component {
      * The URL from which to fetch content. Subject to same-origin policy,
      * so must be accessible via fetch on same domain or via CORS.
      */
-    url: string.isRequired,
+    url: string,
+    /**
+     * String containing text to display.
+     */
+    text: string,
     /**
      * Options object which will be passed through to the `fetch` request.
      * Defaults to `{ credentials: 'omit' }`.
@@ -258,13 +263,33 @@ export default class LazyLog extends Component {
     this.endRequest();
   }
 
+  initEmitter() {
+    const { stream: isStream, url, fetchOptions } = this.props;
+
+    if (isStream) {
+      return stream(url, fetchOptions);
+    }
+
+    return request(url, fetchOptions);
+  }
+
   request() {
-    const { url, fetchOptions, stream: isStream } = this.props;
+    const { text } = this.props;
 
     this.endRequest();
-    this.emitter = isStream
-      ? stream(url, fetchOptions)
-      : request(url, fetchOptions);
+
+    if (text) {
+      const encodedLog = encode(text);
+      const { lines, remaining } = convertBufferToLines(encodedLog);
+
+      this.handleUpdate({
+        lines: remaining ? lines.concat(remaining) : lines,
+        encodedLog,
+      });
+      this.handleEnd(encodedLog);
+    }
+
+    this.emitter = this.initEmitter();
     this.emitter.on('update', this.handleUpdate);
     this.emitter.on('end', this.handleEnd);
     this.emitter.on('error', this.handleError);
@@ -286,7 +311,7 @@ export default class LazyLog extends Component {
     const { scrollToLine, follow, stream } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
-    let lines = this.state.lines.concat(moreLines);
+    let lines = (this.state.lines || List()).concat(moreLines);
     let count = lines.count();
 
     if (count > lineLimit) {
