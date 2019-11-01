@@ -274,7 +274,7 @@ export default class LazyLog extends Component {
   }
 
   request() {
-    const { text } = this.props;
+    const { text, url } = this.props;
 
     this.endRequest();
 
@@ -289,11 +289,13 @@ export default class LazyLog extends Component {
       this.handleEnd(encodedLog);
     }
 
-    this.emitter = this.initEmitter();
-    this.emitter.on('update', this.handleUpdate);
-    this.emitter.on('end', this.handleEnd);
-    this.emitter.on('error', this.handleError);
-    this.emitter.emit('start');
+    if (url) {
+      this.emitter = this.initEmitter();
+      this.emitter.on('update', this.handleUpdate);
+      this.emitter.on('end', this.handleEnd);
+      this.emitter.on('error', this.handleError);
+      this.emitter.emit('start');
+    }
   }
 
   endRequest() {
