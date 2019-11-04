@@ -232,7 +232,11 @@ export default class LazyLog extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.url !== this.props.url || prevState.url !== this.state.url) {
+    if (
+      prevProps.url !== this.props.url ||
+      prevState.url !== this.state.url ||
+      prevProps.text !== this.props.text
+    ) {
       this.request();
     }
 
