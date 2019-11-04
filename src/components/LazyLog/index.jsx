@@ -8,6 +8,7 @@ import {
   object,
   oneOfType,
   string,
+  shape,
 } from 'prop-types';
 import { AutoSizer, List as VirtualList } from 'react-virtualized';
 import { List } from 'immutable';
@@ -26,6 +27,7 @@ import Loading from '../Loading';
 import SearchBar from '../SearchBar';
 import request from '../../request';
 import stream from '../../stream';
+import websocket from '../../websocket';
 import { searchLines } from '../../search';
 import { lazyLog, searchMatch } from './index.module.css';
 
@@ -49,11 +51,33 @@ export default class LazyLog extends Component {
      * Defaults to `{ credentials: 'omit' }`.
      */
     fetchOptions: object,
+
+    /**
+     * Options object which will be passed through to websocket.
+     */
+    websocketOptions: shape({
+      // a callback which is invoked when the websocket connection is opened.
+      onOpen: func,
+      // a callback which is invoked when the websocket connection is closed.
+      onClose: func,
+      // a callback which is invoked when there is an error opening the
+      // underlying websocket connection..
+      onError: func,
+      // a callback which formats the websocket data stream.
+      formatMessage: func,
+    }),
     /**
      * Set to `true` to specify remote URL will be streaming chunked data.
      * Defaults to `false` to download data until completion.
      */
     stream: bool,
+
+    /**
+     * Set to `true` to specify that url is a websocket URL.
+     * Defaults to `false` to download data until completion.
+     */
+    websocket: bool,
+
     /**
      * Set the height in pixels for the component.
      * Defaults to `'auto'` if unspecified. When the `height` is `'auto'`,
@@ -162,6 +186,7 @@ export default class LazyLog extends Component {
 
   static defaultProps = {
     stream: false,
+    websocket: false,
     height: 'auto',
     width: 'auto',
     follow: false,
@@ -182,6 +207,7 @@ export default class LazyLog extends Component {
     onHighlight: null,
     onLoad: null,
     formatPart: null,
+    websocketOptions: {},
     fetchOptions: { credentials: 'omit' },
     loadingComponent: Loading,
     lineClassName: '',
@@ -268,7 +294,17 @@ export default class LazyLog extends Component {
   }
 
   initEmitter() {
-    const { stream: isStream, url, fetchOptions } = this.props;
+    const {
+      stream: isStream,
+      websocket: isWebsocket,
+      url,
+      fetchOptions,
+      websocketOptions,
+    } = this.props;
+
+    if (isWebsocket) {
+      return websocket(url, websocketOptions);
+    }
 
     if (isStream) {
       return stream(url, fetchOptions);
@@ -314,7 +350,7 @@ export default class LazyLog extends Component {
 
   handleUpdate = ({ lines: moreLines, encodedLog }) => {
     this.encodedLog = encodedLog;
-    const { scrollToLine, follow, stream } = this.props;
+    const { scrollToLine, follow, stream, websocket } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
     let lines = (this.state.lines || List()).concat(moreLines);
@@ -341,7 +377,7 @@ export default class LazyLog extends Component {
       scrollToIndex,
     });
 
-    if (stream) {
+    if (stream || websocket) {
       this.forceSearch();
     }
   };
@@ -413,9 +449,9 @@ export default class LazyLog extends Component {
 
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
-    const { caseInsensitive, stream } = this.props;
+    const { caseInsensitive, stream, websocket } = this.props;
     const currentResultLines =
-      !stream && keywords === searchKeywords
+      !stream && !websocket && keywords === searchKeywords
         ? resultLines
         : searchLines(keywords, this.encodedLog, caseInsensitive);
 
