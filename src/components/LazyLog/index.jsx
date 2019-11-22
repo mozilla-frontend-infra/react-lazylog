@@ -176,9 +176,7 @@ export default class LazyLog extends Component {
       maxWidth: 'initial',
       overflow: 'initial',
     },
-    style: {
-      overflow: 'auto',
-    },
+    style: {},
     extraLines: 0,
     onError: null,
     onHighlight: null,

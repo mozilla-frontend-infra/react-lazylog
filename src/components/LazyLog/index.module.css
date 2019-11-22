@@ -1,5 +1,5 @@
 .lazyLog {
-  overflow-x: scroll;
+  overflow: auto !important;
   font-family: "Monaco", monospace;
   font-size: 12px;
   margin: 0;
