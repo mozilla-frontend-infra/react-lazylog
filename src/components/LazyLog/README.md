@@ -51,7 +51,7 @@ let socket = null;
     websocketOptions={{
       onOpen: (e, sock) => {
         console.log("opened");
-          socket = sock; sock.send('Socket has been opened!')
+          socket = sock; sock.send('{"message": "Socket has been opened!"}')
         },
       formatMessage: (e) => {
           return JSON.parse(e).message;
