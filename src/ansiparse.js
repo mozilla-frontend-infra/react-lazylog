@@ -88,17 +88,17 @@ const ansiparse = str => {
             state.foreground = foregroundColors[ansiCode];
           } else if (backgroundColors[ansiCode]) {
             state.background = backgroundColors[ansiCode];
-          } else if (ansiCode === 39) {
+          } else if (ansiCode === '39') {
             delete state.foreground;
-          } else if (ansiCode === 49) {
+          } else if (ansiCode === '49') {
             delete state.background;
           } else if (styles[ansiCode]) {
             state[styles[ansiCode]] = true;
-          } else if (ansiCode === 22) {
+          } else if (ansiCode === '22') {
             state.bold = false;
-          } else if (ansiCode === 23) {
+          } else if (ansiCode === '23') {
             state.italic = false;
-          } else if (ansiCode === 24) {
+          } else if (ansiCode === '24') {
             state.underline = false;
           }
         }
