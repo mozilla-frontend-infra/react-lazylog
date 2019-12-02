@@ -50,7 +50,6 @@ let socket = null;
     websocket
     websocketOptions={{
       onOpen: (e, sock) => {
-        console.log("opened");
           socket = sock; sock.send('{"message": "Socket has been opened!"}')
         },
       formatMessage: (e) => {
