@@ -43,14 +43,14 @@ const url = 'wss://echo.websocket.org';
 let socket = null;
 
 <div style={{ height: 200, width: 902 }}>
-  <button style={{margin: 5}} onClick={() => socket && socket.send(JSON.stringify({ message: '[taskcluster 2018-11-14 21:08:32.452Z] Worker Group: us-east-1' }))}>ping</button>
+  <button style={{margin: 5}} onClick={() => socket && socket.send(JSON.stringify({ message: '[taskcluster 2018-11-14 21:08:32.452Z] Worker Group: us-east-1\n' }))}>ping</button>
   <LazyLog
     enableSearch
     url={url}
     websocket
     websocketOptions={{
       onOpen: (e, sock) => {
-          socket = sock; sock.send('{"message": "Socket has been opened!"}')
+          socket = sock; sock.send(JSON.stringify({message: "Socket has been opened!\n"}))
         },
       formatMessage: (e) => {
           return JSON.parse(e).message;

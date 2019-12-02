@@ -39,6 +39,7 @@ export default (url, options) => {
     const { lines, remaining } = convertBufferToLines(data, overage);
 
     overage = remaining;
+
     emitter.emit('update', { lines, encodedLog });
   });
 

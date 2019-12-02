@@ -1,14 +1,30 @@
 import mitt from 'mitt';
+import { List } from 'immutable';
 import { encode } from './encoding';
+import { bufferConcat, convertBufferToLines } from './utils';
 
 export default (url, options) => {
   const { onOpen, onClose, onError, formatMessage } = options;
   const emitter = mitt();
+  let encodedLog = new Uint8Array();
+  let overage = null;
 
-  emitter.on('data', msg => {
-    const lines = encode(msg);
+  emitter.on('data', data => {
+    encodedLog = bufferConcat(encodedLog, encode(data));
 
-    emitter.emit('update', { lines });
+    const { lines, remaining } = convertBufferToLines(encode(data), overage);
+
+    overage = remaining;
+
+    emitter.emit('update', { lines, encodedLog });
+  });
+
+  emitter.on('done', () => {
+    if (overage) {
+      emitter.emit('update', { lines: List.of(overage), encodedLog });
+    }
+
+    emitter.emit('end', encodedLog);
   });
 
   emitter.on('start', () => {
