@@ -53,7 +53,7 @@ let socket = null;
           socket = sock; sock.send(JSON.stringify({message: "Socket has been opened!"}))
         },
       formatMessage: (e) => {
-          return `${JSON.parse(e).message}`;
+          return JSON.parse(e).message;
       },
     }}
   />
