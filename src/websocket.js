@@ -43,7 +43,11 @@ export default (url, options) => {
       });
 
       socket.addEventListener('message', e => {
-        const msg = formatMessage ? formatMessage(e.data) : e.data;
+        let msg = formatMessage ? formatMessage(e.data) : e.data;
+
+        // add a new line character between each message if one doesn't exist.
+        // this allows our search index to properly distinguish new lines.
+        msg = msg.endsWith('\n') ? msg : `${msg}\n`;
 
         emitter.emit('data', msg);
       });
