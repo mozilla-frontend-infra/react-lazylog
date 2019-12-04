@@ -35,3 +35,31 @@ consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?
   <LazyLog extraLines={1} enableSearch text={text} caseInsensitive />
 </div>
 ```
+
+Log viewing using a websocket
+
+```jsx harmony
+const url = 'wss://echo.websocket.org';
+let socket = null;
+
+<div>
+  <button
+    style={{ marginBottom: 8, background: '#eee' }}
+    onClick={() => socket && socket.send(JSON.stringify({ message: '[taskcluster 2018-11-14 21:08:32.452Z] Worker Group: us-east-1' }))}>
+    ping
+  </button>
+  <div style={{ height: 200, width: 902 }}>
+  <LazyLog
+    enableSearch
+    url={url}
+    websocket
+    websocketOptions={{
+      onOpen: (e, sock) => {
+          socket = sock; sock.send(JSON.stringify({message: "Socket has been opened!"}))
+        },
+      formatMessage: e => JSON.parse(e).message,
+    }}
+  />
+  </div>
+</div>
+```
