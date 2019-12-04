@@ -36,7 +36,9 @@ export default (url, options) => {
         // relay on open events if a handler is registered
         onOpen && onOpen(e, socket);
       });
-      socket.addEventListener('close', onClose);
+      socket.addEventListener('close', e => {
+        onClose && onClose(e);
+      });
 
       socket.addEventListener('error', err => {
         onError && onError(err);

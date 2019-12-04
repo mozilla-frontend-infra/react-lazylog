@@ -42,8 +42,13 @@ Log viewing using a websocket
 const url = 'wss://echo.websocket.org';
 let socket = null;
 
-<div style={{ height: 200, width: 902 }}>
-  <button style={{margin: 5}} onClick={() => socket && socket.send(JSON.stringify({ message: '[taskcluster 2018-11-14 21:08:32.452Z] Worker Group: us-east-1' }))}>ping</button>
+<div>
+  <button
+    style={{ marginBottom: 8, background: '#eee' }}
+    onClick={() => socket && socket.send(JSON.stringify({ message: '[taskcluster 2018-11-14 21:08:32.452Z] Worker Group: us-east-1' }))}>
+    ping
+  </button>
+  <div style={{ height: 200, width: 902 }}>
   <LazyLog
     enableSearch
     url={url}
@@ -52,11 +57,9 @@ let socket = null;
       onOpen: (e, sock) => {
           socket = sock; sock.send(JSON.stringify({message: "Socket has been opened!"}))
         },
-      formatMessage: (e) => {
-          return JSON.parse(e).message;
-      },
+      formatMessage: e => JSON.parse(e).message,
     }}
   />
-}
+  </div>
 </div>
 ```
