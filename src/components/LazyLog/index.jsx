@@ -533,12 +533,18 @@ export default class LazyLog extends Component {
   };
 
   renderError() {
-    const { url, lineClassName, highlightLineClassName } = this.props;
+    const {
+      url,
+      lineClassName,
+      selectableLines,
+      highlightLineClassName,
+    } = this.props;
     const { error } = this.state;
 
     return (
       <Fragment>
         <Line
+          selectable={selectableLines}
           className={lineClassName}
           highlightClassName={highlightLineClassName}
           number="Error"
@@ -554,6 +560,7 @@ export default class LazyLog extends Component {
           ]}
         />
         <Line
+          selectable={selectableLines}
           key="error-line-1"
           className={lineClassName}
           highlightClassName={highlightLineClassName}
@@ -565,6 +572,7 @@ export default class LazyLog extends Component {
           ]}
         />
         <Line
+          selectable={selectableLines}
           key="error-line-2"
           className={lineClassName}
           highlightClassName={highlightLineClassName}
@@ -576,23 +584,21 @@ export default class LazyLog extends Component {
           ]}
         />
         <Line
+          selectable={selectableLines}
           key="error-line-3"
           className={lineClassName}
           highlightClassName={highlightLineClassName}
           data={[]}
         />
         <Line
+          selectable={selectableLines}
           key="error-line-4"
           className={lineClassName}
           highlightClassName={highlightLineClassName}
           data={[
             {
               foreground: 'blue',
-              text: (
-                <a href={url} style={{ color: 'inherit' }}>
-                  {url}
-                </a>
-              ),
+              text: url,
             },
           ]}
         />
