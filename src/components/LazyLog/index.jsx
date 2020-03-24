@@ -325,7 +325,6 @@ export default class LazyLog extends Component {
       this.handleUpdate({
         lines: remaining ? lines.concat(remaining) : lines,
         encodedLog,
-        replaceLines: true,
       });
       this.handleEnd(encodedLog);
     }
@@ -349,14 +348,12 @@ export default class LazyLog extends Component {
     }
   }
 
-  handleUpdate = ({ lines: moreLines, encodedLog, replaceLines }) => {
+  handleUpdate = ({ lines: moreLines, encodedLog }) => {
     this.encodedLog = encodedLog;
     const { scrollToLine, follow, stream, websocket } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
-    let lines = ((!replaceLines && this.state.lines) || List()).concat(
-      moreLines
-    );
+    let lines = (this.state.lines || List()).concat(moreLines);
     let count = lines.count();
 
     if (count > lineLimit) {
