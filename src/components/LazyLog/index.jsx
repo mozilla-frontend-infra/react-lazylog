@@ -216,11 +216,19 @@ export default class LazyLog extends Component {
   };
 
   static getDerivedStateFromProps(
-    { highlight, follow, scrollToLine, rowHeight, url: nextUrl },
+    {
+      highlight,
+      follow,
+      scrollToLine,
+      rowHeight,
+      url: nextUrl,
+      text: nextText,
+    },
     {
       count,
       offset,
       url: previousUrl,
+      text: previousText,
       highlight: previousHighlight,
       isSearching,
       scrollToIndex,
@@ -229,6 +237,9 @@ export default class LazyLog extends Component {
     const newScrollToIndex = isSearching
       ? scrollToIndex
       : getScrollIndex({ follow, scrollToLine, count, offset });
+    const shouldUpdate =
+      (nextUrl && nextUrl !== previousUrl) ||
+      (nextText && nextText !== previousText);
 
     return {
       scrollToIndex: newScrollToIndex,
@@ -236,9 +247,10 @@ export default class LazyLog extends Component {
       highlight: highlight
         ? getHighlightRange(highlight)
         : previousHighlight || getHighlightRange(previousHighlight),
-      ...(nextUrl && nextUrl !== previousUrl
+      ...(shouldUpdate
         ? {
             url: nextUrl,
+            text: nextText,
             lines: List(),
             count: 0,
             offset: 0,
