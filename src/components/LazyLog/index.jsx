@@ -28,6 +28,7 @@ import SearchBar from '../SearchBar';
 import request from '../../request';
 import stream from '../../stream';
 import websocket from '../../websocket';
+import emitter from '../../emitter';
 import { searchLines } from '../../search';
 import { lazyLog, searchMatch } from './index.module.css';
 
@@ -65,6 +66,19 @@ export default class LazyLog extends Component {
       onError: func,
       // a callback which formats the websocket data stream.
       formatMessage: func,
+    }),
+
+    /**
+     * An event source that provides a single log line on the 'data' event.
+     *
+     * The source should respond to the following events:
+     *
+     * - 'start': emitted when the eventSource can start producing data.
+     * - 'abort': emitted when the eventSource should stop producing data.
+     */
+    eventSource: shape({
+      on: func,
+      off: func,
     }),
     /**
      * Set to `true` to specify remote URL will be streaming chunked data.
@@ -187,6 +201,7 @@ export default class LazyLog extends Component {
   static defaultProps = {
     stream: false,
     websocket: false,
+    eventSource: null,
     height: 'auto',
     width: 'auto',
     follow: false,
@@ -309,6 +324,7 @@ export default class LazyLog extends Component {
     const {
       stream: isStream,
       websocket: isWebsocket,
+      eventSource,
       url,
       fetchOptions,
       websocketOptions,
@@ -322,11 +338,15 @@ export default class LazyLog extends Component {
       return stream(url, fetchOptions);
     }
 
+    if (eventSource) {
+      return emitter(eventSource);
+    }
+
     return request(url, fetchOptions);
   }
 
   request() {
-    const { text, url } = this.props;
+    const { text, url, eventSource } = this.props;
 
     this.endRequest();
 
@@ -339,9 +359,11 @@ export default class LazyLog extends Component {
         encodedLog,
       });
       this.handleEnd(encodedLog);
+
+      return;
     }
 
-    if (url) {
+    if (url || eventSource) {
       this.emitter = this.initEmitter();
       this.emitter.on('update', this.handleUpdate);
       this.emitter.on('end', this.handleEnd);
@@ -362,7 +384,7 @@ export default class LazyLog extends Component {
 
   handleUpdate = ({ lines: moreLines, encodedLog }) => {
     this.encodedLog = encodedLog;
-    const { scrollToLine, follow, stream, websocket } = this.props;
+    const { scrollToLine, follow, stream, websocket, eventSource } = this.props;
     const { lineLimit, count: previousCount } = this.state;
     let offset = 0;
     let lines = (this.state.lines || List()).concat(moreLines);
@@ -389,7 +411,7 @@ export default class LazyLog extends Component {
       scrollToIndex,
     });
 
-    if (stream || websocket) {
+    if (stream || websocket || eventSource) {
       this.forceSearch();
     }
   };
@@ -461,9 +483,9 @@ export default class LazyLog extends Component {
 
   handleSearch = keywords => {
     const { resultLines, searchKeywords } = this.state;
-    const { caseInsensitive, stream, websocket } = this.props;
+    const { caseInsensitive, stream, websocket, eventSource } = this.props;
     const currentResultLines =
-      !stream && !websocket && keywords === searchKeywords
+      !stream && !websocket && !eventSource && keywords === searchKeywords
         ? resultLines
         : searchLines(keywords, this.encodedLog, caseInsensitive);
 
