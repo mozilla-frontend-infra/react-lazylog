@@ -46,7 +46,7 @@ export default (url, options) => {
 
       socket.addEventListener('message', e => {
         let msg = formatMessage ? formatMessage(e.data) : e.data;
-
+        if (typeof(msg) !== 'string') return;
         // add a new line character between each message if one doesn't exist.
         // this allows our search index to properly distinguish new lines.
         msg = msg.endsWith('\n') ? msg : `${msg}\n`;
