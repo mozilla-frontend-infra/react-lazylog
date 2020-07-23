@@ -182,6 +182,11 @@ export default class LazyLog extends Component {
      * Flag to enable/disable case insensitive search
      */
     caseInsensitive: bool,
+    /**
+     * If true, capture system hotkeys for searching the page (Cmd-F, Ctrl-F,
+     * etc.)
+     */
+    captureHotkeys: bool,
   };
 
   static defaultProps = {
@@ -213,6 +218,7 @@ export default class LazyLog extends Component {
     lineClassName: '',
     highlightLineClassName: '',
     caseInsensitive: false,
+    captureHotkeys: false,
   };
 
   static getDerivedStateFromProps(
@@ -719,6 +725,7 @@ export default class LazyLog extends Component {
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
             disabled={count === 0}
+            captureHotkeys={this.props.captureHotkeys}
           />
         )}
         <AutoSizer

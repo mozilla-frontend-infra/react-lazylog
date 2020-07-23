@@ -36,6 +36,7 @@
   "dependencies": {
     "@mattiasbuelens/web-streams-polyfill": "^0.2.0",
     "fetch-readablestream": "^0.2.0",
+    "hotkeys-js": "^3.7.3",
     "immutable": "^3.8.2",
     "mitt": "^1.1.2",
     "prop-types": "^15.6.1",
