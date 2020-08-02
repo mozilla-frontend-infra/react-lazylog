@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import { bool, func, number } from 'prop-types';
 import FilterLinesIcon from './FilterLinesIcon';
-import { SEARCH_MIN_KEYWORDS } from '../../utils';
 import {
   searchBar,
   searchInput,
@@ -71,9 +70,9 @@ export default class SearchBar extends Component {
 
   search = () => {
     const { keywords } = this.state;
-    const { onSearch, onClearSearch } = this.props;
+    const { onSearch, onClearSearch, searchMinKeywords } = this.props;
 
-    if (keywords && keywords.length > SEARCH_MIN_KEYWORDS) {
+    if (keywords && keywords.length > searchMinKeywords) {
       onSearch(keywords);
     } else {
       onClearSearch();
