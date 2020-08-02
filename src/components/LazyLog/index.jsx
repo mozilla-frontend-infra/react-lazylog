@@ -16,7 +16,6 @@ import ansiparse from '../../ansiparse';
 import { decode, encode } from '../../encoding';
 import {
   SEARCH_BAR_HEIGHT,
-  SEARCH_MIN_KEYWORDS,
   getScrollIndex,
   getHighlightRange,
   searchFormatPart,
@@ -117,6 +116,10 @@ export default class LazyLog extends Component {
      */
     enableSearch: bool,
     /**
+     * Set the minimum length of search text
+     */
+    searchMinKeywords: number,
+    /**
      * Execute a function against each string part of a line,
      * returning a new line part. Is passed a single argument which is
      * the string part to manipulate, should return a new string
@@ -194,6 +197,7 @@ export default class LazyLog extends Component {
     highlight: null,
     selectableLines: false,
     enableSearch: false,
+    searchMinKeywords: 2,
     rowHeight: 19,
     overscanRowCount: 100,
     containerStyle: {
@@ -479,8 +483,9 @@ export default class LazyLog extends Component {
 
   forceSearch = () => {
     const { searchKeywords } = this.state;
+    const { searchMinKeywords } = this.props;
 
-    if (searchKeywords && searchKeywords.length > SEARCH_MIN_KEYWORDS) {
+    if (searchKeywords && searchKeywords.length > searchMinKeywords) {
       this.handleSearch(this.state.searchKeywords);
     }
   };
@@ -700,7 +705,7 @@ export default class LazyLog extends Component {
   };
 
   render() {
-    const { enableSearch } = this.props;
+    const { enableSearch, searchMinKeywords } = this.props;
     const {
       resultLines,
       isFilteringLinesWithMatches,
@@ -719,6 +724,7 @@ export default class LazyLog extends Component {
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
             disabled={count === 0}
+            searchMinKeywords={searchMinKeywords}
           />
         )}
         <AutoSizer
