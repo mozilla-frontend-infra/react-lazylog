@@ -29,7 +29,7 @@ import request from '../../request';
 import stream from '../../stream';
 import websocket from '../../websocket';
 import { searchLines } from '../../search';
-import { lazyLog, searchMatch, searchMatchExactLine } from './index.module.css';
+import { lazyLog, searchMatch } from './index.module.css';
 
 // Setting a hard limit on lines since browsers have trouble with heights
 // starting at around 16.7 million pixels and up
@@ -182,11 +182,6 @@ export default class LazyLog extends Component {
      * Flag to enable/disable case insensitive search
      */
     caseInsensitive: bool,
-    /**
-     * Flag to enable/disable finding next/previous
-     * occurrences buttons when searching
-     */
-    enableFinding: bool,
   };
 
   static defaultProps = {
@@ -218,7 +213,6 @@ export default class LazyLog extends Component {
     lineClassName: '',
     highlightLineClassName: '',
     caseInsensitive: false,
-    enableFinding: true,
   };
 
   static getDerivedStateFromProps(
@@ -269,7 +263,6 @@ export default class LazyLog extends Component {
 
   state = {
     resultLines: [],
-    currentSearchIndex: 0,
   };
 
   componentDidMount() {
@@ -479,7 +472,6 @@ export default class LazyLog extends Component {
         resultLines: currentResultLines,
         isSearching: true,
         searchKeywords: keywords,
-        currentSearchIndex: 0,
       },
       this.filterLinesWithMatches
     );
@@ -502,7 +494,6 @@ export default class LazyLog extends Component {
       resultLineUniqueIndexes: [],
       isFilteringLinesWithMatches: this.state.isFilteringLinesWithMatches,
       scrollToIndex: 0,
-      currentSearchIndex: 0,
     });
   };
 
@@ -515,28 +506,6 @@ export default class LazyLog extends Component {
       },
       this.filterLinesWithMatches
     );
-  };
-
-  handleIndexChangeSearch = toAdd => {
-    if (this.state.resultLines && this.state.resultLines.length > 0) {
-      // Because -1 modulo x we want x - 1, not -1
-      const n = this.state.resultLines.length;
-      const currentSearchIndex =
-        (((this.state.currentSearchIndex + toAdd) % n) + n) % n;
-
-      this.setState({
-        currentSearchIndex,
-        scrollToIndex: this.state.resultLines[currentSearchIndex],
-      });
-    }
-  };
-
-  handleUpSearch = () => {
-    this.handleIndexChangeSearch(-1);
-  };
-
-  handleDownSearch = () => {
-    this.handleIndexChangeSearch(1);
   };
 
   filterLinesWithMatches = () => {
@@ -556,10 +525,8 @@ export default class LazyLog extends Component {
     }
   };
 
-  // TODO: Currently it highlights every occurrence on a line,
-  // need some clever way solve which occurrence on the line to highlight
-  handleFormatPart = number => {
-    const { isSearching, searchKeywords, scrollToIndex } = this.state;
+  handleFormatPart = () => {
+    const { isSearching, searchKeywords } = this.state;
 
     if (isSearching) {
       return searchFormatPart({
@@ -567,11 +534,7 @@ export default class LazyLog extends Component {
         formatPart: this.props.formatPart,
         caseInsensitive: this.props.caseInsensitive,
         replaceJsx: (text, key) => (
-          <span
-            key={key}
-            className={
-              scrollToIndex === number ? searchMatchExactLine : searchMatch
-            }>
+          <span key={key} className={searchMatch}>
             {text}
           </span>
         ),
@@ -683,7 +646,7 @@ export default class LazyLog extends Component {
         style={style}
         key={key}
         number={number}
-        formatPart={this.handleFormatPart(number)}
+        formatPart={this.handleFormatPart()}
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
@@ -737,13 +700,12 @@ export default class LazyLog extends Component {
   };
 
   render() {
-    const { enableSearch, enableFinding } = this.props;
+    const { enableSearch } = this.props;
     const {
       resultLines,
       isFilteringLinesWithMatches,
       filteredLines = List(),
       count,
-      currentSearchIndex,
     } = this.state;
     const rowCount = isFilteringLinesWithMatches ? filteredLines.size : count;
 
@@ -756,11 +718,7 @@ export default class LazyLog extends Component {
             onClearSearch={this.handleClearSearch}
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
-            currentSearchIndex={currentSearchIndex}
             disabled={count === 0}
-            enableFinding={enableFinding}
-            onHandleUpSearch={this.handleUpSearch}
-            onHandleDownSearch={this.handleDownSearch}
           />
         )}
         <AutoSizer
