@@ -14,41 +14,43 @@ const fetcher = Promise.resolve().then(() =>
       )
 );
 
-export const recurseReaderAsEvent = async (reader, emitter) => {
-  const result = await reader.read();
+/**
+ * @param {!ReadableStream<!Uint8Array>} stream
+ * @param {?} emitter 
+ */
+async function consumeStream(stream, emitter) {
+  const reader = stream.getReader();
+  emitter.on('abort', () => reader.cancel('ABORTED'));
 
-  if (result.value) {
-    emitter.emit('data', result.value);
-  }
-
-  if (!result.done) {
-    return recurseReaderAsEvent(reader, emitter);
-  }
-
-  emitter.emit('done');
-};
-
-export default (url, options) => {
-  const emitter = mitt();
   let overage = null;
   let encodedLog = new Uint8Array();
-
-  emitter.on('data', data => {
-    encodedLog = bufferConcat(encodedLog, new Uint8Array(data));
-
-    const { lines, remaining } = convertBufferToLines(data, overage);
-
-    overage = remaining;
-    emitter.emit('update', { lines, encodedLog });
-  });
-
-  emitter.on('done', () => {
-    if (overage) {
-      emitter.emit('update', { lines: List.of(overage), encodedLog });
+  while (true) {
+    const {value, done} = await reader.read();
+    if (value) {
+      encodedLog = bufferConcat(encodedLog, value);
+    
+      const { lines, remaining } = convertBufferToLines(value, overage);
+      overage = remaining;
+      emitter.emit('update', { lines, encodedLog });
     }
+    if (done) {
+      if (overage) {
+        emitter.emit('update', { lines: List.of(overage), encodedLog });
+      }
+  
+      emitter.emit('end', encodedLog);
+      return;
+    }
+  }
+};
 
-    emitter.emit('end', encodedLog);
-  });
+/**
+ * @param {string} url
+ * @param {?} options
+ * @param {?ReadableStream} stream
+ */
+export default (url, options, stream) => {
+  const emitter = mitt();
 
   emitter.on('start', async () => {
     try {
@@ -60,18 +62,29 @@ export default (url, options) => {
 
       if (!response.ok) {
         const error = new Error(response.statusText);
-
         error.status = response.status;
         emitter.emit('error', error);
-
         return;
       }
 
-      const reader = response.body.getReader();
+      return consumeStream(response.body, emitter);
+    } catch (err) {
+      emitter.emit('error', err);
+    }
+  });
 
-      emitter.on('abort', () => reader.cancel('ABORTED'));
+  return emitter;
+};
 
-      return recurseReaderAsEvent(reader, emitter);
+/**
+ * @param {!ReadableStream} stream
+ */
+export function consumeReadableStream(stream) {
+  const emitter = mitt();
+
+  emitter.on('start', async () => {
+    try {
+      return consumeStream(stream, emitter);
     } catch (err) {
       emitter.emit('error', err);
     }

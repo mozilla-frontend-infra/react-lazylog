@@ -26,7 +26,7 @@ import Line from '../Line';
 import Loading from '../Loading';
 import SearchBar from '../SearchBar';
 import request from '../../request';
-import stream from '../../stream';
+import stream, {consumeReadableStream} from '../../stream';
 import websocket from '../../websocket';
 import { searchLines } from '../../search';
 import { lazyLog, searchMatch } from './index.module.css';
@@ -71,6 +71,8 @@ export default class LazyLog extends Component {
      * Defaults to `false` to download data until completion.
      */
     stream: bool,
+
+    readableStream: any,
 
     /**
      * Set to `true` to specify that url is a websocket URL.
@@ -312,7 +314,12 @@ export default class LazyLog extends Component {
       url,
       fetchOptions,
       websocketOptions,
+      readableStream,
     } = this.props;
+
+    if (readableStream) {
+      return consumeReadableStream(readableStream);
+    }
 
     if (isWebsocket) {
       return websocket(url, websocketOptions);

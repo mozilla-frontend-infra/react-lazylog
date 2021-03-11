@@ -1,10 +1,19 @@
 Normal log viewing using a `url`:
 
 ```js
-const url = 'https://gist.githubusercontent.com/helfi92/96d4444aa0ed46c5f9060a789d316100/raw/ba0d30a9877ea5cc23c7afcd44505dbc2bab1538/typical-live_backing.log';
+const encoder = new TextEncoder('utf-8');
+const stream = new ReadableStream({
+  start(controller) {
+    let i = 0;
+    setInterval(() => {
+      const data = encoder.encode(`Chunk ${i++}\n`);
+      controller.enqueue(data);
+    }, 1000);
+  }
+});
 
 <div style={{ height: 500, width: 902 }}>
-  <LazyLog extraLines={1} enableSearch url={url} caseInsensitive />
+  <LazyLog extraLines={1} enableSearch url={'does/not/matter/but/must/be/set'} stream={true} caseInsensitive readableStream={stream} />
 </div>
 ```
 
