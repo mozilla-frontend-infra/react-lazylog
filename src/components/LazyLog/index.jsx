@@ -21,6 +21,7 @@ import {
   getHighlightRange,
   searchFormatPart,
   convertBufferToLines,
+  isNumber,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -182,6 +183,10 @@ export default class LazyLog extends Component {
      * Flag to enable/disable case insensitive search
      */
     caseInsensitive: bool,
+    /**
+     * Offset of starting line number
+     */
+    startingLineNumberOffset: number,
   };
 
   static defaultProps = {
@@ -213,6 +218,7 @@ export default class LazyLog extends Component {
     lineClassName: '',
     highlightLineClassName: '',
     caseInsensitive: false,
+    startingLineNumberOffset: 0,
   };
 
   static getDerivedStateFromProps(
@@ -624,6 +630,7 @@ export default class LazyLog extends Component {
       selectableLines,
       lineClassName,
       highlightLineClassName,
+      startingLineNumberOffset,
     } = this.props;
     const {
       highlight,
@@ -634,9 +641,10 @@ export default class LazyLog extends Component {
       resultLineUniqueIndexes,
     } = this.state;
     const linesToRender = isFilteringLinesWithMatches ? filteredLines : lines;
-    const number = isFilteringLinesWithMatches
-      ? resultLineUniqueIndexes[index]
-      : index + 1 + offset;
+    const numberComputed = isFilteringLinesWithMatches
+      ? resultLineUniqueIndexes[index] + startingLineNumberOffset
+      : index + 1 + offset + startingLineNumberOffset;
+    const number = isNumber(numberComputed) ? numberComputed : undefined;
 
     return (
       <Line

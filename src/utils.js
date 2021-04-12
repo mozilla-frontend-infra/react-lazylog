@@ -131,3 +131,5 @@ export const searchFormatPart = ({
 
   return formattedPart;
 };
+
+export const isNumber = x => !Number.isNaN(Number(x));
