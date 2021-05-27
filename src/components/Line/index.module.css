@@ -3,12 +3,8 @@
   user-select: none;
 }
 
-.line:hover {
-  background-color: #444444;
-}
-
 .lineHighlight {
-  background-color: #666666;
+  background-color: #444;
 }
 
 .lineSelectable {

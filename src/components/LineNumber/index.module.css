@@ -1,15 +1,17 @@
 .lineNumber {
   display: inline-block;
-  width: 55px;
-  margin-left: 15px;
-  margin-right: 15px;
-  color: #666666;
+  width: 40px;
+  color: #545454;
   user-select: none;
   text-align: right;
   min-width: 40px;
   cursor: pointer;
   text-decoration: none;
-  padding-right: 1em
+  padding: 0 10px 0 18px;
+}
+
+.lineNumber:hover {
+  color: white;
 }
 
 .lineNumber::before {

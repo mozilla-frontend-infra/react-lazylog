@@ -1,33 +1,29 @@
-.bold { font-weight: bold; }
-.underline { text-decoration: underline; }
-.italic { font-style: italic; }
+.term-fg1 { } /* don't bold beccause it looks weird */
+.term-fg2 { color: #838887; } /* faint (decreased intensity) - same as gray really */
+.term-fg3 { font-style: italic; } /* italic */
+.term-fg4 { text-decoration: underline; } /* underline */
+.term-fg5 { animation: blink-animation 1s steps(3, start) infinite; } /* blink */
+.term-fg9 { text-decoration: line-through; } /* crossed-out */
 
-.black { color: #4e4e4e; }
-.red { color: #ff6c60; }
-.green { color: #00aa00; }
-.yellow { color: #ffffb6; }
-.blue { color: #96cbfe; }
-.magenta { color: #ff73fd; }
-.cyan { color: #00aaaa; }
-.white { color: #eeeeee; }
-.grey { color: #969696; }
+.term-fg30 { color: #666666; } /* black (but we can't use black, so a diff color) */
+.term-fg31 { color: #ff7070; } /* red */
+.term-fg32 { color: #b0f986; } /* green */
+.term-fg33 { color: #c6c502; } /* yellow */
+.term-fg34 { color: #8db7e0; } /* blue */
+.term-fg35 { color: #f271fb; } /* magenta */
+.term-fg36 { color: #6bf7ff; } /* cyan */
 
-.blackBold { color: #7c7c7c; }
-.redBold { color: #ff9b93; }
-.greenBold { color: #ceffab }
-.yellowBold { color: #ffffcb; }
-.blueBold { color: #b5dcfe; }
-.magentaBold { color: #ff9cfe; }
-.cyanBold { color: #55ffff; }
-.whiteBold { color: #ffffff; }
-.greyBold { color: #969696; }
+/* high intense colors */
+.term-fgi1 { color: #5ef765; }
+.term-fgi90 { color: #838887; } /* grey */
+.term-fgi91 { color: #ff3333; } /* red */
+.term-fgi92 { color: #00FF00; } /* green */
+.term-fgi93 { color: #fffc67; } /* yellow */
+.term-fgi94 { color: #6871ff; } /* blue */
+.term-fgi95 { color: #ff76ff; } /* magenta */
+.term-fgi96 { color: #60fcff; } /* cyan */
 
-.blackBg { background-color: #4e4e4e; }
-.redBg { background-color: #ff6c60; }
-.greenBg { background-color: #00aa00; }
-.yellowBg { background-color: #ffffb6; }
-.blueBg { background-color: #96cbfe; }
-.magentaBg { background-color: #ff73fd; }
-.cyanBg { background-color: #00aaaa; }
-.whiteBg { background-color: #eeeeee; }
-.greyBg { background-color: #969696; }
+/* background colors */
+.term-bg40 { background: #676767; } /* grey */
+.term-bg41 { background: #ff4343; } /* red */
+.term-bg42 { background: #99ff5f; } /* green */

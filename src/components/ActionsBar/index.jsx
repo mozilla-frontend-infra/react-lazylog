@@ -1,16 +1,9 @@
 import { Component } from 'react';
-import { bool, func, number } from 'prop-types';
-import FilterLinesIcon from './FilterLinesIcon';
+import { bool, func, number, object } from 'prop-types';
 import { SEARCH_MIN_KEYWORDS } from '../../utils';
-import {
-  searchBar,
-  searchInput,
-  button,
-  active,
-  inactive,
-} from './index.module.css';
+import { actionsBar, searchInput, button } from './index.module.css';
 
-export default class SearchBar extends Component {
+export default class ActionsBar extends Component {
   static propTypes = {
     /**
      * Executes a function when the user starts typing.
@@ -38,6 +31,10 @@ export default class SearchBar extends Component {
      * If true, the input field and filter button will be disabled.
      */
     disabled: bool,
+    /**
+     * Optional custom inline style to attach to root element.
+     */
+    style: object,
   };
 
   static defaultProps = {
@@ -81,37 +78,38 @@ export default class SearchBar extends Component {
   };
 
   render() {
-    const { resultsCount, filterActive, disabled } = this.props;
+    const { resultsCount, filterActive, disabled, style } = this.props;
     const matchesLabel = `match${resultsCount === 1 ? '' : 'es'}`;
-    const filterIcon = filterActive ? active : inactive;
 
     return (
-      <div className={`react-lazylog-searchbar ${searchBar}`}>
-        <input
-          autoComplete="off"
-          type="text"
-          name="search"
-          placeholder="Search"
-          className={`react-lazylog-searchbar-input ${searchInput}`}
-          onChange={this.handleSearchChange}
-          onKeyPress={this.handleSearchKeyPress}
-          value={this.state.keywords}
-          disabled={disabled}
-        />
-        <button
-          disabled={disabled}
-          className={`react-lazylog-searchbar-filter ${
-            filterActive ? 'active' : 'inactive'
-          } ${button} ${filterIcon}`}
-          onClick={this.handleFilterToggle}>
-          <FilterLinesIcon />
-        </button>
-        <span
-          className={`react-lazylog-searchbar-matches ${
-            resultsCount ? 'active' : 'inactive'
-          } ${resultsCount ? active : inactive}`}>
-          {resultsCount} {matchesLabel}
-        </span>
+      <div className={`react-lazylog-searchbar ${actionsBar}`} style={style}>
+        <div>
+          <div onClick={null} className={button}>
+            <i className="fa fa-download" />
+            Download
+          </div>
+          <div onClick={null} className={button}>
+            <i className="fa fa-arrow-down" />
+            Jump to end
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <input
+            autoComplete="off"
+            type="text"
+            name="search"
+            placeholder="Search"
+            className={`react-lazylog-searchbar-input ${searchInput}`}
+            onChange={this.handleSearchChange}
+            onKeyPress={this.handleSearchKeyPress}
+            value={this.state.keywords}
+            disabled={disabled}
+          />
+          <div onClick={this.handleFilterToggle} className={button}>
+            <i className="fa fa-align-left" />
+            {filterActive ? 'Unfilter' : 'Filter'} {resultsCount} {matchesLabel}
+          </div>
+        </div>
       </div>
     );
   }

@@ -28,17 +28,17 @@ yarn add react-lazylog
 npm install --save react-lazylog
 ```
 
-The core component from react-lazylog is `LazyLog`. There is also a higher-order component (HOC) for
+The core component from react-lazylog is `ProdigyLog`. There is also a higher-order component (HOC) for
 following logs until scroll. This module can be required via ES imports, CommonJS require, or UMD.
 
 ```js
-import { LazyLog } from 'react-lazylog';
+import { ProdigyLog } from 'react-lazylog';
 
 // using require
-const { LazyLog } = require('react-lazylog');
+const { ProdigyLog } = require('react-lazylog');
 ```
 
-## `<LazyLog />`
+## `<ProdigyLog />`
 
 ### Usage
 
@@ -47,25 +47,25 @@ After importing a component, it can be rendered with the required `url` prop:
 ```jsx
 import React from 'react';
 import { render } from 'react-dom';
-import { LazyLog } from 'react-lazylog';
+import { ProdigyLog } from 'react-lazylog';
 
 render((
-  <LazyLog url="http://example.log" />
+  <ProdigyLog url="http://example.log" />
 ), document.getElementById('root'));
 ```
 
-By default the `LazyLog` will expand to fill its container, so ensure this container has valid dimensions and layout.
+By default the `ProdigyLog` will expand to fill its container, so ensure this container has valid dimensions and layout.
 If you wish to have fixed dimensions, change the `height` and `width` props.
 
 If you are going to be rendering a complete file, or an endpoint which can be downloaded all at once, use the
-`<LazyLog />` component as-is for better overall performance at the expense of slightly longer upfront load time.
+`<ProdigyLog />` component as-is for better overall performance at the expense of slightly longer upfront load time.
 
-If you are going to be requesting a streaming or chunked response, use the `<LazyLog stream />` component with the
+If you are going to be requesting a streaming or chunked response, use the `<ProdigyLog stream />` component with the
 `stream` prop of `true` for quicker upfront rendering as content can be decoded as it arrives.
 
 [See the styleguide](https://mozilla-frontend-infra.github.io/react-lazylog) for a listing of complete props and a demo.
 
-In addition to the props listed for `LazyLog`, most of the properties available to
+In addition to the props listed for `ProdigyLog`, most of the properties available to
 [react-virtualized List](https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md)
 can be provided and will be passed through to the component. _Here are a few useful props:_
 
@@ -78,7 +78,7 @@ can be provided and will be passed through to the component. _Here are a few use
 
 ## `<ScrollFollow />`
 
-`ScrollFollow` is a higher-order component (HOC) that aims to simplify toggling a `LazyLog`'s
+`ScrollFollow` is a higher-order component (HOC) that aims to simplify toggling a `ProdigyLog`'s
 "follow" functionality based on user scrolling.
 
 ### Usage
@@ -89,13 +89,13 @@ function's arguments.
 ```jsx
 import React from 'react';
 import { render } from 'react-dom';
-import { LazyLog, ScrollFollow } from 'react-lazylog';
+import { ProdigyLog, ScrollFollow } from 'react-lazylog';
 
 render((
   <ScrollFollow
     startFollowing={true}
     render={({ follow, onScroll }) => (
-      <LazyLog url="http://example.log" stream follow={follow} onScroll={onScroll} />
+      <ProdigyLog url="http://example.log" stream follow={follow} onScroll={onScroll} />
     )}
   />
 ), document.getElementById('root'));
@@ -108,7 +108,7 @@ you wish to override these styles, there are a few techniques you can use.
 
 ### `style` and `containerStyle`
 
-For the core container of `<LazyLog />`, you can pass a `style` object prop to affect many styles.
+For the core container of `<ProdigyLog />`, you can pass a `style` object prop to affect many styles.
 For affecting the look or behavior of the scrollable region of these components, use the `containerStyle` prop with a
 styling object.
 

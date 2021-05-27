@@ -1,29 +1,32 @@
 /* eslint-disable no-plusplus, no-continue */
 const foregroundColors = {
-  '30': 'black',
-  '31': 'red',
-  '32': 'green',
-  '33': 'yellow',
-  '34': 'blue',
-  '35': 'magenta',
-  '36': 'cyan',
-  '37': 'white',
-  '90': 'grey',
+  '30': 'term-fg30',
+  '31': 'term-fg31',
+  '32': 'term-fg32',
+  '33': 'term-fg33',
+  '34': 'term-fg34',
+  '35': 'term-fg35',
+  '36': 'term-fg36',
+  '90': 'term-fgi90',
+  '91': 'term-fgi91',
+  '92': 'term-fgi92',
+  '93': 'term-fgi93',
+  '94': 'term-fgi94',
+  '95': 'term-fgi95',
+  '96': 'term-fgi96',
 };
 const backgroundColors = {
-  '40': 'black',
-  '41': 'red',
-  '42': 'green',
-  '43': 'yellow',
-  '44': 'blue',
-  '45': 'magenta',
-  '46': 'cyan',
-  '47': 'white',
+  '40': 'term-bg40',
+  '41': 'term-bg41',
+  '42': 'term-bg42',
 };
 const styles = {
-  '1': 'bold',
-  '3': 'italic',
-  '4': 'underline',
+  '1': 'term-fg1',
+  '2': 'term-fg2',
+  '3': 'term-fg3',
+  '4': 'term-fg4',
+  '5': 'term-fg5',
+  '9': 'term-fg9',
 };
 const eraseChar = (matchingText, result) => {
   if (matchingText.length) {

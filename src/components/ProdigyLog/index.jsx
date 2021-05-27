@@ -24,18 +24,18 @@ import {
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
-import SearchBar from '../SearchBar';
+import ActionsBar from '../ActionsBar';
 import request from '../../request';
 import stream from '../../stream';
 import websocket from '../../websocket';
 import { searchLines } from '../../search';
-import { lazyLog, searchMatch } from './index.module.css';
+import { prodigyLog, searchMatch } from './index.module.css';
 
 // Setting a hard limit on lines since browsers have trouble with heights
 // starting at around 16.7 million pixels and up
 const BROWSER_PIXEL_LIMIT = 16.7 * 1000000;
 
-export default class LazyLog extends Component {
+export default class ProdigyLog extends Component {
   static propTypes = {
     /**
      * The URL from which to fetch content. Subject to same-origin policy,
@@ -109,13 +109,13 @@ export default class LazyLog extends Component {
      */
     highlight: oneOfType([number, arrayOf(number)]),
     /**
-     * Make the text selectable, allowing to copy & paste. Defaults to `false`.
+     * Make the text selectable, allowing to copy & paste. Defaults to `true`.
      */
     selectableLines: bool,
     /**
      * Enable the search feature.
      */
-    enableSearch: bool,
+    enableActions: bool,
     /**
      * Execute a function against each string part of a line,
      * returning a new line part. Is passed a single argument which is
@@ -192,9 +192,9 @@ export default class LazyLog extends Component {
     follow: false,
     scrollToLine: 0,
     highlight: null,
-    selectableLines: false,
-    enableSearch: false,
-    rowHeight: 19,
+    selectableLines: true,
+    enableActions: false,
+    rowHeight: 17,
     overscanRowCount: 100,
     containerStyle: {
       width: 'auto',
@@ -564,7 +564,7 @@ export default class LazyLog extends Component {
           data={[
             {
               bold: true,
-              foreground: 'red',
+              foreground: 'term-fg31',
               text: error.status
                 ? `${error.message} (HTTP ${error.status})`
                 : error.message || 'Network Error',
@@ -609,7 +609,7 @@ export default class LazyLog extends Component {
           highlightClassName={highlightLineClassName}
           data={[
             {
-              foreground: 'blue',
+              foreground: 'term-fg34',
               text: url,
             },
           ]}
@@ -688,9 +688,9 @@ export default class LazyLog extends Component {
   };
 
   calculateListHeight = autoSizerHeight => {
-    const { height, enableSearch } = this.props;
+    const { height, enableActions } = this.props;
 
-    if (enableSearch) {
+    if (enableActions) {
       return height === 'auto'
         ? autoSizerHeight - SEARCH_BAR_HEIGHT
         : height - SEARCH_BAR_HEIGHT;
@@ -700,7 +700,7 @@ export default class LazyLog extends Component {
   };
 
   render() {
-    const { enableSearch } = this.props;
+    const { enableActions } = this.props;
     const {
       resultLines,
       isFilteringLinesWithMatches,
@@ -711,14 +711,20 @@ export default class LazyLog extends Component {
 
     return (
       <Fragment>
-        {enableSearch && (
-          <SearchBar
+        {enableActions && (
+          <ActionsBar
             filterActive={isFilteringLinesWithMatches}
             onSearch={this.handleSearch}
             onClearSearch={this.handleClearSearch}
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
             disabled={count === 0}
+            style={
+              enableActions && {
+                borderRadius: '5px 5px 0 0',
+                borderBottom: '1px solid #272727',
+              }
+            }
           />
         )}
         <AutoSizer
@@ -726,7 +732,7 @@ export default class LazyLog extends Component {
           disableWidth={this.props.width !== 'auto'}>
           {({ height, width }) => (
             <VirtualList
-              className={`react-lazylog ${lazyLog}`}
+              className={`react-lazylog ${prodigyLog}`}
               rowCount={
                 rowCount === 0 ? rowCount : rowCount + this.props.extraLines
               }
@@ -736,6 +742,11 @@ export default class LazyLog extends Component {
               height={this.calculateListHeight(height)}
               width={this.props.width === 'auto' ? width : this.props.width}
               scrollToIndex={this.state.scrollToIndex}
+              style={
+                enableActions && {
+                  borderRadius: '0 0 5px 5px',
+                }
+              }
             />
           )}
         </AutoSizer>

@@ -1,9 +1,8 @@
 {
-  "name": "react-lazylog",
+  "name": "prodigy-logger",
   "version": "4.5.3",
-  "description": "React Lazy Logviewer",
+  "description": "React Lazy Log Viewer Designed for Prodigy",
   "license": "MPL-2.0",
-  "repository": "mozilla-frontend-infra/react-lazylog",
   "main": "build/index.js",
   "files": [
     "build",

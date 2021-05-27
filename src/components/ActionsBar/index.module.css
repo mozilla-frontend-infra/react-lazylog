@@ -1,0 +1,44 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+.actionsBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Helvetica, sans-serif;
+  line-height: 1.42857143;
+  font-size: 12px;
+  background-color: #171717;
+  color: white;
+  padding: 3px 20px 3px;
+  border-bottom: 1px solid #272727;
+  border-radius: 5px;
+}
+
+.searchInput {
+  background-color: #464646;
+  color: white;
+  height: 20px;
+  min-width: 200px;
+  font-size: 12px;
+  padding: 2px 5px;
+  border: 1px solid #4e4e4e;
+  border-radius: 5px;
+  outline: none;
+}
+
+.button {
+  margin-left: 15px;
+  display: inline-block;
+  padding: 10px 0;
+  color: #B8B8B8;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  color: white;
+}
+
+.button i {
+  margin-right: 8px;
+}
