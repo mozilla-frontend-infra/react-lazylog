@@ -17,9 +17,9 @@
     "lazy",
     "lazylog"
   ],
-  "files": {
+  "files": [
     "dist/"
-  },
+  ],
   "scripts": {
     "build": "webpack --progress",
     "prepare": "npm run build"
