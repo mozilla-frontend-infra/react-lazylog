@@ -18,7 +18,8 @@
     "lazylog"
   ],
   "scripts": {
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "prepare": "npm run build"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
