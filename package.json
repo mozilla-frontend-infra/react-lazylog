@@ -1,6 +1,6 @@
 {
   "name": "react-lazylog",
-  "version": "4.5.3",
+  "version": "5.0.0",
   "description": "React Lazy Logviewer",
   "license": "MPL-2.0",
   "repository": "mozilla-frontend-infra/react-lazylog",
@@ -17,6 +17,9 @@
     "lazy",
     "lazylog"
   ],
+  "files": {
+    "dist/"
+  },
   "scripts": {
     "build": "webpack --progress",
     "prepare": "npm run build"
