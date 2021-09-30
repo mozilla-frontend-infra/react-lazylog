@@ -18,23 +18,22 @@
     "lazylog"
   ],
   "scripts": {
-    "build": "neutrino build",
-    "prepare": "neutrino build",
-    "lint": "neutrino lint",
-    "start": "neutrino styleguide:start",
-    "precommit": "neutrino stage",
-    "deploy": "neutrino styleguide:build && gh-pages --remote upstream -d styleguide"
+    "build": "webpack --progress"
   },
   "devDependencies": {
     "babel-polyfill": "^6.26.0",
-    "gh-pages": "^1.1.0",
-    "neutrino": "^8.2.1",
-    "neutrino-preset-mozilla-frontend-infra": "^4.1.0",
     "react": "^16.3.1",
-    "react-dom": "^16.3.1"
+    "react-dom": "^16.3.1",
+    "style-loader": "^3.3.0",
+    "webpack": "^5.55.1",
+    "webpack-cli": "^4.8.0"
   },
   "dependencies": {
-    "@mattiasbuelens/web-streams-polyfill": "^0.2.0",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^6.3.0",
     "fetch-readablestream": "^0.2.0",
     "immutable": "^3.8.2",
     "mitt": "^1.1.2",
