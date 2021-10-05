@@ -2,6 +2,7 @@ declare namespace IndexModuleCssNamespace {
   export interface IIndexModuleCss {
     lazyLog: string;
     searchMatch: string;
+    searchMatchHighlighted: string;
   }
 }
 

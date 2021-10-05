@@ -19,7 +19,7 @@ import request from "../../request";
 import stream from "../../stream";
 import websocket from "../../websocket";
 import { searchLines } from "../../search";
-import { lazyLog, searchMatch } from "./index.module.css";
+import { lazyLog, searchMatch, searchMatchHighlighted } from "./index.module.css";
 
 // Setting a hard limit on lines since browsers have trouble with heights
 // starting at around 16.7 million pixels and up
@@ -172,6 +172,20 @@ export default class LazyLog extends Component<any, any> {
          * Flag to enable/disable case insensitive search
          */
         caseInsensitive: bool,
+        /**
+         * If true, capture system hotkeys for searching the page (Cmd-F, Ctrl-F,
+         * etc.)
+         */
+        captureHotKeys: bool,
+        /**
+         * If true, search like a browser search - enter jumps to the next line
+         * with the searched term, shift + enter goes backwards.
+         * Also adds up and down arrows to search bar to jump
+         * to the next and previous result.
+         * If false, enter toggles the filter instead.
+         * Defaults to true.
+         */
+        searchLikeBrowser: bool,
     };
 
     static defaultProps = {
@@ -203,6 +217,8 @@ export default class LazyLog extends Component<any, any> {
         lineClassName: "",
         highlightLineClassName: "",
         caseInsensitive: false,
+        captureHotKeys: false,
+        searchLikeBrowser: true,
     };
 
     static getDerivedStateFromProps(
@@ -425,6 +441,73 @@ export default class LazyLog extends Component<any, any> {
         });
     };
 
+    handleScrollToLine(scrollToLine = 0) {
+        const scrollToIndex = getScrollIndex({
+            scrollToLine,
+        });
+
+        this.setState({
+            scrollToIndex,
+            scrollToLine,
+        });
+    }
+
+    handleEnterPressed = () => {
+        const { resultLines, scrollToLine, currentResultsPosition, isFilteringLinesWithMatches } = this.state;
+
+        if (!this.props.searchLikeBrowser) {
+            this.handleFilterLinesWithMatches(!isFilteringLinesWithMatches);
+
+            return;
+        }
+
+        // If we have search results
+        if (resultLines) {
+            // If we already scrolled to a line
+            if (scrollToLine) {
+                // Scroll to the next line if possible,
+                // wrap to the top if we're at the end.
+
+                if (currentResultsPosition + 1 < resultLines.length) {
+                    this.handleScrollToLine(resultLines[currentResultsPosition + 1]);
+                    this.setState({ currentResultsPosition: currentResultsPosition + 1 });
+
+                    return;
+                }
+            }
+
+            this.handleScrollToLine(resultLines[0]);
+            this.setState({ currentResultsPosition: 0 });
+        }
+    };
+
+    handleShiftEnterPressed = () => {
+        const { resultLines, scrollToLine, currentResultsPosition } = this.state;
+
+        if (!this.props.searchLikeBrowser) {
+            return;
+        }
+
+        // If we have search results
+        if (resultLines) {
+            // If we already scrolled to a line
+            if (scrollToLine) {
+                // Scroll to the previous line if possible,
+                // wrap to the bottom if we're at the top.
+
+                if (currentResultsPosition - 1 >= 0) {
+                    this.handleScrollToLine(resultLines[currentResultsPosition - 1]);
+                    this.setState({ currentResultsPosition: currentResultsPosition - 1 });
+
+                    return;
+                }
+            }
+
+            this.handleScrollToLine(resultLines[resultLines.length - 1]);
+            this.setState({ currentResultsPosition: resultLines.length - 1 });
+        }
+    };
+
     handleSearch = (keywords) => {
         const { resultLines, searchKeywords } = this.state;
         const { caseInsensitive, stream, websocket } = this.props;
@@ -438,6 +521,7 @@ export default class LazyLog extends Component<any, any> {
                 resultLines: currentResultLines,
                 isSearching: true,
                 searchKeywords: keywords,
+                currentResultsPosition: 0,
             },
             this.filterLinesWithMatches,
         );
@@ -460,6 +544,7 @@ export default class LazyLog extends Component<any, any> {
             resultLineUniqueIndexes: [],
             isFilteringLinesWithMatches: this.state.isFilteringLinesWithMatches,
             scrollToIndex: 0,
+            currentResultsPosition: 0,
         });
     };
 
@@ -489,20 +574,67 @@ export default class LazyLog extends Component<any, any> {
         }
     };
 
-    handleFormatPart = () => {
-        const { isSearching, searchKeywords } = this.state;
+    handleFormatPart = (lineNumber) => {
+        const { isSearching, searchKeywords, resultLines, currentResultsPosition } = this.state;
+        const { searchLikeBrowser } = this.props;
 
         if (isSearching) {
+            // If browser-search has started and we're on the line
+            // that has the search term that is selected
+            if (
+                searchLikeBrowser &&
+                resultLines &&
+                currentResultsPosition !== undefined &&
+                resultLines[currentResultsPosition] === lineNumber
+            ) {
+                let locationInLine = 0;
+                // Find the first occurance of the line number
+                // We use this to make sure we're only searching from where
+                // the line number first occurs to the currentResultsPosition below
+                const initialOccurance = resultLines.findIndex(
+                    (element) => element === resultLines[currentResultsPosition],
+                );
+
+                // This finds which word in the line should be the highlighted one.
+                // For example, if we should be highlighting the 2nd match on line 18,
+                // this would set locationInLine to 2.
+                for (let i = initialOccurance; i <= currentResultsPosition; i += 1) {
+                    if (resultLines[i] === lineNumber) {
+                        locationInLine += 1;
+                    }
+                }
+
+                return searchFormatPart({
+                    searchKeywords,
+                    nextFormatPart: undefined,
+                    caseInsensitive: this.props.caseInsensitive,
+                    replaceJsx: (text, key) => (
+                        <span key={key} className={searchMatch}>
+                            {text}
+                        </span>
+                    ),
+                    selectedLine: true,
+                    replaceJsxHighlight: (text, key) => (
+                        <span key={key} className={searchMatchHighlighted}>
+                            {text}
+                        </span>
+                    ),
+                    highlightedWordLocation: locationInLine,
+                });
+            }
+
             return searchFormatPart({
                 searchKeywords,
-                nextFormatPart: null,
-                //formatPart: this.props.formatPart,
+                nextFormatPart: undefined,
                 caseInsensitive: this.props.caseInsensitive,
                 replaceJsx: (text, key) => (
                     <span key={key} className={searchMatch}>
                         {text}
                     </span>
                 ),
+                selectedLine: undefined,
+                replaceJsxHighlight: undefined,
+                highlightedWordLocation: undefined,
             });
         }
 
@@ -590,6 +722,7 @@ export default class LazyLog extends Component<any, any> {
         } = this.state;
         const linesToRender = isFilteringLinesWithMatches ? filteredLines : lines;
         const number = isFilteringLinesWithMatches ? resultLineUniqueIndexes[index] : index + 1 + offset;
+        const data = ansiparse(decode(linesToRender.get(index)));
 
         return (
             <Line
@@ -599,7 +732,7 @@ export default class LazyLog extends Component<any, any> {
                 style={style}
                 key={key}
                 number={number}
-                formatPart={this.handleFormatPart()}
+                formatPart={this.handleFormatPart(number)}
                 selectable={selectableLines}
                 highlight={highlight.includes(number)}
                 onLineNumberClick={this.handleHighlight}
@@ -648,7 +781,13 @@ export default class LazyLog extends Component<any, any> {
 
     render() {
         const { enableSearch } = this.props;
-        const { resultLines, isFilteringLinesWithMatches, filteredLines = List(), count } = this.state;
+        const {
+            resultLines,
+            isFilteringLinesWithMatches,
+            filteredLines = List(),
+            count,
+            currentResultsPosition,
+        } = this.state;
         const rowCount = isFilteringLinesWithMatches ? filteredLines.size : count;
 
         return (
@@ -661,6 +800,11 @@ export default class LazyLog extends Component<any, any> {
                         onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
                         resultsCount={resultLines.length}
                         disabled={count === 0}
+                        captureHotKeys={this.props.captureHotKeys}
+                        onEnter={this.handleEnterPressed}
+                        onShiftEnter={this.handleShiftEnterPressed}
+                        searchLikeBrowser={this.props.searchLikeBrowser}
+                        currentResultsPosition={currentResultsPosition}
                     />
                 )}
                 <AutoSizer
@@ -671,13 +815,14 @@ export default class LazyLog extends Component<any, any> {
                         <VirtualList
                             className={`react-lazylog ${lazyLog}`}
                             rowCount={rowCount === 0 ? rowCount : rowCount + this.props.extraLines}
-                            rowHeight={0}
                             rowRenderer={(row) => this.renderRow(row)}
                             noRowsRenderer={this.renderNoRows}
                             {...this.props}
+                            rowHeight={this.props.rowHeight}
                             height={this.calculateListHeight(height)}
                             width={this.props.width === "auto" ? width : this.props.width}
                             scrollToIndex={this.state.scrollToIndex}
+                            scrollToAlignment="start"
                         />
                     )}
                 </AutoSizer>

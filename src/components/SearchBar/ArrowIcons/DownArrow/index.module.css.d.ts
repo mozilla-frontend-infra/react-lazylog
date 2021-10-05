@@ -1,11 +1,6 @@
 declare namespace IndexModuleCssNamespace {
   export interface IIndexModuleCss {
-    active: string;
-    button: string;
-    clickable: string;
-    inactive: string;
-    searchBar: string;
-    searchInput: string;
+    downArrowIcon: string;
   }
 }
 

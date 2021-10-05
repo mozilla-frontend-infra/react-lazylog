@@ -1,8 +1,13 @@
-import React, { Component } from "react";
+/* eslint-disable @typescript-eslint/no-empty-function */
+import React, { createRef, Component, Fragment } from "react";
+import hotkeys from "hotkeys-js";
+import DownArrowIcon from "./ArrowIcons/DownArrow";
+import UpArrowIcon from "./ArrowIcons/UpArrow";
+
 import { bool, func, number } from "prop-types";
 import FilterLinesIcon from "./FilterLinesIcon";
 import { SEARCH_MIN_KEYWORDS } from "../../utils";
-import { searchBar, searchInput, button, active, inactive } from "./index.module.css";
+import { searchBar, searchInput, button, active, inactive, clickable } from "./index.module.css";
 
 export default class SearchBar extends Component<any, any> {
     static propTypes = {
@@ -32,6 +37,32 @@ export default class SearchBar extends Component<any, any> {
          * If true, the input field and filter button will be disabled.
          */
         disabled: bool,
+        /**
+         * If true, capture system hotkeys for searching the page (Cmd-F, Ctrl-F,
+         * etc.)
+         */
+        captureHotKeys: bool,
+        /**
+         * Exectues a function when enter is pressed.
+         */
+        onEnter: func,
+        /**
+         * Exectues a function when shift + enter is pressed.
+         */
+        onShiftEnter: func,
+        /**
+         * If true, adds up and down arrows to search bar to jump
+         * to the next and previous result. The down arrow calls
+         * "onEnter" and the up arrow calls "onShiftEnter"
+         * Defaults to false, which does not add the arrows.
+         */
+        searchLikeBrowser: bool,
+        /**
+         * The current result the browser search is highlighting.
+         * Only applicable if searchLikeBrowser is true.
+         * Defaults to 0.
+         */
+        currentResultsPosition: number,
     };
 
     static defaultProps = {
@@ -41,15 +72,19 @@ export default class SearchBar extends Component<any, any> {
         resultsCount: 0,
         filterActive: false,
         disabled: false,
+        captureHotKeys: false,
+        currentResultsPosition: 0,
     };
 
     state = {
         keywords: "",
     };
+    inputRef = undefined;
 
-    handleFilterToggle = () => {
-        this.props.onFilterLinesWithMatches(!this.props.filterActive);
-    };
+    constructor(props) {
+        super(props);
+        this.inputRef = createRef();
+    }
 
     handleSearchChange = (e) => {
         const { value: keywords } = e.target;
@@ -57,10 +92,27 @@ export default class SearchBar extends Component<any, any> {
         this.setState({ keywords }, () => this.search());
     };
 
-    handleSearchKeyPress = (e) => {
+    handleFilterToggle = () => {
+        this.props.onFilterLinesWithMatches(!this.props.filterActive);
+    };
+
+    handleKeyPress = (e) => {
         if (e.key === "Enter") {
-            this.handleFilterToggle();
+            if (e.shiftKey) {
+                this.props.onShiftEnter();
+            } else {
+                this.props.onEnter();
+            }
         }
+    };
+
+    handleSearchHotkey = (e) => {
+        if (!this.inputRef.current) {
+            return;
+        }
+
+        e.preventDefault();
+        this.inputRef.current.focus();
     };
 
     search = () => {
@@ -74,13 +126,45 @@ export default class SearchBar extends Component<any, any> {
         }
     };
 
+    componentDidMount() {
+        if (this.props.captureHotKeys) {
+            hotkeys("ctrl+f,command+f", this.handleSearchHotkey);
+            hotkeys.filter = () => true;
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.props.captureHotKeys) {
+            hotkeys.deleteScope("all");
+        }
+    }
+
     render() {
-        const { resultsCount, filterActive, disabled } = this.props;
+        const {
+            resultsCount,
+            filterActive,
+            disabled,
+            searchLikeBrowser,
+            currentResultsPosition,
+            onEnter,
+            onShiftEnter,
+        } = this.props;
         const matchesLabel = `match${resultsCount === 1 ? "" : "es"}`;
         const filterIcon = filterActive ? active : inactive;
+        const arrowIcon = resultsCount ? active : inactive;
 
         return (
             <div className={`react-lazylog-searchbar ${searchBar}`}>
+                <span
+                    className={`react-lazylog-searchbar-matches ${resultsCount ? "active" : "inactive"} ${
+                        resultsCount ? active : inactive
+                    }`}
+                    style={{ marginRight: "10px" }}
+                >
+                    {searchLikeBrowser && resultsCount
+                        ? `${currentResultsPosition + 1} of ${resultsCount} ${matchesLabel}`
+                        : `${resultsCount} ${matchesLabel}`}
+                </span>
                 <input
                     autoComplete="off"
                     type="text"
@@ -88,26 +172,43 @@ export default class SearchBar extends Component<any, any> {
                     placeholder="Search"
                     className={`react-lazylog-searchbar-input ${searchInput}`}
                     onChange={this.handleSearchChange}
-                    onKeyPress={this.handleSearchKeyPress}
+                    onKeyPress={this.handleKeyPress}
                     value={this.state.keywords}
                     disabled={disabled}
+                    ref={this.inputRef}
                 />
                 <button
                     disabled={disabled}
                     className={`react-lazylog-searchbar-filter ${
                         filterActive ? "active" : "inactive"
-                    } ${button} ${filterIcon}`}
-                    onClick={this.handleFilterToggle}
+                    } ${button} ${filterIcon} ${clickable}`}
+                    onKeyPress={this.handleKeyPress}
+                    onMouseUp={this.handleFilterToggle}
                 >
                     <FilterLinesIcon />
                 </button>
-                <span
-                    className={`react-lazylog-searchbar-matches ${resultsCount ? "active" : "inactive"} ${
-                        resultsCount ? active : inactive
-                    }`}
-                >
-                    {resultsCount} {matchesLabel}
-                </span>
+                {searchLikeBrowser && (
+                    <Fragment>
+                        <button
+                            disabled={disabled}
+                            className={`react-lazylog-searchbar-up-arrow ${
+                                resultsCount ? `active ${clickable}` : "inactive"
+                            } ${button} ${arrowIcon}`}
+                            onClick={onShiftEnter}
+                        >
+                            <UpArrowIcon />
+                        </button>
+                        <button
+                            disabled={disabled}
+                            className={`react-lazylog-searchbar-down-arrow ${
+                                resultsCount ? `active ${clickable}` : "inactive"
+                            } ${button} ${arrowIcon}`}
+                            onClick={onEnter}
+                        >
+                            <DownArrowIcon />
+                        </button>
+                    </Fragment>
+                )}
             </div>
         );
     }
