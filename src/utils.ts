@@ -130,8 +130,14 @@ export const searchFormatPart = ({
     // Escape out regex characters so they're treated as normal
     // characters when we use regex to search for them.
     const regexKeywords = searchKeywords.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    const exp = new RegExp(`(?=${regexKeywords})`);
-    const splitParts = part.split(exp);
+
+    // Split part on keywords
+    const splitExp = new RegExp(`(?=${regexKeywords})`, caseInsensitive ? "i" : undefined);
+    const splitParts = part.split(splitExp);
+
+    // Expression to replace keywords
+    const replaceExp = new RegExp(`(${regexKeywords})`, caseInsensitive ? "i" : undefined);
+
     // This deals with the special highlighting that occurs when a
     // line is selected using the browser search
     const handleHighlighting = () => {
@@ -140,15 +146,15 @@ export const searchFormatPart = ({
             // This is the special case where the searched
             // word is at the very start of the string
             if (splitParts.length === 1) {
-                formattedPart = reactStringReplace(formattedPart, searchKeywords, replaceJsxHighlight);
+                formattedPart = reactStringReplace(formattedPart, regexKeywords, replaceJsxHighlight);
             } else {
                 // This highlights the special color
                 // if the word is selected, otherwise, just
                 // the regular matched search term color
-                formattedPart = splitParts.map((part, index) =>
+                formattedPart = splitParts.map((splitPart: string, index: number) =>
                     reactStringReplace(
-                        part,
-                        searchKeywords,
+                        splitPart,
+                        replaceExp,
                         index === highlightedWordLocation ? replaceJsxHighlight : replaceJsx,
                     ),
                 );
@@ -156,7 +162,7 @@ export const searchFormatPart = ({
         }
         // Finally, just do regular highlighting since this line isn't selected
         else {
-            formattedPart = reactStringReplace(formattedPart, searchKeywords, replaceJsx);
+            formattedPart = reactStringReplace(formattedPart, replaceExp, replaceJsx);
         }
 
         return formattedPart;
