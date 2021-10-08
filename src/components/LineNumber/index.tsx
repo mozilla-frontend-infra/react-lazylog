@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { bool, func, number, object } from "prop-types";
 import { lineNumber, lineNumberHighlight } from "./index.module.css";
 
-/* eslint-disable jsx-a11y/anchor-has-content, jsx-a11y/anchor-is-valid */
-
 /**
  * The line number of a single line.
  * The anchor contained within is interactive, and will highlight the
