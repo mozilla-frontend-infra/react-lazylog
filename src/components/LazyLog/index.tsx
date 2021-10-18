@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { any, arrayOf, bool, func, number, object, oneOfType, string, shape } from "prop-types";
 import { AutoSizer, List as VirtualList } from "react-virtualized";
-import { List } from "immutable";
+import { List, Range } from "immutable";
 import ansiparse from "../../ansiparse";
 import { decode, encode } from "../../encoding";
 import {
@@ -186,6 +186,14 @@ export default class LazyLog extends Component<any, any> {
          * Defaults to true.
          */
         searchLikeBrowser: bool,
+        /**
+         * Additional function called when a line number is clicked.
+         * On click, the line will always be highlighted.
+         * This function is to provide additional actions.
+         * Can accept the line number as an argument.
+         * Defaults to null.
+         */
+        onLineNumberClick: func,
     };
 
     static defaultProps = {
@@ -219,6 +227,7 @@ export default class LazyLog extends Component<any, any> {
         caseInsensitive: false,
         captureHotKeys: false,
         searchLikeBrowser: true,
+        onLineNumberClick: null,
     };
 
     static getDerivedStateFromProps(
@@ -241,9 +250,10 @@ export default class LazyLog extends Component<any, any> {
         return {
             scrollToIndex: newScrollToIndex,
             lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
-            highlight: highlight
-                ? getHighlightRange(highlight)
-                : previousHighlight || getHighlightRange(previousHighlight),
+            highlight:
+                previousHighlight === Range(0, 0)
+                    ? getHighlightRange(highlight)
+                    : previousHighlight || getHighlightRange(previousHighlight),
             ...(shouldUpdate
                 ? {
                       url: nextUrl,
@@ -711,7 +721,13 @@ export default class LazyLog extends Component<any, any> {
     }
 
     renderRow = ({ key, index, style }) => {
-        const { rowHeight, selectableLines, lineClassName, highlightLineClassName } = this.props;
+        const {
+            rowHeight,
+            selectableLines,
+            lineClassName,
+            highlightLineClassName,
+            onLineNumberClick,
+        } = this.props;
         const {
             highlight,
             lines,
@@ -734,7 +750,10 @@ export default class LazyLog extends Component<any, any> {
                 formatPart={this.handleFormatPart(number)}
                 selectable={selectableLines}
                 highlight={highlight.includes(number)}
-                onLineNumberClick={this.handleHighlight}
+                onLineNumberClick={(e) => {
+                    this.handleHighlight(e);
+                    onLineNumberClick?.(number);
+                }}
                 data={ansiparse(decode(linesToRender.get(index)))}
             />
         );
