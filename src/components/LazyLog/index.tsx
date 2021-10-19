@@ -99,6 +99,11 @@ export default class LazyLog extends Component<any, any> {
          */
         highlight: oneOfType([number, arrayOf(number)]),
         /**
+         * Enable the ability to select multiple lines using shift + click.
+         * Defaults to true.
+         */
+        enableMultilineHighlight: bool,
+        /**
          * Make the text selectable, allowing to copy & paste. Defaults to `false`.
          */
         selectableLines: bool,
@@ -204,6 +209,7 @@ export default class LazyLog extends Component<any, any> {
         follow: false,
         scrollToLine: 0,
         highlight: null,
+        enableMultilineHighlight: true,
         selectableLines: false,
         enableSearch: false,
         rowHeight: 19,
@@ -404,7 +410,7 @@ export default class LazyLog extends Component<any, any> {
     };
 
     handleHighlight = (e) => {
-        const { onHighlight } = this.props;
+        const { onHighlight, enableMultilineHighlight } = this.props;
         const { isFilteringLinesWithMatches } = this.state;
 
         if (!e.target.id) {
@@ -425,8 +431,10 @@ export default class LazyLog extends Component<any, any> {
             range = null;
         } else if (!e.shiftKey || !first) {
             range = lineNumber;
-        } else if (lineNumber > first) {
+        } else if (enableMultilineHighlight && lineNumber > first) {
             range = [first, lineNumber];
+        } else if (!enableMultilineHighlight && lineNumber > first) {
+            range = lineNumber;
         } else {
             range = [lineNumber, last];
         }
