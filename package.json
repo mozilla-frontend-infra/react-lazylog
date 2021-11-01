@@ -1,0 +1,50 @@
+{
+  "name": "react-lazylog",
+  "version": "4.5.3",
+  "description": "React Lazy Logviewer (Spire)",
+  "license": "MPL-2.0",
+  "repository": "nsat/react-lazylog",
+  "main": "build/index.js",
+  "files": [
+    "build",
+    "src"
+  ],
+  "keywords": [
+    "react",
+    "log",
+    "viewer",
+    "logviewer",
+    "lazy",
+    "lazylog"
+  ],
+  "scripts": {
+    "build": "webpack --progress",
+    "dev": "styleguidist server"
+  },
+  "devDependencies": {
+    "css-loader": "^3.3.0",
+    "prettier": "^2.1.2",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "react-styleguidist": "^11.1.7",
+    "ts-loader": "^6.2.0",
+    "webpack": "^5.60.0",
+    "webpack-bundle-tracker": "^1.4.0",
+    "webpack-cli": "^4.9.1"
+  },
+  "dependencies": {
+    "fetch-readablestream": "^0.2.0",
+    "immutable": "^3.8.2",
+    "mitt": "^1.1.2",
+    "process": "^0.11.10",
+    "prop-types": "^15.6.1",
+    "react-string-replace": "^0.4.1",
+    "react-virtualized": "^9.21.0",
+    "text-encoding-utf-8": "^1.0.1",
+    "typescript": "^4.0.3",
+    "whatwg-fetch": "^2.0.4"
+  },
+  "peerDependencies": {
+    "react": ">=16.3.0"
+  }
+}
