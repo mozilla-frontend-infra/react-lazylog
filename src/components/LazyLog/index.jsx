@@ -531,7 +531,7 @@ export default class LazyLog extends Component {
     if (isSearching) {
       return searchFormatPart({
         searchKeywords,
-        formatPart: this.props.formatPart,
+        nextFormatPart: this.props.formatPart,
         caseInsensitive: this.props.caseInsensitive,
         replaceJsx: (text, key) => (
           <span key={key} className={searchMatch}>
