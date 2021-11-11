@@ -762,7 +762,7 @@ export default class LazyLog extends Component<any, any> {
                 highlight={highlight.includes(number)}
                 onLineNumberClick={(e) => {
                     const highlighted = this.handleHighlight(e);
-                    onLineNumberClick?.({lineNumber: number, highlightRange: highlighted});
+                    onLineNumberClick?.({ lineNumber: number, highlightRange: highlighted });
                 }}
                 data={ansiparse(decode(linesToRender.get(index)))}
             />
