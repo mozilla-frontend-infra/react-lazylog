@@ -27,7 +27,13 @@ export const getScrollIndex = ({
 };
 
 export const getHighlightRange = (highlight) => {
-    if (!highlight) {
+    /**
+     * Set to Range(0, 0) if:
+     * 1) highlight doesn't evaluate to "true"
+     * 2) highlight is not a number
+     * 3) highlight is an array where a value isn't a number
+    */
+    if (!highlight || (Array.isArray(highlight) && (isNaN(highlight[0]) || isNaN(highlight[1]))) || (!Array.isArray(highlight) && isNaN(highlight))) {
         return Range(0, 0);
     }
 

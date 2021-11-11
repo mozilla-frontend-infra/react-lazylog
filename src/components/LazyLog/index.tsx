@@ -195,7 +195,7 @@ export default class LazyLog extends Component<any, any> {
          * Additional function called when a line number is clicked.
          * On click, the line will always be highlighted.
          * This function is to provide additional actions.
-         * Can accept the line number as an argument.
+         * Receives an object with lineNumber and highlightRange.
          * Defaults to null.
          */
         onLineNumberClick: func,
@@ -457,6 +457,8 @@ export default class LazyLog extends Component<any, any> {
                 this.handleFilterLinesWithMatches(false);
             }
         });
+
+        return highlight;
     };
 
     handleScrollToLine(scrollToLine = 0) {
@@ -759,8 +761,8 @@ export default class LazyLog extends Component<any, any> {
                 selectable={selectableLines}
                 highlight={highlight.includes(number)}
                 onLineNumberClick={(e) => {
-                    this.handleHighlight(e);
-                    onLineNumberClick?.(number);
+                    const highlighted = this.handleHighlight(e);
+                    onLineNumberClick?.({lineNumber: number, highlightRange: highlighted});
                 }}
                 data={ansiparse(decode(linesToRender.get(index)))}
             />
