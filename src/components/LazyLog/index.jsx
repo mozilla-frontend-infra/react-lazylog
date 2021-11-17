@@ -21,6 +21,7 @@ import {
   getHighlightRange,
   searchFormatPart,
   convertBufferToLines,
+  parseLinks,
 } from '../../utils';
 import Line from '../Line';
 import Loading from '../Loading';
@@ -113,6 +114,10 @@ export default class LazyLog extends Component {
      */
     selectableLines: bool,
     /**
+     * Make links clickable. Defaults to `false`.
+     */
+    clickableLinks: bool,
+    /**
      * Enable the search feature.
      */
     enableSearch: bool,
@@ -193,6 +198,7 @@ export default class LazyLog extends Component {
     scrollToLine: 0,
     highlight: null,
     selectableLines: false,
+    clickableLinks: false,
     enableSearch: false,
     rowHeight: 19,
     overscanRowCount: 100,
@@ -624,6 +630,7 @@ export default class LazyLog extends Component {
       selectableLines,
       lineClassName,
       highlightLineClassName,
+      clickableLinks,
     } = this.props;
     const {
       highlight,
@@ -637,6 +644,9 @@ export default class LazyLog extends Component {
     const number = isFilteringLinesWithMatches
       ? resultLineUniqueIndexes[index]
       : index + 1 + offset;
+    const data = clickableLinks
+      ? parseLinks(ansiparse(decode(linesToRender.get(index))))
+      : ansiparse(decode(linesToRender.get(index)));
 
     return (
       <Line
@@ -650,7 +660,7 @@ export default class LazyLog extends Component {
         selectable={selectableLines}
         highlight={highlight.includes(number)}
         onLineNumberClick={this.handleHighlight}
-        data={ansiparse(decode(linesToRender.get(index)))}
+        data={data}
       />
     );
   };

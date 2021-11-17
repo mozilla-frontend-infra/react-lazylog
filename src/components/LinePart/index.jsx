@@ -60,9 +60,33 @@ export default class LinePart extends Component {
   render() {
     const { format, part, style } = this.props;
 
+    if (part.link) {
+      return (
+        <span>
+          <a
+            className={getClassName(part)}
+            href={part.text}
+            target="_blank"
+            rel="noopener noreferrer">
+            {format ? format(part.text) : part.text}
+          </a>{' '}
+        </span>
+      );
+    }
+
+    if (part.email) {
+      return (
+        <span>
+          <a className={getClassName(part)} href={`mailto:${part.text}`}>
+            {format ? format(part.text) : part.text}
+          </a>{' '}
+        </span>
+      );
+    }
+
     return (
       <span className={getClassName(part)} style={style}>
-        {format ? format(part.text) : part.text}
+        {format ? format(part.text) : part.text}{' '}
       </span>
     );
   }

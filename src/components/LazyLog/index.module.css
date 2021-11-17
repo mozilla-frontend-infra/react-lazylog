@@ -11,6 +11,10 @@
   outline: none;
 }
 
+.lazyLog span a {
+  color: #d6d6d6;
+}
+
 .searchMatch {
   background-color: #ffff00;
   color: #222222;

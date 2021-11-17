@@ -131,3 +131,73 @@ export const searchFormatPart = ({
 
   return formattedPart;
 };
+
+// General Email Regex (RFC 5322 Official Standard)
+const emailPattern =
+  '^(?:(?!.*?[.]{2})[a-zA-Z0-9](?:[a-zA-Z0-9.+!%-]{1,64}|)|"[a-zA-Z0-9.+!% -]{1,64}")';
+const emailDomainPattern = '[a-zA-Z0-9][a-zA-Z0-9.-]+(.[a-z]{2,}|.[0-9]{1,})$';
+const emailRegex = new RegExp(`${emailPattern}@${emailDomainPattern}`);
+// Add some RegEx magic from xterm.js | xterm-addon-web-links
+// https://github.com/xtermjs/xterm.js/blob/581272ee51129ee2431718b03e90755aed63d8ba/addons/xterm-addon-web-links/src/WebLinksAddon.ts
+const protocolClause = '(((http|ftp)?s?s?)(:)(/{2}))';
+const domainCharacterSet = '[\\da-z\\.-]+';
+const negatedDomainCharacterSet = '[^\\da-z\\.-]+';
+const domainBodyClause = `(${domainCharacterSet})`;
+const tldClause = '([a-z\\.]{2,6})';
+const ipClause = '((\\d{1,3}\\.){3}\\d{1,3})';
+const localHostClause = '(localhost)';
+const portClause = '(:\\d{1,5})';
+const hostClause = `((${domainBodyClause}\\.${tldClause})|${ipClause}|${localHostClause})${portClause}?`;
+const pathCharacterSet = '(\\/[\\/\\w\\.\\-%~:+@]*)*([^:"\'\\s])';
+const pathClause = `(${pathCharacterSet})?`;
+const queryStringHashFragmentCharacterSet =
+  "[0-9\\w\\[\\]\\(\\)\\/\\?\\!#@$%&'*+,:;~\\=\\.\\-]*";
+const queryStringClause = `(\\?${queryStringHashFragmentCharacterSet})?`;
+const hashFragmentClause = `(#${queryStringHashFragmentCharacterSet})?`;
+const negatedPathCharacterSet = '[^\\/\\w\\.\\-%]+';
+const bodyClause =
+  hostClause + pathClause + queryStringClause + hashFragmentClause;
+const start = `(?:^|${negatedDomainCharacterSet})(`;
+const end = `)($|${negatedPathCharacterSet})`;
+const strictUrlRegex = new RegExp(
+  `${start + protocolClause}?${bodyClause}${end}`,
+  'gim'
+);
+
+export const parseLinks = data => {
+  const result = [];
+
+  data.forEach(tmp => {
+    const arr = tmp.text.split(' ');
+
+    arr.forEach(text => {
+      if (text.search(strictUrlRegex) > -1) {
+        const email = true;
+        const link = true;
+
+        if (text.search(emailRegex) > -1) {
+          result.push({ text, email });
+
+          return;
+        }
+
+        if (text.search(protocolClause) === -1) {
+          result.push({ text: `https://${text}`, link });
+
+          return;
+        }
+
+        result.push({
+          text,
+          link,
+        });
+
+        return;
+      }
+
+      result.push({ text });
+    });
+  });
+
+  return result;
+};

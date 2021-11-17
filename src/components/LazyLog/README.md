@@ -63,3 +63,17 @@ let socket = null;
   </div>
 </div>
 ```
+
+Clickable Links
+
+```js
+const text = `It does not care about secure http://www.mozilla.org or unsecure https://www.mozilla.org
+We want to upload data to ftp://www.mozilla.org or ftps://www.mozilla.org
+We just need to write documents for www.mozilla.org
+And at the end send a mail to react-lazylog@mozilla.org
+`;
+
+<div style={{ height: 110, width: 902 }}>
+  <LazyLog text={text} clickableLinks={true} />
+</div>
+```
