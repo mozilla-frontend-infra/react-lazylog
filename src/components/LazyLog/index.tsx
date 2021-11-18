@@ -233,7 +233,7 @@ export default class LazyLog extends Component<any, any> {
     };
 
     static getDerivedStateFromProps(
-        { highlight, follow, scrollToLine, rowHeight, url: nextUrl, text: nextText },
+        { highlight, follow, scrollToLine, url: nextUrl, text: nextText },
         {
             count,
             offset,
@@ -357,9 +357,10 @@ export default class LazyLog extends Component<any, any> {
         this.encodedLog = encodedLog;
         const { scrollToLine, follow, stream, websocket } = this.props;
         const { count: previousCount } = this.state;
-        let offset = 0;
-        let lines = (this.state.lines || List()).concat(moreLines);
-        let count = lines.count();
+
+        const offset = 0;
+        const lines = (this.state.lines || List()).concat(moreLines);
+        const count = lines.count();
 
         const scrollToIndex = getScrollIndex({
             follow,
@@ -720,13 +721,8 @@ export default class LazyLog extends Component<any, any> {
     }
 
     renderRow = ({ key, index, style }) => {
-        const {
-            rowHeight,
-            selectableLines,
-            lineClassName,
-            highlightLineClassName,
-            onLineNumberClick,
-        } = this.props;
+        const { rowHeight, selectableLines, lineClassName, highlightLineClassName, onLineNumberClick } =
+            this.props;
         const {
             highlight,
             lines,
