@@ -21,10 +21,6 @@ import websocket from "../../websocket";
 import { searchLines } from "../../search";
 import { lazyLog, searchMatch, searchMatchHighlighted } from "./index.module.css";
 
-// Setting a hard limit on lines since browsers have trouble with heights
-// starting at around 16.7 million pixels and up
-const BROWSER_PIXEL_LIMIT = 16.7 * 1000000;
-
 export default class LazyLog extends Component<any, any> {
     static propTypes = {
         /**
@@ -255,7 +251,6 @@ export default class LazyLog extends Component<any, any> {
 
         return {
             scrollToIndex: newScrollToIndex,
-            lineLimit: Math.floor(BROWSER_PIXEL_LIMIT / rowHeight),
             highlight:
                 previousHighlight === Range(0, 0)
                     ? getHighlightRange(highlight)
@@ -361,16 +356,10 @@ export default class LazyLog extends Component<any, any> {
     handleUpdate = ({ lines: moreLines, encodedLog }) => {
         this.encodedLog = encodedLog;
         const { scrollToLine, follow, stream, websocket } = this.props;
-        const { lineLimit, count: previousCount } = this.state;
+        const { count: previousCount } = this.state;
         let offset = 0;
         let lines = (this.state.lines || List()).concat(moreLines);
         let count = lines.count();
-
-        if (count > lineLimit) {
-            offset = count - lineLimit;
-            lines = lines.slice(-lineLimit);
-            count = lines.count();
-        }
 
         const scrollToIndex = getScrollIndex({
             follow,
