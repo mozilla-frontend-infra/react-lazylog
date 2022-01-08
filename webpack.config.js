@@ -1,7 +1,7 @@
 "use strict";
 
 const path = require("path");
-const webpack = require('webpack')
+const webpack = require("webpack");
 
 module.exports = () => {
     return {
@@ -20,10 +20,10 @@ module.exports = () => {
         },
         devtool: "source-map",
         plugins: [
-          // fix "process is not defined" error:
-          new webpack.ProvidePlugin({
-            process: 'process/browser',
-          }),
+            // fix "process is not defined" error:
+            new webpack.ProvidePlugin({
+                process: "process/browser",
+            }),
         ],
         module: {
             rules: [
@@ -31,10 +31,7 @@ module.exports = () => {
                     test: /\.css$/i,
                     use: [
                         "style-loader",
-                        {
-                            loader: "@teamsupercell/typings-for-css-modules-loader",
-                            options: {},
-                        },
+                        "@teamsupercell/typings-for-css-modules-loader",
                         {
                             loader: "css-loader",
                             options: {
@@ -45,7 +42,7 @@ module.exports = () => {
                 },
                 {
                     test: /\.tsx?$/,
-                    use: "ts-loader",
+                    loader: "ts-loader",
                     exclude: /node_modules/,
                 },
             ],
