@@ -275,6 +275,7 @@ export default class LazyLog extends Component {
       prevState.url !== this.state.url ||
       prevProps.text !== this.props.text
     ) {
+      this.handleFilterLinesWithMatches(false);
       this.request();
     }
 
