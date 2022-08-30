@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { arrayOf, func, number, object, shape, string } from "prop-types";
 import LinePart from "../LinePart";
 import { lineContent } from "./index.module.css";
+import { arrayOf, func, number, object, shape, string } from "prop-types";
+import React, { Component } from "react";
 
 /* eslint-disable react/no-array-index-key */
 

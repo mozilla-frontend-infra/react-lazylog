@@ -1,5 +1,5 @@
-import React, { Component, Fragment } from "react";
 import { bool, func } from "prop-types";
+import React, { Component, Fragment } from "react";
 
 export default class ScrollFollow extends Component<any, any> {
     static propTypes = {

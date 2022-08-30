@@ -1,5 +1,5 @@
-import React, { PureComponent } from "react";
 import { filterLinesIcon } from "./index.module.css";
+import React, { PureComponent } from "react";
 
 export default class FilterLinesIcon extends PureComponent {
     render() {

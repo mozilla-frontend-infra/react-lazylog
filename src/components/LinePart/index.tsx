@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import { func, object, shape, string } from "prop-types";
 import * as styles from "./index.module.css";
+import { func, object, shape, string } from "prop-types";
+import React, { Component } from "react";
 
 const getClassName = (part) => {
     const className = [];

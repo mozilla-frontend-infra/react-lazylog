@@ -1,5 +1,5 @@
-import mitt from "mitt";
 import { convertBufferToLines } from "./utils";
+import mitt from "mitt";
 
 const fetcher = Promise.resolve().then(() => self.fetch);
 

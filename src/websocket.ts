@@ -1,7 +1,7 @@
-import mitt from "mitt";
-import { List } from "immutable";
 import { encode } from "./encoding";
 import { bufferConcat, convertBufferToLines } from "./utils";
+import { List } from "immutable";
+import mitt from "mitt";
 
 export default (url, options) => {
     const { onOpen, onClose, onError, formatMessage } = options;
