@@ -1,4 +1,5 @@
 import React, { PureComponent } from "react";
+
 import { upArrowIcon } from "./index.module.css";
 
 export default class UpArrowIcon extends PureComponent {

@@ -1,5 +1,6 @@
-import mitt from "mitt";
 import { List } from "immutable";
+import mitt from "mitt";
+
 import { encode } from "./encoding";
 import { bufferConcat, convertBufferToLines } from "./utils";
 

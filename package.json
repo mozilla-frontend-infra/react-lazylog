@@ -23,6 +23,7 @@
     },
     "devDependencies": {
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
+        "@trivago/prettier-plugin-sort-imports": "^3.3.0",
         "css-loader": "^6.5.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",

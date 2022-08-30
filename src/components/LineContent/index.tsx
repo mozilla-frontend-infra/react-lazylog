@@ -1,5 +1,7 @@
-import React, { Component } from "react";
 import { arrayOf, func, number, object, shape, string } from "prop-types";
+
+import React, { Component } from "react";
+
 import LinePart from "../LinePart";
 import { lineContent } from "./index.module.css";
 

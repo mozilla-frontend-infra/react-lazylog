@@ -1,4 +1,5 @@
 import { List, Range } from "immutable";
+
 import reactStringReplace from "react-string-replace";
 
 export const ENCODED_NEWLINE = 10; // \n

@@ -1,7 +1,9 @@
-import React, { Component } from "react";
 import { arrayOf, bool, func, number, object, shape, string } from "prop-types";
-import LineNumber from "../LineNumber";
+
+import React, { Component } from "react";
+
 import LineContent from "../LineContent";
+import LineNumber from "../LineNumber";
 import { line, lineHighlight, lineSelectable } from "./index.module.css";
 
 /**
