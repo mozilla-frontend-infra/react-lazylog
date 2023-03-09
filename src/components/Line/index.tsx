@@ -24,7 +24,7 @@ export default class Line extends Component<any, any> {
         style: object,
         formatPart: func,
         onLineNumberClick: func,
-        onRowClick: func,
+        onMouseUp: func,
         className: string,
         highlightClassName: string,
     };
@@ -35,7 +35,7 @@ export default class Line extends Component<any, any> {
         style: {},
         formatPart: null,
         onLineNumberClick: null,
-        onRowClick: null,
+        onMouseUp: null,
         className: "",
         highlightClassName: "",
     };
@@ -47,7 +47,7 @@ export default class Line extends Component<any, any> {
             highlight,
             selectable,
             onLineNumberClick,
-            onRowClick,
+            onMouseUp,
             number,
             rowHeight,
             style,
@@ -63,11 +63,18 @@ export default class Line extends Component<any, any> {
             minWidth: style ? style.width || "100%" : "100%",
             width: null,
         };
+        const contentStyle = { width: "100%", display: "inline-block" };
 
         return (
             <div className={classes} style={lineStyle}>
                 <LineNumber number={number} highlight={highlight} onClick={onLineNumberClick} />
-                <LineContent number={number} onClick={onRowClick} formatPart={formatPart} data={data} />
+                <LineContent
+                    number={number}
+                    formatPart={formatPart}
+                    data={data}
+                    onMouseUp={onMouseUp}
+                    style={contentStyle}
+                />
             </div>
         );
     }
