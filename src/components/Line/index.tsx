@@ -3,6 +3,7 @@ import { arrayOf, bool, func, number, object, shape, string } from "prop-types";
 import React, { Component } from "react";
 
 import LineContent from "../LineContent";
+import LineGutter from "../LineGutter";
 import LineNumber from "../LineNumber";
 import { line, lineHighlight, lineSelectable } from "./index.module.css";
 
@@ -53,6 +54,7 @@ export default class Line extends Component<any, any> {
             style,
             className,
             highlightClassName,
+            gutter,
         } = this.props;
         const selectableClass = selectable ? ` ${lineSelectable}` : "";
         const highlightClass = highlight ? ` ${lineHighlight} ${highlightClassName}` : "";
@@ -67,6 +69,7 @@ export default class Line extends Component<any, any> {
         return (
             <div className={classes} style={lineStyle}>
                 <LineNumber number={number} highlight={highlight} onClick={onLineNumberClick} />
+                <LineGutter gutter={gutter} />
                 <LineContent number={number} onClick={onRowClick} formatPart={formatPart} data={data} />
             </div>
         );

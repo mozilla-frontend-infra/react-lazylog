@@ -611,17 +611,17 @@ export default class LazyLog extends Component<any, any> {
                 resultLines[currentResultsPosition] === lineNumber
             ) {
                 let locationInLine = 0;
-                // Find the first occurance of the line number
+                // Find the first occurrence of the line number
                 // We use this to make sure we're only searching from where
                 // the line number first occurs to the currentResultsPosition below
-                const initialOccurance = resultLines.findIndex(
+                const initialOccurrence = resultLines.findIndex(
                     (element) => element === resultLines[currentResultsPosition],
                 );
 
                 // This finds which word in the line should be the highlighted one.
                 // For example, if we should be highlighting the 2nd match on line 18,
                 // this would set locationInLine to 2.
-                for (let i = initialOccurance; i <= currentResultsPosition; i += 1) {
+                for (let i = initialOccurrence; i <= currentResultsPosition; i += 1) {
                     if (resultLines[i] === lineNumber) {
                         locationInLine += 1;
                     }
@@ -734,8 +734,14 @@ export default class LazyLog extends Component<any, any> {
     }
 
     renderRow = ({ key, index, style }) => {
-        const { rowHeight, selectableLines, lineClassName, highlightLineClassName, onLineNumberClick } =
-            this.props;
+        const {
+            rowHeight,
+            selectableLines,
+            lineClassName,
+            highlightLineClassName,
+            onLineNumberClick,
+            gutter,
+        } = this.props;
         const {
             highlight,
             lines,
@@ -762,6 +768,7 @@ export default class LazyLog extends Component<any, any> {
                     const highlighted = this.handleHighlight(e);
                     onLineNumberClick?.({ lineNumber: number, highlightRange: highlighted });
                 }}
+                gutter={gutter ? gutter[number] : null}
                 data={ansiparse(decode(linesToRender.get(index)))}
             />
         );

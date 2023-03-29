@@ -1,0 +1,10 @@
+.lineGutter {
+  display: inline-flex;
+  overflow: hidden;
+  min-width: 20px;
+  padding-right: 0.5em;
+
+  color: #a7a7a7;
+  text-decoration: none;
+  user-select: none;
+}
