@@ -275,6 +275,7 @@ export default class LazyLog extends Component {
       prevState.url !== this.state.url ||
       prevProps.text !== this.props.text
     ) {
+      this.handleClearSearch();
       this.handleFilterLinesWithMatches(false);
       this.request();
     }
@@ -720,6 +721,7 @@ export default class LazyLog extends Component {
             onFilterLinesWithMatches={this.handleFilterLinesWithMatches}
             resultsCount={resultLines.length}
             disabled={count === 0}
+            searchKeywords={this.state.searchKeywords}
           />
         )}
         <AutoSizer

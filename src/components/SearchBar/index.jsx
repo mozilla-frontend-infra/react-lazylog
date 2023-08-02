@@ -95,7 +95,7 @@ export default class SearchBar extends Component {
           className={`react-lazylog-searchbar-input ${searchInput}`}
           onChange={this.handleSearchChange}
           onKeyPress={this.handleSearchKeyPress}
-          value={this.state.keywords}
+          value={this.props.searchKeywords}
           disabled={disabled}
         />
         <button
