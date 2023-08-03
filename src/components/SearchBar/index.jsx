@@ -53,6 +53,10 @@ export default class SearchBar extends Component {
     keywords: '',
   };
 
+  clearKeywords = () => {
+    this.setState({ keywords: '' });
+  };
+
   handleFilterToggle = () => {
     this.props.onFilterLinesWithMatches(!this.props.filterActive);
   };
@@ -95,7 +99,7 @@ export default class SearchBar extends Component {
           className={`react-lazylog-searchbar-input ${searchInput}`}
           onChange={this.handleSearchChange}
           onKeyPress={this.handleSearchKeyPress}
-          value={this.props.searchKeywords}
+          value={this.state.keywords}
           disabled={disabled}
         />
         <button

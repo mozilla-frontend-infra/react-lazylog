@@ -1,4 +1,4 @@
-import { Component, Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
   any,
   arrayOf,
@@ -264,6 +264,10 @@ export default class LazyLog extends Component {
   state = {
     resultLines: [],
   };
+  constructor(props) {
+    super(props);
+    this.searchRef = React.createRef();
+  }
 
   componentDidMount() {
     this.request();
@@ -276,6 +280,7 @@ export default class LazyLog extends Component {
       prevProps.text !== this.props.text
     ) {
       this.handleClearSearch();
+      this.searchRef.current.clearKeywords();
       this.handleFilterLinesWithMatches(false);
       this.request();
     }
@@ -485,6 +490,13 @@ export default class LazyLog extends Component {
     if (searchKeywords && searchKeywords.length > SEARCH_MIN_KEYWORDS) {
       this.handleSearch(this.state.searchKeywords);
     }
+  };
+
+  changeSearchWords = () => {
+    this.setState({
+      ...this.state,
+      searchKeywords: '1321',
+    });
   };
 
   handleClearSearch = () => {
@@ -722,6 +734,8 @@ export default class LazyLog extends Component {
             resultsCount={resultLines.length}
             disabled={count === 0}
             searchKeywords={this.state.searchKeywords}
+            changeSearchWords={this.changeSearchWords}
+            ref={this.searchRef}
           />
         )}
         <AutoSizer
