@@ -53,6 +53,10 @@ export default class SearchBar extends Component {
     keywords: '',
   };
 
+  clearKeywords = () => {
+    this.setState({ keywords: '' });
+  };
+
   handleFilterToggle = () => {
     this.props.onFilterLinesWithMatches(!this.props.filterActive);
   };
