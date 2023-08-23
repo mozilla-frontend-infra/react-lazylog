@@ -4,7 +4,8 @@ The `ScrollFollow` component accepts a render prop function which should return 
 component to render based on the function's arguments.
 
 ```js
-const url = 'https://runkit.io/eliperelman/streaming-endpoint/branches/master';
+import { LazyLog } from "..";
+const url = "https://runkit.io/eliperelman/streaming-endpoint/branches/master";
 
 <div style={{ height: 500, width: 902 }}>
   <ScrollFollow

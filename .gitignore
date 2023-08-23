@@ -65,3 +65,5 @@ es5
 
 # Webstorm project specific settings
 .idea/
+
+dist/

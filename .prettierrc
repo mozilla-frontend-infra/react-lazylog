@@ -1,0 +1,10 @@
+{
+  "tabWidth": 4,
+  "useTabs": false,
+  "printWidth": 110,
+  "trailingComma": "all",
+  "parser": "typescript",
+  "importOrder": ["<THIRD_PARTY_MODULES>", "^react(.*)$", "^@(.*)$", "^[./]"],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
